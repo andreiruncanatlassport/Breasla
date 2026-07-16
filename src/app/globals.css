@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/* Activeaza variantele dark: pe baza clasei .dark de pe <html> (nu pe baza
+   preferintei sistemului) — comutata din panoul de Setari. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Identitate vizuala: "registru oficial + stampila de incredere", reinterpretat
+  intr-o cheie moderna — suprafete tip sticla, gradient auriu->corai pe accente
+  cheie, glow discret in jurul stampilei. Navy + auriu raman ancora brandului;
+  "futurist" vine din efecte (glass, gradient, glow, miscare), nu dintr-o
+  paleta neon generica.
+*/
+@theme inline {
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-paper-white: var(--paper-white);
+  --color-navy: var(--navy);
+  --color-seal: var(--seal);
+  --color-seal-light: var(--seal-light);
+  --color-teal: var(--teal);
+  --color-teal-light: var(--teal-light);
+  --color-rust: var(--rust);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-content: var(--primary-content);
+
+  --font-display: var(--font-family-display);
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+}
+
+:root {
+  --ink: #14213d;
+  --paper: #f3f4f8;
+  --paper-white: #ffffff;
+  --navy: #101a30;
+  --seal: #b8842e;
+  --seal-light: #d9a94f;
+  --teal: #1f6f5c;
+  --teal-light: #2e8f77;
+  --rust: #a23e2e;
+  --line: #e1e3ec;
+  --primary: #14213d;
+  --primary-content: #ffffff;
+
+  --font-family-display: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+  --font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --base-font-scale: 1;
+}
+
+.dark {
+  --ink: #e9ebf5;
+  --paper: #0a0e1a;
+  --paper-white: #121729;
+  --navy: #05070f;
+  --seal: #e0b25c;
+  --seal-light: #f2c977;
+  --teal: #3fc2a6;
+  --teal-light: #58d8bc;
+  --rust: #e57a6b;
+  --line: #242b42;
+  --primary: #e0b25c;
+  --primary-content: #101a30;
+}
+
+/* Variante de font — comutate din panoul de Setari */
+.font-sistem {
+  --font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.font-clasic {
+  --font-family-sans: Georgia, "Times New Roman", "Iowan Old Style", serif;
+  --font-family-display: Georgia, "Times New Roman", "Iowan Old Style", serif;
+}
+.font-rotunjit {
+  --font-family-sans: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+}
+
+/* Marimi de font — comutate din panoul de Setari */
+.text-mic { --base-font-scale: 0.9375; }
+.text-normal { --base-font-scale: 1; }
+.text-mare { --base-font-scale: 1.125; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: calc(16px * var(--base-font-scale));
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.font-mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-seal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Textura fina, doar in light mode (in dark mode preferam un fundal curat) */
+.paper-texture {
+  background-image: radial-gradient(circle at 1px 1px, rgba(20, 33, 61, 0.035) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+.dark .paper-texture {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(224, 178, 92, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(63, 194, 166, 0.06), transparent 40%);
+}
+
+/* Gradient "sigiliu holografic" — folosit STRICT pe accente cheie */
+.gradient-seal {
+  background: linear-gradient(135deg, var(--color-seal) 0%, var(--color-seal-light) 45%, #e8886b 100%);
+}
+
+/* Glow discret in jurul elementelor de incredere/verificare */
+.glow-seal {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-seal) 35%, transparent),
+    0 8px 30px -8px color-mix(in srgb, var(--color-seal) 45%, transparent);
+}
+
+/* Suprafata tip "sticla" — folosita pentru carduri plutitoare peste hero */
+.glass {
+  background: color-mix(in srgb, var(--color-paper-white) 70%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--color-line) 80%, transparent);
+}
+
+.lift-on-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.lift-on-hover:hover {
+  transform: translateY(-2px);
+}
