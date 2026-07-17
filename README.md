@@ -107,8 +107,8 @@ nu se piardă ordinea în care le rulezi (ordinea de **rulare** contează, nu or
 6. Repetă identic, **în ordine**, pentru `0003_seed_judete.sql`, `0004_seed_categories.sql`,
    `0005_search_function.sql`, `0006_profile_reviews_reauth.sql`, `0007_storage.sql`,
    `0008_rating_response_time.sql`, `0009_terms_acceptance.sql`,
-   `0010_email_verification.sql`, și `0011_discounts_rfq_slugs.sql`. Fiecare fișier depinde de
-   cel dinainte.
+   `0010_email_verification.sql`, `0011_discounts_rfq_slugs.sql`, și
+   `0012_fix_rfq_policies.sql`. Fiecare fișier depinde de cel dinainte.
 7. Dacă un fișier dă eroare, cel mai probabil ai sărit un pas sau ai rulat fișierele într-o altă
    ordine. Verifică în **Table Editor** dacă tabelele așteptate există deja; dacă nu, reia de la
    0001.
