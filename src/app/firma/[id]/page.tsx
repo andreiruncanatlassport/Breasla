@@ -1,15 +1,22 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images } from "lucide-react";
+import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart } from "lucide-react";
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
-import { Card, Badge } from "@/components/ui/Card";
+import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { VerifiedStamp } from "@/components/ui/VerifiedStamp";
 import { ConnectButton } from "@/components/ConnectButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ReviewForm } from "@/components/ReviewForm";
 import type { Company, Profile, CompanyContact, CompanyProject } from "@/types/database";
+
+const TIMP_RASPUNS_LABEL: Record<string, string> = {
+  sub_1h: "răspunde în <1h",
+  sub_24h: "răspunde în <24h",
+  "2_3_zile": "răspunde în 2-3 zile",
+  peste_3_zile: "răspunde în peste 3 zile",
+};
 
 export default async function CompanyPage({
   params,
@@ -42,7 +49,7 @@ export default async function CompanyPage({
     { data: contacteData },
     { data: proiecteData },
     { data: recenziiData },
-    { data: ratingData },
+    { data: judeteSuplimentareData },
   ] = await Promise.all([
     company.judet_cod
       ? supabase.from("judete").select("nume").eq("cod", company.judet_cod).maybeSingle()
@@ -67,7 +74,7 @@ export default async function CompanyPage({
       .eq("reviewed_company_id", id)
       .eq("status", "approved")
       .order("created_at", { ascending: false }),
-    supabase.rpc("company_rating", { target_company_id: id } as never),
+    supabase.from("company_judete").select("judete(nume)").eq("company_id", id),
   ]);
 
   const judetNume = (judetData as { nume: string } | null)?.nume ?? null;
@@ -79,9 +86,12 @@ export default async function CompanyPage({
   const financiar = (financiarData as { an: number; cifra_afaceri: number | null; numar_salariati: number | null }[] | null)?.[0];
   const contacte = (contacteData as CompanyContact[]) ?? [];
   const proiecte = (proiecteData as CompanyProject[]) ?? [];
+  const judeteSuplimentare =
+    (judeteSuplimentareData as unknown as { judete: { nume: string } | null }[] | null)
+      ?.map((j) => j.judete?.nume)
+      .filter((n): n is string => Boolean(n)) ?? [];
   const recenzii =
     (recenziiData as unknown as { id: string; rating: number; comentariu: string | null; created_at: string; reviewer: { id: string; denumire: string } | null }[]) ?? [];
-  const rating = (ratingData as unknown as { medie: number; numar: number }[] | null)?.[0] ?? { medie: 0, numar: 0 };
 
   // ---- reprezentant (date personale) — RLS decide daca randul e vizibil -----
   const { data: profileData } = await supabase
@@ -151,51 +161,72 @@ export default async function CompanyPage({
         </div>
       )}
 
-      {/* Banner + avatar */}
-      <div className="relative h-40 w-full overflow-hidden rounded-xl bg-ink/5 sm:h-56">
-        {company.banner_url && (
-          <Image src={company.banner_url} alt="" fill className="object-cover" unoptimized />
-        )}
-        <div className="absolute -bottom-8 left-6 h-20 w-20 overflow-hidden rounded-full border-4 border-paper bg-paper-white sm:h-24 sm:w-24">
-          {company.logo_url ? (
-            <Image src={company.logo_url} alt={company.denumire} fill className="object-cover" unoptimized />
+      {/* Banner + avatar — antetul de profil, cu adancime si accent */}
+      <div className="block-raised relative overflow-hidden p-0">
+        <div className="relative h-40 w-full overflow-hidden sm:h-56">
+          {company.banner_url ? (
+            <Image src={company.banner_url} alt="" fill className="object-cover" unoptimized />
           ) : (
-            <div className="flex h-full items-center justify-center text-ink/25">
-              <Building2 className="h-8 w-8" />
+            <div className="mesh-hero h-full w-full">
+              <div aria-hidden className="absolute inset-0 grid-registry" />
             </div>
           )}
+          {/* gradient jos, ca avatarul si textul sa aiba contrast garantat */}
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent" />
+        </div>
+
+        <div className="relative px-6 pb-6">
+          <div className="-mt-12 flex items-end justify-between gap-4">
+            <div className="relative h-24 w-24 overflow-hidden rounded-2xl border-4 border-surface bg-surface shadow-[var(--shadow-lg)]">
+              {company.logo_url ? (
+                <Image src={company.logo_url} alt={company.denumire} fill className="object-cover" unoptimized />
+              ) : (
+                <div className="flex h-full items-center justify-center bg-ink/4 text-ink-soft/40">
+                  <Building2 className="h-9 w-9" strokeWidth={1.5} />
+                </div>
+              )}
+            </div>
+            <div className="mb-1 flex shrink-0 items-center gap-2">
+              <FavoriteButton companyId={company.id} />
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              {domeniuPrincipal && <p className="stamp-label text-seal">{domeniuPrincipal}</p>}
+              <h1 className="mt-1.5 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                {company.denumire}
+              </h1>
+
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-ink-soft/60" />
+                  {[company.localitate, judetNume].filter(Boolean).join(", ") || "—"}
+                </span>
+                {company.rating_numar > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <Star className="h-4 w-4 fill-seal text-seal" />
+                    <span className="font-mono-num font-semibold text-ink">
+                      {company.rating_mediu.toFixed(1)}
+                    </span>
+                    <span className="text-ink-soft/70">({company.rating_numar} recenzii)</span>
+                  </span>
+                )}
+                <span className="flex items-center gap-1.5 text-ink-soft/70">
+                  <Eye className="h-4 w-4" />
+                  <span className="font-mono-num">{company.vizualizari}</span>
+                </span>
+              </div>
+            </div>
+
+            <VerifiedStamp size="md" className="hidden shrink-0 sm:block" />
+          </div>
         </div>
       </div>
 
-      <div className="mt-11 flex items-start justify-between gap-4">
-        <div>
-          {domeniuPrincipal && (
-            <p className="text-xs font-medium uppercase tracking-wide text-seal">{domeniuPrincipal}</p>
-          )}
-          <h1 className="mt-1 font-display text-3xl font-semibold text-ink">{company.denumire}</h1>
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink/60">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
-              {[company.localitate, judetNume].filter(Boolean).join(", ") || "—"}
-            </span>
-            {rating.numar > 0 && (
-              <span className="flex items-center gap-1">
-                <Star className="h-3.5 w-3.5 fill-seal text-seal" />
-                {rating.medie.toFixed(1)} ({rating.numar})
-              </span>
-            )}
-            <span className="flex items-center gap-1 text-ink/40">
-              <Eye className="h-3.5 w-3.5" /> {company.vizualizari}
-            </span>
-          </p>
-        </div>
-        <div className="flex shrink-0 flex-col items-end gap-2">
-          <VerifiedStamp size="md" />
-          <FavoriteButton companyId={company.id} />
-        </div>
-      </div>
-
-      {company.descriere && <p className="mt-6 max-w-2xl leading-relaxed text-ink/75">{company.descriere}</p>}
+      {company.descriere && (
+        <p className="mt-8 max-w-2xl text-base leading-relaxed text-ink-soft">{company.descriere}</p>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-2">
         {domeniiSecundare.map((c) => (
@@ -212,12 +243,20 @@ export default async function CompanyPage({
             {financiar.cifra_afaceri.toLocaleString("ro-RO")} lei ({financiar.an})
           </Badge>
         )}
+        {company.timp_raspuns && (
+          <Badge tone="success">
+            <Zap className="mr-1 h-3 w-3 inline" /> {TIMP_RASPUNS_LABEL[company.timp_raspuns]}
+          </Badge>
+        )}
+        {company.data_inregistrare && (
+          <Badge tone="neutral">Activă din {new Date(company.data_inregistrare).getFullYear()}</Badge>
+        )}
       </div>
 
       {company.tags && company.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {company.tags.map((t) => (
-            <span key={t} className="rounded-full bg-ink/6 px-2.5 py-1 text-xs text-ink/60">
+            <span key={t} className="rounded-full bg-ink/6 px-2.5 py-1 text-xs text-ink-soft">
               {t}
             </span>
           ))}
@@ -227,17 +266,17 @@ export default async function CompanyPage({
       {(company.facebook_url || company.instagram_url || company.linkedin_url) && (
         <div className="mt-4 flex gap-3">
           {company.facebook_url && (
-            <a href={company.facebook_url} target="_blank" rel="noopener noreferrer" className="text-ink/40 hover:text-seal">
+            <a href={company.facebook_url} target="_blank" rel="noopener noreferrer" className="text-ink-soft/70 hover:text-seal">
               <FacebookIcon className="h-5 w-5" />
             </a>
           )}
           {company.instagram_url && (
-            <a href={company.instagram_url} target="_blank" rel="noopener noreferrer" className="text-ink/40 hover:text-seal">
+            <a href={company.instagram_url} target="_blank" rel="noopener noreferrer" className="text-ink-soft/70 hover:text-seal">
               <InstagramIcon className="h-5 w-5" />
             </a>
           )}
           {company.linkedin_url && (
-            <a href={company.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-ink/40 hover:text-seal">
+            <a href={company.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-ink-soft/70 hover:text-seal">
               <LinkedinIcon className="h-5 w-5" />
             </a>
           )}
@@ -246,38 +285,38 @@ export default async function CompanyPage({
 
       <div className="mt-8 grid gap-6 sm:grid-cols-2">
         <Card>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Contact firmă</h2>
+          <SectionLabel icon={<Phone className="h-3.5 w-3.5" />}>Contact firmă</SectionLabel>
           <div className="mt-3 space-y-2 text-sm">
             {company.telefon_firma && (
-              <p className="flex items-center gap-2 text-ink/80"><Phone className="h-4 w-4 text-ink/40" /> {company.telefon_firma}</p>
+              <p className="flex items-center gap-2 text-ink"><Phone className="h-4 w-4 text-ink-soft/70" /> {company.telefon_firma}</p>
             )}
             {company.email_firma && (
-              <p className="flex items-center gap-2 text-ink/80"><Mail className="h-4 w-4 text-ink/40" /> {company.email_firma}</p>
+              <p className="flex items-center gap-2 text-ink"><Mail className="h-4 w-4 text-ink-soft/70" /> {company.email_firma}</p>
             )}
             {company.website && (
-              <p className="flex items-center gap-2 text-ink/80">
-                <Globe className="h-4 w-4 text-ink/40" />
+              <p className="flex items-center gap-2 text-ink">
+                <Globe className="h-4 w-4 text-ink-soft/70" />
                 <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-seal hover:underline">
                   {company.website}
                 </a>
               </p>
             )}
-            <p className="flex items-center gap-2 text-ink/50">
-              <Building2 className="h-4 w-4 text-ink/40" /> CUI <span className="font-mono-num">{company.cui}</span>
+            <p className="flex items-center gap-2 text-ink-soft">
+              <Building2 className="h-4 w-4 text-ink-soft/70" /> CUI <span className="font-mono-num">{company.cui}</span>
             </p>
           </div>
         </Card>
 
         <Card>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Reprezentant</h2>
+          <SectionLabel icon={<UserRound className="h-3.5 w-3.5" />}>Reprezentant</SectionLabel>
           {profil ? (
-            <div className="mt-3 space-y-1 text-sm text-ink/80">
+            <div className="mt-3 space-y-1 text-sm text-ink">
               <p className="font-medium text-ink">{profil.nume_complet}</p>
               {profil.telefon_personal && <p>{profil.telefon_personal}</p>}
               {profil.email_personal && <p>{profil.email_personal}</p>}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-ink/50">Vizibil doar pentru firmele conectate.</p>
+            <p className="mt-3 text-sm text-ink-soft">Vizibil doar pentru firmele conectate.</p>
           )}
           <div className="mt-4">
             <ConnectButton
@@ -290,15 +329,29 @@ export default async function CompanyPage({
         </Card>
       </div>
 
+      {(company.raza_deservire_km || judeteSuplimentare.length > 0) && (
+        <Card className="mt-6">
+          <SectionLabel icon={<Navigation className="h-3.5 w-3.5" />}>Zonă deservită</SectionLabel>
+          <div className="mt-2 space-y-1 text-sm text-ink-soft">
+            {company.raza_deservire_km && (
+              <p>Rază de {company.raza_deservire_km} km în jurul sediului{judetNume ? ` (${judetNume})` : ""}.</p>
+            )}
+            {judeteSuplimentare.length > 0 && (
+              <p>Deservește explicit și: {judeteSuplimentare.join(", ")}.</p>
+            )}
+          </div>
+        </Card>
+      )}
+
       {contacte.length > 0 && (
         <Card className="mt-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Persoane de contact</h2>
+          <SectionLabel icon={<Users className="h-3.5 w-3.5" />}>Persoane de contact</SectionLabel>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {contacte.map((c) => (
               <div key={c.id} className="text-sm">
                 <p className="font-medium text-ink">{c.nume}</p>
-                <p className="text-ink/55">{[c.rol, c.departament].filter(Boolean).join(" · ")}</p>
-                <p className="text-ink/55">{[c.telefon, c.email].filter(Boolean).join(" · ")}</p>
+                <p className="text-ink-soft">{[c.rol, c.departament].filter(Boolean).join(" · ")}</p>
+                <p className="text-ink-soft">{[c.telefon, c.email].filter(Boolean).join(" · ")}</p>
               </div>
             ))}
           </div>
@@ -309,8 +362,8 @@ export default async function CompanyPage({
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           {nevoi.length > 0 && (
             <Card>
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Caută ajutor în</h2>
-              <ul className="mt-3 space-y-1.5 text-sm text-ink/75">
+              <SectionLabel icon={<HelpCircle className="h-3.5 w-3.5" />}>Caută ajutor în</SectionLabel>
+              <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 {nevoi.map((n, i) => (
                   <li key={i}>• {n.categories?.name_ro ?? ""} {n.nota && `— ${n.nota}`}</li>
                 ))}
@@ -319,8 +372,8 @@ export default async function CompanyPage({
           )}
           {oferte.length > 0 && (
             <Card>
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Poate ajuta cu</h2>
-              <ul className="mt-3 space-y-1.5 text-sm text-ink/75">
+              <SectionLabel icon={<HandHeart className="h-3.5 w-3.5" />}>Poate ajuta cu</SectionLabel>
+              <ul className="mt-3 space-y-1.5 text-sm text-ink-soft">
                 {oferte.map((o, i) => (
                   <li key={i}>• {o.categories?.name_ro ?? ""} {o.nota && `— ${o.nota}`}</li>
                 ))}
@@ -332,9 +385,7 @@ export default async function CompanyPage({
 
       {proiecte.length > 0 && (
         <div className="mt-8">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink/50">
-            <Images className="h-4 w-4" /> Portofoliu
-          </h2>
+          <SectionLabel icon={<Images className="h-3.5 w-3.5" />}>Portofoliu</SectionLabel>
           <div className="mt-3 grid gap-4 sm:grid-cols-3">
             {proiecte.map((p) => (
               <Link
@@ -347,7 +398,7 @@ export default async function CompanyPage({
                 </div>
                 <div className="p-3">
                   <p className="text-sm font-medium text-ink">{p.titlu}</p>
-                  {p.locatie && <p className="text-xs text-ink/50">{p.locatie}{p.an ? ` · ${p.an}` : ""}</p>}
+                  {p.locatie && <p className="text-xs text-ink-soft">{p.locatie}{p.an ? ` · ${p.an}` : ""}</p>}
                 </div>
               </Link>
             ))}
@@ -356,9 +407,9 @@ export default async function CompanyPage({
       )}
 
       <div className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">
-          Recenzii {rating.numar > 0 && `(${rating.numar})`}
-        </h2>
+        <SectionLabel icon={<Star className="h-3.5 w-3.5" />}>
+          Recenzii {company.rating_numar > 0 && `(${company.rating_numar})`}
+        </SectionLabel>
 
         {recenzii.length > 0 && (
           <div className="mt-3 space-y-3">
@@ -368,16 +419,16 @@ export default async function CompanyPage({
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className={`h-3.5 w-3.5 ${i < r.rating ? "fill-seal text-seal" : "text-ink/20"}`} />
                   ))}
-                  <Link href={`/firma/${r.reviewer?.id}`} className="text-xs font-medium text-ink/60 hover:text-seal">
+                  <Link href={`/firma/${r.reviewer?.id}`} className="text-xs font-medium text-ink-soft hover:text-seal">
                     {r.reviewer?.denumire}
                   </Link>
                 </div>
-                {r.comentariu && <p className="mt-2 text-sm text-ink/75">{r.comentariu}</p>}
+                {r.comentariu && <p className="mt-2 text-sm text-ink-soft">{r.comentariu}</p>}
               </Card>
             ))}
           </div>
         )}
-        {recenzii.length === 0 && <p className="mt-2 text-sm text-ink/50">Nicio recenzie publicată încă.</p>}
+        {recenzii.length === 0 && <p className="mt-2 text-sm text-ink-soft">Nicio recenzie publicată încă.</p>}
 
         {poateRecenza && firmaVizitatorId && (
           <div className="mt-4">

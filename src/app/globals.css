@@ -1,84 +1,119 @@
 @import "tailwindcss";
 
-/* Activeaza variantele dark: pe baza clasei .dark de pe <html> (nu pe baza
-   preferintei sistemului) — comutata din panoul de Setari. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/*
-  Identitate vizuala: "registru oficial + stampila de incredere", reinterpretat
-  intr-o cheie moderna — suprafete tip sticla, gradient auriu->corai pe accente
-  cheie, glow discret in jurul stampilei. Navy + auriu raman ancora brandului;
-  "futurist" vine din efecte (glass, gradient, glow, miscare), nu dintr-o
-  paleta neon generica.
-*/
+/* ==========================================================================
+   BREASLA — sistem de design
+   Concept: "registrul breslei, reimaginat" — autoritate oficiala (navy adanc,
+   sigiliu auriu) intalneste indrazneala moderna (mesh gradients, adancime in
+   straturi, accente vii). Blocurile sunt clar delimitate prin ELEVATIE +
+   TEXTURA, nu doar prin linii subtiri: fiecare tip de continut are un
+   tratament vizual propriu, ca sa se distinga dintr-o privire.
+   ========================================================================== */
+
 @theme inline {
   --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
   --color-paper: var(--paper);
   --color-paper-white: var(--paper-white);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-navy: var(--navy);
   --color-seal: var(--seal);
   --color-seal-light: var(--seal-light);
+  --color-ember: var(--ember);
   --color-teal: var(--teal);
   --color-teal-light: var(--teal-light);
+  --color-violet: var(--violet);
   --color-rust: var(--rust);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-primary: var(--primary);
   --color-primary-content: var(--primary-content);
 
   --font-display: var(--font-family-display);
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-family-mono);
+
+  --radius-xl: 14px;
+  --radius-2xl: 20px;
+  --radius-3xl: 28px;
 }
 
 :root {
-  --ink: #14213d;
-  --paper: #f3f4f8;
+  /* ---- LIGHT ---- */
+  --ink: #0f2438;
+  --ink-soft: #4a5c6d;
+  --paper: #f4f6f8;
   --paper-white: #ffffff;
-  --navy: #101a30;
-  --seal: #b8842e;
-  --seal-light: #d9a94f;
-  --teal: #1f6f5c;
-  --teal-light: #2e8f77;
-  --rust: #a23e2e;
-  --line: #e1e3ec;
-  --primary: #14213d;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --navy: #0a2540;
+  --seal: #f0722a;
+  --seal-light: #ff9552;
+  --ember: #d85f1b;
+  --teal: #269fa6;
+  --teal-light: #4dbdc4;
+  --violet: #6a4bc4;
+  --rust: #b4331f;
+  --line: #e2e7ec;
+  --line-strong: #ccd3da;
+  --primary: #0a2540;
   --primary-content: #ffffff;
 
-  --font-family-display: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
-  --font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --font-family-display: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-sans: var(--font-work-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --base-font-scale: 1;
+
+  /* Elevatie in straturi — cheia pentru blocuri clar distinse */
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 2px 4px -1px rgba(16, 24, 40, 0.06), 0 4px 12px -2px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 4px 8px -2px rgba(16, 24, 40, 0.08), 0 12px 28px -4px rgba(16, 24, 40, 0.12);
+  --shadow-xl: 0 8px 16px -4px rgba(16, 24, 40, 0.1), 0 24px 48px -8px rgba(16, 24, 40, 0.16);
 }
 
 .dark {
-  --ink: #e9ebf5;
-  --paper: #0a0e1a;
-  --paper-white: #121729;
-  --navy: #05070f;
-  --seal: #e0b25c;
-  --seal-light: #f2c977;
-  --teal: #3fc2a6;
-  --teal-light: #58d8bc;
-  --rust: #e57a6b;
-  --line: #242b42;
-  --primary: #e0b25c;
-  --primary-content: #101a30;
+  --ink: #eceef4;
+  --ink-soft: #98a2b3;
+  --paper: #070a12;
+  --paper-white: #10141f;
+  --surface: #10141f;
+  --surface-raised: #171c2b;
+  --navy: #05070d;
+  --seal: #ff9552;
+  --seal-light: #ffb27a;
+  --ember: #ff8a4d;
+  --teal: #3fc0c7;
+  --teal-light: #63d6dc;
+  --violet: #9b7ff0;
+  --rust: #f07665;
+  --line: #232a3d;
+  --line-strong: #333c54;
+  --primary: #ff9552;
+  --primary-content: #0a2540;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.5), 0 12px 28px -4px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.55), 0 24px 48px -8px rgba(0, 0, 0, 0.6);
 }
 
-/* Variante de font — comutate din panoul de Setari */
+/* ---- Variante de font (panoul de Setari) ---- */
 .font-sistem {
-  --font-family-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-sans: var(--font-work-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: var(--font-space-grotesk), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 .font-clasic {
-  --font-family-sans: Georgia, "Times New Roman", "Iowan Old Style", serif;
-  --font-family-display: Georgia, "Times New Roman", "Iowan Old Style", serif;
+  --font-family-sans: Georgia, "Times New Roman", serif;
+  --font-family-display: Georgia, "Times New Roman", serif;
 }
 .font-rotunjit {
   --font-family-sans: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+  --font-family-display: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
 }
 
-/* Marimi de font — comutate din panoul de Setari */
 .text-mic { --base-font-scale: 0.9375; }
 .text-normal { --base-font-scale: 1; }
 .text-mare { --base-font-scale: 1.125; }
@@ -86,32 +121,42 @@
 html {
   scroll-behavior: smooth;
   font-size: calc(16px * var(--base-font-scale));
+  color-scheme: light;
 }
+.dark { color-scheme: dark; }
 
 body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.022em;
+  font-weight: 600;
 }
+
+h1 { letter-spacing: -0.032em; }
 
 .font-mono-num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 :focus-visible {
   outline: 2px solid var(--color-seal);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -119,39 +164,181 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Textura fina, doar in light mode (in dark mode preferam un fundal curat) */
-.paper-texture {
-  background-image: radial-gradient(circle at 1px 1px, rgba(20, 33, 61, 0.035) 1px, transparent 0);
-  background-size: 22px 22px;
-}
-.dark .paper-texture {
+/* ==========================================================================
+   FUNDALURI CU CARACTER
+   ========================================================================== */
+
+/* Mesh gradient — fundal principal de hero, viu dar nu strident */
+.mesh-hero {
+  background-color: var(--paper);
   background-image:
-    radial-gradient(circle at 20% 20%, rgba(224, 178, 92, 0.08), transparent 45%),
-    radial-gradient(circle at 80% 0%, rgba(63, 194, 166, 0.06), transparent 40%);
+    radial-gradient(at 12% 8%, color-mix(in srgb, var(--color-seal) 22%, transparent) 0px, transparent 55%),
+    radial-gradient(at 88% 12%, color-mix(in srgb, var(--color-violet) 16%, transparent) 0px, transparent 50%),
+    radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 14%, transparent) 0px, transparent 45%),
+    radial-gradient(at 25% 92%, color-mix(in srgb, var(--color-ember) 12%, transparent) 0px, transparent 50%);
+}
+.dark .mesh-hero {
+  background-image:
+    radial-gradient(at 12% 8%, color-mix(in srgb, var(--color-seal) 18%, transparent) 0px, transparent 55%),
+    radial-gradient(at 88% 12%, color-mix(in srgb, var(--color-violet) 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 14%, transparent) 0px, transparent 45%),
+    radial-gradient(at 25% 92%, color-mix(in srgb, var(--color-ember) 10%, transparent) 0px, transparent 50%);
 }
 
-/* Gradient "sigiliu holografic" — folosit STRICT pe accente cheie */
-.gradient-seal {
-  background: linear-gradient(135deg, var(--color-seal) 0%, var(--color-seal-light) 45%, #e8886b 100%);
+/* Grila fina de "registru" — evoca hartia de caiet oficial */
+.grid-registry {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-ink) 4%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 100%);
 }
 
-/* Glow discret in jurul elementelor de incredere/verificare */
-.glow-seal {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-seal) 35%, transparent),
-    0 8px 30px -8px color-mix(in srgb, var(--color-seal) 45%, transparent);
+.paper-texture {
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--color-ink) 6%, transparent) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 
-/* Suprafata tip "sticla" — folosita pentru carduri plutitoare peste hero */
+/* ==========================================================================
+   BLOCURI / SUPRAFETE — fiecare tip are un tratament distinct
+   ========================================================================== */
+
+/* Bloc standard: alb pe fundal cald, umbra medie, contur fin */
+.block-base {
+  background: var(--surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+}
+
+/* Bloc "ridicat": pentru continut principal, cu umbra mai pronuntata */
+.block-raised {
+  background: var(--surface-raised);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bloc "scobit": pentru zone de input/filtre — pare adancit in pagina */
+.block-inset {
+  background: color-mix(in srgb, var(--color-ink) 3%, transparent);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+  box-shadow: inset 0 1px 3px color-mix(in srgb, var(--color-ink) 5%, transparent);
+}
+.dark .block-inset {
+  background: color-mix(in srgb, black 25%, transparent);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Bloc de sticla: plutitor peste fundaluri colorate */
 .glass {
-  background: color-mix(in srgb, var(--color-paper-white) 70%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid color-mix(in srgb, var(--color-line) 80%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid color-mix(in srgb, var(--color-line) 70%, transparent);
+  border-radius: var(--radius-2xl);
 }
 
+/* Bloc cu accent lateral — semnaleaza importanta/categoria */
+.block-accent {
+  position: relative;
+  overflow: hidden;
+}
+.block-accent::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--color-seal), var(--color-ember));
+}
+
+/* ==========================================================================
+   ACCENTE & EFECTE
+   ========================================================================== */
+
+.gradient-seal {
+  background: linear-gradient(135deg, var(--color-seal) 0%, var(--color-seal-light) 40%, var(--color-ember) 100%);
+}
+
+.text-gradient-seal {
+  background: linear-gradient(120deg, var(--color-seal) 0%, var(--color-ember) 60%, var(--color-violet) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-seal {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-seal) 30%, transparent),
+    0 0 40px -6px color-mix(in srgb, var(--color-seal) 50%, transparent),
+    var(--shadow-lg);
+}
+
+.ring-seal {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-seal) 15%, transparent);
+}
+
+/* Interactiuni */
 .lift-on-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
 }
 .lift-on-hover:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.008);
+  box-shadow: var(--shadow-xl);
+  border-color: color-mix(in srgb, var(--color-seal) 40%, var(--color-line));
+}
+
+.press-on-click {
+  transition: transform 0.1s ease;
+}
+.press-on-click:active {
+  transform: scale(0.98);
+}
+
+/* Eticheta tip "stampila de dosar" */
+.stamp-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Animatii */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-ink) 6%, transparent) 25%,
+    color-mix(in srgb, var(--color-ink) 12%, transparent) 50%,
+    color-mix(in srgb, var(--color-ink) 6%, transparent) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Bara de scroll discreta, in ton cu tema */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
 }

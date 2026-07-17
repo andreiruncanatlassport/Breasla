@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ExternalLink, Bookmark } from "lucide-react";
+import { Pencil, ExternalLink, Bookmark, Building2, Inbox, Send, Handshake } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Card, Badge } from "@/components/ui/Card";
+import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
 import { ConnectionActions } from "@/components/ConnectionActions";
+import { EmailUnverifiedBanner } from "@/components/EmailUnverifiedBanner";
 import type { Company, CompanyStatus } from "@/types/database";
 
 const STATUS_LABEL: Record<CompanyStatus, string> = {
@@ -75,32 +76,44 @@ export default async function DashboardPage() {
   const trimise = conexiuni.filter((c) => c.status === "pending" && companyIds.includes(c.requester_company_id));
   const acceptate = conexiuni.filter((c) => c.status === "accepted");
 
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("email_verificat")
+    .eq("id", user.id)
+    .maybeSingle();
+  const emailVerificat = (profileData as { email_verificat: boolean } | null)?.email_verificat ?? true;
+
   return (
     <div className="mx-auto max-w-4xl px-5 py-12">
+      {!emailVerificat && user.email && <EmailUnverifiedBanner email={user.email} />}
+
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-ink">Contul meu</h1>
+        <div>
+          <p className="stamp-label text-seal">Panoul tău</p>
+          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Contul meu</h1>
+        </div>
         <LinkButton href="/inregistrare" variant="secondary" size="sm">Adaugă altă firmă</LinkButton>
       </div>
 
       {/* Firmele mele */}
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Firmele mele</h2>
+        <SectionLabel icon={<Building2 className="h-3.5 w-3.5" />}>Firmele mele</SectionLabel>
         <div className="mt-3 space-y-3">
           {companies.length === 0 && (
-            <p className="text-sm text-ink/50">Nu ai nicio firmă înregistrată încă.</p>
+            <p className="text-sm text-ink-soft">Nu ai nicio firmă înregistrată încă.</p>
           )}
           {companies.map((c) => (
-            <Card key={c.id} className="flex items-center justify-between">
+            <Card key={c.id} className="lift-on-hover flex items-center justify-between">
               <div>
                 <p className="font-medium text-ink">{c.denumire}</p>
-                <p className="mt-1 font-mono-num text-xs text-ink/50">CUI {c.cui}</p>
+                <p className="mt-1 font-mono-num text-xs text-ink-soft">CUI {c.cui}</p>
               </div>
               <div className="flex items-center gap-3">
                 <Badge tone={STATUS_TONE[c.status]}>{STATUS_LABEL[c.status]}</Badge>
-                <Link href={`/firma/${c.id}`} className="text-ink/50 hover:text-ink" title="Vezi profilul public">
+                <Link href={`/firma/${c.id}`} className="text-ink-soft hover:text-ink" title="Vezi profilul public">
                   <ExternalLink className="h-4 w-4" />
                 </Link>
-                <Link href={`/dashboard/firma/${c.id}/edit`} className="text-ink/50 hover:text-ink" title="Editează">
+                <Link href={`/dashboard/firma/${c.id}/edit`} className="text-ink-soft hover:text-ink" title="Editează">
                   <Pencil className="h-4 w-4" />
                 </Link>
               </div>
@@ -112,10 +125,10 @@ export default async function DashboardPage() {
       {/* Cereri primite */}
       {primite.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Cereri de conexiune primite</h2>
+          <SectionLabel icon={<Inbox className="h-3.5 w-3.5" />}>Cereri primite</SectionLabel>
           <div className="mt-3 space-y-3">
             {primite.map((c) => (
-              <Card key={c.id} className="flex items-center justify-between">
+              <Card key={c.id} className="lift-on-hover flex items-center justify-between">
                 <Link href={`/firma/${c.requester?.id}`} className="font-medium text-ink hover:text-seal">
                   {c.requester?.denumire}
                 </Link>
@@ -129,10 +142,10 @@ export default async function DashboardPage() {
       {/* Cereri trimise */}
       {trimise.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Cereri trimise, în așteptare</h2>
+          <SectionLabel icon={<Send className="h-3.5 w-3.5" />}>Cereri trimise</SectionLabel>
           <div className="mt-3 space-y-3">
             {trimise.map((c) => (
-              <Card key={c.id} className="flex items-center justify-between">
+              <Card key={c.id} className="lift-on-hover flex items-center justify-between">
                 <Link href={`/firma/${c.target?.id}`} className="font-medium text-ink hover:text-seal">
                   {c.target?.denumire}
                 </Link>
@@ -145,10 +158,10 @@ export default async function DashboardPage() {
 
       {/* Conexiuni active */}
       <section className="mt-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Conexiunile mele</h2>
+        <SectionLabel icon={<Handshake className="h-3.5 w-3.5" />}>Conexiunile mele</SectionLabel>
         <div className="mt-3 space-y-3">
           {acceptate.length === 0 && (
-            <p className="text-sm text-ink/50">Nicio conexiune activă încă.</p>
+            <p className="text-sm text-ink-soft">Nicio conexiune activă încă.</p>
           )}
           {acceptate.map((c) => {
             const cealalta = companyIds.includes(c.requester_company_id) ? c.target : c.requester;
@@ -164,12 +177,10 @@ export default async function DashboardPage() {
       </section>
       {/* Favorite */}
       <section className="mt-8">
-        <h2 className="flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wide text-ink/50">
-          <Bookmark className="h-3.5 w-3.5" /> Firme salvate
-        </h2>
+        <SectionLabel icon={<Bookmark className="h-3.5 w-3.5" />}>Firme salvate</SectionLabel>
         <div className="mt-3 space-y-3">
           {favorite.length === 0 && (
-            <p className="text-sm text-ink/50">Nicio firmă salvată încă.</p>
+            <p className="text-sm text-ink-soft">Nicio firmă salvată încă.</p>
           )}
           {favorite.map((f) => (
             <Card key={f.id}>

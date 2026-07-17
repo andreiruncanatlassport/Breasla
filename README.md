@@ -35,6 +35,14 @@ sări peste niciunul. Îți ia cam 30-45 de minute prima dată.
   (contract, comandă etc.), afișate ca rating mediu pe profil.
 - **Firme salvate (favorite)**, notificări pentru cereri de conexiune, contor de vizualizări,
   cod QR + link rapid de distribuit pentru fiecare profil.
+- **Rating mediu și timp de răspuns** vizibile direct în catalog, nu doar pe profil.
+- **Verificare email proprie, opțională și neblocantă**: contul e activ imediat; un banner roșu
+  "Neverificat" în Dashboard permite verificarea printr-un cod, când dorește utilizatorul.
+- **Termeni & Condiții, Regulament, și Politică de confidențialitate (GDPR)**, cu bifă
+  obligatorie la înregistrare — data acceptului rămâne înregistrată pe cont.
+- **Design propriu, expresiv**: paletă navy + sigiliu auriu, mesh gradients, blocuri delimitate
+  prin elevație (text ridicat vs. inputuri adâncite), semn de brand desenat de la zero, mod
+  întunecat complet. Font modern ("Geist"), găzduit local.
 - **Ștergere firmă de către proprietar**, iar orice editare/ștergere cere reconfirmarea emailului
   (cod trimis prin email) înainte de a fi permisă.
 - **Panou de admin**: aprobare/respingere manuală, moderare recenzii, statistici de bază,
@@ -89,8 +97,9 @@ nu se piardă ordinea în care le rulezi (ordinea de **rulare** contează, nu or
 5. Șterge tot conținutul din tab (Ctrl+A, Delete), lipește conținutul lui `0002_rls.sql`, Run,
    așteaptă succesul.
 6. Repetă identic, **în ordine**, pentru `0003_seed_judete.sql`, `0004_seed_categories.sql`,
-   `0005_search_function.sql`, `0006_profile_reviews_reauth.sql`, și `0007_storage.sql`. Fiecare
-   fișier depinde de cel dinainte.
+   `0005_search_function.sql`, `0006_profile_reviews_reauth.sql`, `0007_storage.sql`,
+   `0008_rating_response_time.sql`, `0009_terms_acceptance.sql`, și
+   `0010_email_verification.sql`. Fiecare fișier depinde de cel dinainte.
 7. Dacă un fișier dă eroare, cel mai probabil ai sărit un pas sau ai rulat fișierele într-o altă
    ordine. Verifică în **Table Editor** dacă tabelele așteptate există deja; dacă nu, reia de la
    0001.
@@ -118,27 +127,39 @@ Fișierul `0007_storage.sql` a creat automat două "bucket"-uri de stocare. Veri
 
 ### 3.5 Setări de autentificare (email)
 
-1. **Authentication** → **Providers** → **Email**.
-2. Pentru testare rapidă, poți **dezactiva** "Confirm email" (așa contul e activ instant după
-   înregistrare, fără emailul de confirmare). Pentru lansare publică, recomandăm să-l lași
-   **activat**.
+1. **Authentication** → **Sign In / Providers** → **Email** → comutatorul **"Confirm email"**
+   → setează-l pe **OFF** → **Save**.
+
+   > ⚠️ **Atenție la confuzie:** în **Authentication → Emails → Templates** există un element numit
+   > "Confirm sign up" — acela e doar *șablonul de email*, nu comutatorul. Comutatorul real e cel
+   > de mai sus, la Providers → Email.
+
+2. **De ce OFF:** aplicația are propriul sistem de verificare a emailului, opțional și neblocant —
+   contul e activ imediat după înregistrare, iar în Dashboard apare un banner roșu
+   **"Neverificat"** cu buton de verificare (cod pe email). Dacă lași "Confirm email" activat,
+   înregistrarea firmei se întrerupe la mijloc: utilizatorul e obligat să iasă din formular, să
+   deschidă emailul și să se autentifice din nou înainte să continue.
+
 3. **Authentication** → **URL Configuration**: aici vei reveni la Pasul 5.5, după ce ai domeniul de
    pe Railway.
 
-#### 3.5.1 Activează codul din 6 cifre pentru reconfirmarea la editare/ștergere
+#### 3.5.1 Activează codul din 6 cifre (necesar pentru verificări)
 
-Funcția "reconfirmă-ți identitatea prin email" (cerută înainte de a edita sau șterge o firmă)
-trimite implicit un link, nu un cod — trebuie să spui explicit șablonului de email să trimită și
-codul:
+Două funcții trimit un cod pe email: **verificarea opțională a emailului** (bannerul roșu din
+Dashboard) și **reconfirmarea identității** înainte de a edita/șterge o firmă. Supabase trimite
+implicit un link, nu un cod — trebuie să adaugi explicit codul în șablon:
 
 1. **Authentication** → **Email Templates** → **Magic Link**.
-2. În conținutul HTML, adaugă undeva variabila `{{ .Token }}` — de exemplu:
+2. În conținutul HTML, adaugă variabila `{{ .Token }}` — de exemplu:
    ```html
    <h2>Codul tău de confirmare</h2>
    <p>Introdu acest cod în Breasla: <strong>{{ .Token }}</strong></p>
    <p>Expiră în câteva minute.</p>
    ```
-3. Salvează. Testează din aplicație (buton "Editează" → "Trimite cod pe email").
+3. Salvează. Testează din aplicație (Dashboard → butonul "Verifică acum" din bannerul roșu).
+
+> **Notă:** dacă vezi mesajul "Set up custom SMTP to edit templates" în Supabase, va trebui să
+> configurezi întâi un furnizor SMTP propriu (vezi 3.5.2) ca să poți edita șablonul.
 
 #### 3.5.2 Atenție la limita emailului de test din Supabase
 

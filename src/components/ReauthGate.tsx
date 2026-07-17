@@ -66,7 +66,7 @@ export function ReauthGate({ children }: { children: ReactNode }) {
   }
 
   if (seVerifica) {
-    return <p className="text-sm text-ink/50">Se verifică...</p>;
+    return <p className="text-sm text-ink-soft">Se verifică...</p>;
   }
 
   if (valid) {
@@ -79,7 +79,7 @@ export function ReauthGate({ children }: { children: ReactNode }) {
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-seal" />
         <div className="w-full">
           <p className="font-medium text-ink">Confirmă-ți identitatea</p>
-          <p className="mt-1 text-sm text-ink/65">
+          <p className="mt-1 text-sm text-ink-soft">
             Din motive de siguranță, îți cerem să reconfirmi emailul înainte de a edita sau șterge
             profilul firmei.
           </p>

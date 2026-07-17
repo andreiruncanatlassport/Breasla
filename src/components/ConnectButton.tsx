@@ -73,7 +73,7 @@ export function ConnectButton({ targetCompanyId, connectionId, stareInitiala, au
 
   if (stare === "pending_sent") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-ink/60">
+      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft">
         <Clock className="h-4 w-4" /> Cerere trimisă, în așteptare
       </span>
     );

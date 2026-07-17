@@ -15,6 +15,10 @@ export interface Profile {
   email_personal: string | null;
   rol: Rol;
   activ: boolean;
+  termeni_acceptati_la: string | null;
+  termeni_versiune: string | null;
+  email_verificat: boolean;
+  email_verificat_la: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -87,6 +91,9 @@ export interface Company {
   linkedin_url: string | null;
   tags: string[] | null;
   vizualizari: number;
+  timp_raspuns: "sub_1h" | "sub_24h" | "2_3_zile" | "peste_3_zile" | null;
+  rating_mediu: number;
+  rating_numar: number;
 
   status: CompanyStatus;
   motiv_respingere: string | null;

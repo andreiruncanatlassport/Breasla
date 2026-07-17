@@ -84,7 +84,7 @@ export function ReviewForm({
         onChange={(e) => setComentariu(e.target.value)}
       />
 
-      <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm text-ink/70 hover:border-seal">
+      <label className="mt-3 flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm text-ink-soft hover:border-seal">
         <Paperclip className="h-4 w-4" />
         {fisier ? fisier.name : "Atașează dovada colaborării"}
         <input

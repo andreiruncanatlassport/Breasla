@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError, FieldHint } from "@/components/ui/Field";
+import { TERMENI_VERSIUNE } from "@/lib/terms";
 
 interface Props {
   onDone: () => void;
@@ -14,13 +16,21 @@ export function StepCont({ onDone }: Props) {
   const [parola, setParola] = useState("");
   const [numeComplet, setNumeComplet] = useState("");
   const [telefonPersonal, setTelefonPersonal] = useState("");
+  const [acceptaTermeni, setAcceptaTermeni] = useState(false);
   const [eroare, setEroare] = useState<string | null>(null);
+  const [emailDejaFolosit, setEmailDejaFolosit] = useState(false);
+  const [confirmareNecesara, setConfirmareNecesara] = useState(false);
   const [seIncarca, setSeIncarca] = useState(false);
-  const [asteaptaConfirmare, setAsteaptaConfirmare] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setEroare(null);
+
+    if (!acceptaTermeni) {
+      setEroare("Trebuie să accepți Termenii, Regulamentul și Politica de confidențialitate.");
+      return;
+    }
+
     setSeIncarca(true);
 
     const supabase = createClient();
@@ -34,35 +44,45 @@ export function StepCont({ onDone }: Props) {
 
     setSeIncarca(false);
 
+    // Cazul 1: adresa exista deja, iar "Confirm email" e DEZACTIVAT in Supabase
+    // -> Supabase intoarce o eroare explicita.
     if (error) {
-      setEroare(error.message);
+      if (/already registered|already exists/i.test(error.message)) {
+        setEmailDejaFolosit(true);
+      } else {
+        setEroare(error.message);
+      }
       return;
     }
 
-    // Daca in Supabase e activata confirmarea prin email, nu primim sesiune imediat.
+    // Cazul 2: adresa exista deja, iar "Confirm email" e ACTIVAT
+    // -> Supabase intoarce, intentionat, un user "fals" fara sesiune, ca sa nu
+    //    se poata afla ce adrese sunt inregistrate. Semnul distinctiv e
+    //    identities = [] (documentat de Supabase).
+    if (data.user && (data.user.identities?.length ?? 0) === 0) {
+      setEmailDejaFolosit(true);
+      return;
+    }
+
+    // Cazul 3: adresa e noua, dar "Confirm email" e inca ACTIVAT in Supabase
+    // -> contul e creat, insa fara sesiune pana la click-ul din email.
+    //    Nu putem continua inregistrarea firmei; anuntam clar de ce.
     if (!data.session) {
-      setAsteaptaConfirmare(true);
+      setConfirmareNecesara(true);
       return;
     }
 
-    // Salvam si telefonul personal (trigger-ul de bd a creat deja randul din profiles)
-    if (telefonPersonal) {
-      await supabase
-        .from("profiles")
-        .update({ telefon_personal: telefonPersonal } as never)
-        .eq("id", data.user!.id);
-    }
+    // Salvam telefonul personal si acceptul termenilor (trigger-ul de bd a creat deja randul din profiles)
+    await supabase
+      .from("profiles")
+      .update({
+        telefon_personal: telefonPersonal || null,
+        termeni_acceptati_la: new Date().toISOString(),
+        termeni_versiune: TERMENI_VERSIUNE,
+      } as never)
+      .eq("id", data.user!.id);
 
     onDone();
-  }
-
-  if (asteaptaConfirmare) {
-    return (
-      <div className="rounded-lg bg-teal/10 p-5 text-sm text-teal">
-        Ți-am trimis un email de confirmare la <strong>{email}</strong>. Deschide-l, apasă pe
-        linkul de confirmare, apoi revino aici și autentifică-te ca să continui înregistrarea firmei.
-      </div>
-    );
   }
 
   return (
@@ -95,7 +115,11 @@ export function StepCont({ onDone }: Props) {
           type="email"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setEmailDejaFolosit(false);
+            setConfirmareNecesara(false);
+          }}
           autoComplete="email"
         />
       </div>
@@ -113,9 +137,65 @@ export function StepCont({ onDone }: Props) {
         <FieldHint>Minim 8 caractere.</FieldHint>
       </div>
 
+      <label className="flex items-start gap-2.5 text-sm text-ink-soft">
+        <input
+          type="checkbox"
+          checked={acceptaTermeni}
+          onChange={(e) => setAcceptaTermeni(e.target.checked)}
+          className="mt-0.5 rounded border-line accent-seal"
+        />
+        <span>
+          Am citit și sunt de acord cu{" "}
+          <Link href="/termeni" target="_blank" className="font-medium text-seal hover:underline">
+            Termenii și Condițiile
+          </Link>
+          ,{" "}
+          <Link href="/regulament" target="_blank" className="font-medium text-seal hover:underline">
+            Regulamentul comunității
+          </Link>{" "}
+          și{" "}
+          <Link href="/confidentialitate" target="_blank" className="font-medium text-seal hover:underline">
+            Politica de confidențialitate (GDPR)
+          </Link>
+          .
+        </span>
+      </label>
+
+      {confirmareNecesara && (
+        <div className="rounded-xl border border-teal/30 bg-teal/8 p-4 text-sm">
+          <p className="font-semibold text-ink">Contul a fost creat.</p>
+          <p className="mt-1 text-ink-soft">
+            Confirmarea prin email e activată în Supabase, așa că trebuie să deschizi emailul
+            trimis la <strong className="text-ink">{email}</strong> și să apeși pe link, apoi să te{" "}
+            <Link href="/login" className="font-medium text-seal hover:underline">
+              autentifici
+            </Link>{" "}
+            ca să continui.
+          </p>
+          <p className="mt-2 text-xs text-ink-soft/80">
+            Ca administrator: poți elimina acest pas dezactivând <em>Confirm email</em> din
+            Supabase (Authentication → Sign In / Providers → Email). Aplicația are deja propriul
+            sistem de verificare, opțional.
+          </p>
+        </div>
+      )}
+
+      {emailDejaFolosit && (
+        <div className="rounded-xl border border-seal/30 bg-seal/8 p-4 text-sm">
+          <p className="font-semibold text-ink">Există deja un cont cu acest email.</p>
+          <p className="mt-1 text-ink-soft">
+            <Link href="/login" className="font-medium text-seal hover:underline">
+              Autentifică-te
+            </Link>{" "}
+            și revino aici — vei putea continua direct cu înregistrarea firmei. Dacă ai uitat
+            parola, o poți reseta din pagina de autentificare.
+          </p>
+        </div>
+      )}
+
       <FieldError>{eroare}</FieldError>
 
-      <Button type="submit" className="w-full" disabled={seIncarca}>
+      <Button type="submit" variant="seal" className="w-full" disabled={seIncarca}>
         {seIncarca ? "Se creează contul..." : "Continuă"}
       </Button>
     </form>

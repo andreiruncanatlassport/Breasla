@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError } from "@/components/ui/Field";
 import { Card } from "@/components/ui/Card";
+import { BreaslaMark } from "@/components/ui/BreaslaMark";
 import { useSettings } from "@/lib/settings/context";
 
 export default function LoginPage() {
@@ -45,8 +46,11 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md items-center px-5 py-16">
-      <Card className="w-full">
-        <h1 className="text-xl font-semibold text-ink">{t.auth.login}</h1>
+      <Card variant="raised" className="w-full">
+        <div className="text-center">
+          <BreaslaMark className="mx-auto h-10 w-10" />
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-ink">{t.auth.login}</h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
@@ -74,12 +78,12 @@ export default function LoginPage() {
 
           <FieldError>{eroare}</FieldError>
 
-          <Button type="submit" className="w-full" disabled={seIncarca}>
+          <Button type="submit" variant="seal" className="w-full" disabled={seIncarca}>
             {seIncarca ? t.common.loading : t.auth.login}
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-ink/60">
+        <p className="mt-6 text-center text-sm text-ink-soft">
           {t.auth.noAccount}{" "}
           <Link href="/inregistrare" className="font-medium text-seal hover:underline">
             {t.nav.register}

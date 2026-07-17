@@ -36,17 +36,18 @@ const SECTIUNI = [
 export default function RegulamentPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 py-14">
-      <h1 className="text-2xl font-semibold text-ink">Regulament</h1>
-      <p className="mt-2 text-sm text-ink/60">
+      <p className="stamp-label text-seal">Document oficial</p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Regulament</h1>
+      <p className="mt-2 text-sm text-ink-soft">
         Reguli simple, gândite să țină comunitatea de încredere. (Acesta e un draft de pornire — ajustează-l liber din cod, în{" "}
         <code className="rounded bg-ink/8 px-1 py-0.5 text-xs">src/app/regulament/page.tsx</code>.)
       </p>
 
       <div className="mt-8 space-y-5">
         {SECTIUNI.map((s) => (
-          <Card key={s.titlu}>
+          <Card key={s.titlu} variant="accent">
             <h2 className="font-semibold text-ink">{s.titlu}</h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink/70">{s.continut}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{s.continut}</p>
           </Card>
         ))}
       </div>

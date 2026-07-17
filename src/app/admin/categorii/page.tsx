@@ -17,7 +17,7 @@ export default async function AdminCategoriiPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">
       <h1 className="text-2xl font-semibold text-ink">Categorii & coduri CAEN</h1>
-      <p className="mt-1.5 text-sm text-ink/60">
+      <p className="mt-1.5 text-sm text-ink-soft">
         Taxonomia de start e un draft funcțional. Adaugă sau elimină coduri CAEN pe măsură ce vezi
         ce firme se înregistrează, pentru o mapare tot mai precisă.
       </p>

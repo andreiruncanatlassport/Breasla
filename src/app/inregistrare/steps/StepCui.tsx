@@ -135,9 +135,9 @@ export function StepCui({ form, update, onNext, onBack }: Props) {
             <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal" />
             <div className="text-sm">
               <p className="font-semibold text-ink">{form.denumire}</p>
-              <p className="mt-1 text-ink/70">{form.adresa_sediu}</p>
-              <p className="mt-1 text-ink/70">Nr. Reg. Com.: {form.nr_reg_com || "—"}</p>
-              <p className="mt-1 text-ink/70">Stare: {form.stare_inregistrare || "—"}</p>
+              <p className="mt-1 text-ink-soft">{form.adresa_sediu}</p>
+              <p className="mt-1 text-ink-soft">Nr. Reg. Com.: {form.nr_reg_com || "—"}</p>
+              <p className="mt-1 text-ink-soft">Stare: {form.stare_inregistrare || "—"}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Badge tone={form.tva_activ ? "success" : "neutral"}>
                   {form.tva_activ ? "Plătitor de TVA" : "Neplătitor de TVA"}

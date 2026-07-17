@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/Card";
+import { SkeletonPage } from "@/components/ui/Skeleton";
 import { LinkButton } from "@/components/ui/Button";
 import { StepCont } from "./steps/StepCont";
 import { StepCui } from "./steps/StepCui";
@@ -63,7 +64,7 @@ export default function InregistrarePage() {
   }
 
   if (verificareSesiune) {
-    return <div className="mx-auto max-w-2xl px-5 py-24 text-center text-ink/50">Se încarcă...</div>;
+    return <SkeletonPage />;
   }
 
   if (rezultat) {
@@ -74,7 +75,7 @@ export default function InregistrarePage() {
             <>
               <CheckCircle2 className="mx-auto h-10 w-10 text-teal" />
               <h1 className="mt-4 text-xl font-semibold text-ink">Firma ta e verificată!</h1>
-              <p className="mt-2 text-sm text-ink/65">
+              <p className="mt-2 text-sm text-ink-soft">
                 CUI-ul a fost validat automat la ANAF, iar profilul tău e deja vizibil în catalog.
               </p>
             </>
@@ -82,7 +83,7 @@ export default function InregistrarePage() {
             <>
               <Clock className="mx-auto h-10 w-10 text-seal" />
               <h1 className="mt-4 text-xl font-semibold text-ink">Înregistrare primită</h1>
-              <p className="mt-2 text-sm text-ink/65">
+              <p className="mt-2 text-sm text-ink-soft">
                 Profilul tău a intrat în verificare manuală și va fi publicat de un administrator
                 în curând.
               </p>
@@ -99,22 +100,44 @@ export default function InregistrarePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-14">
-      <h1 className="text-2xl font-semibold text-ink">Înregistrează-ți firma</h1>
-      <p className="mt-1.5 text-sm text-ink/60">
-        Îți ia câteva minute. Preluăm automat datele oficiale de la ANAF.
-      </p>
-
-      {/* progres */}
-      <div className="mt-6 flex gap-1.5">
-        {ETAPE.map((eticheta, i) => (
-          <div key={eticheta} className="flex-1">
-            <div className={"h-1.5 rounded-full " + (i <= pas ? "bg-seal" : "bg-line")} />
-          </div>
-        ))}
+      <div className="text-center">
+        <p className="stamp-label text-seal">Dosar nou</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">
+          Înregistrează-ți firma
+        </h1>
+        <p className="mt-2 text-sm text-ink-soft">
+          Îți ia câteva minute. Preluăm automat datele oficiale de la ANAF.
+        </p>
       </div>
-      <p className="mt-2 text-xs font-medium uppercase tracking-wide text-ink/40">{ETAPE[pas]}</p>
 
-      <Card className="mt-6">
+      {/* Stepper — arata clar unde esti si cat a mai ramas */}
+      <div className="mt-8">
+        <div className="flex items-center gap-1.5">
+          {ETAPE.map((eticheta, i) => (
+            <div key={eticheta} className="flex flex-1 flex-col gap-2">
+              <div
+                className={
+                  "h-1.5 rounded-full transition-all duration-500 " +
+                  (i < pas ? "gradient-seal" : i === pas ? "gradient-seal animate-pulse" : "bg-line")
+                }
+              />
+              <span
+                className={
+                  "hidden text-center text-[10px] font-semibold uppercase tracking-wide transition-colors sm:block " +
+                  (i <= pas ? "text-seal" : "text-ink-soft/50")
+                }
+              >
+                {eticheta}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-center text-xs font-semibold uppercase tracking-wide text-seal sm:hidden">
+          Pasul {pas + 1} din {ETAPE.length} · {ETAPE[pas]}
+        </p>
+      </div>
+
+      <Card variant="raised" className="mt-6">
         {pas === 0 && <StepCont onDone={() => { setAreCont(true); setPas(1); }} />}
         {pas === 1 && (
           <StepCui

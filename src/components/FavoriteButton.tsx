@@ -50,7 +50,7 @@ export function FavoriteButton({ companyId }: { companyId: string }) {
     <button
       onClick={comuta}
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-        salvat ? "border-seal bg-seal/10 text-seal" : "border-line text-ink/60 hover:border-ink/40"
+        salvat ? "border-seal bg-seal/10 text-seal" : "border-line text-ink-soft hover:border-ink/40"
       }`}
     >
       <Bookmark className={`h-3.5 w-3.5 ${salvat ? "fill-seal" : ""}`} />

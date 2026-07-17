@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, Building2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
 import { useSettings } from "@/lib/settings/context";
 import { LinkButton } from "@/components/ui/Button";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { NotificationBell } from "@/components/NotificationBell";
+import { BreaslaMark } from "@/components/ui/BreaslaMark";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { clsx } from "clsx";
 
 interface HeaderProps {
   userEmail: string | null;
@@ -19,6 +22,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
   const { t } = useSettings();
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -27,45 +31,63 @@ export function Header({ userEmail, rol }: HeaderProps) {
     router.refresh();
   }
 
+  const linkClass = (href: string) =>
+    clsx(
+      "relative py-1 text-sm font-medium transition-colors",
+      pathname === href ? "text-white" : "text-white/65 hover:text-white"
+    );
+
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-navy text-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-        <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold">
-          <Building2 className="h-5 w-5 text-seal-light" strokeWidth={2} />
-          Breasla
+    <header className="sticky top-0 z-40 border-b border-white/8 bg-navy/90 backdrop-blur-xl">
+      {/* fir auriu de sigiliu, sus */}
+      <div className="h-0.5 w-full gradient-seal opacity-80" />
+
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <BreaslaMark variant="white" className="h-7 w-7 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
+          <span className="font-display text-lg font-semibold tracking-tight text-white">
+            Breasla
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-5 text-sm md:flex">
-          <Link href="/catalog" className="opacity-90 hover:opacity-100">
+        <nav className="hidden items-center gap-6 md:flex">
+          <Link href="/catalog" className={linkClass("/catalog")}>
             {t.nav.catalog}
+            {pathname === "/catalog" && (
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+            )}
           </Link>
-          <Link href="/#cum-functioneaza" className="opacity-90 hover:opacity-100">
+          <Link href="/#cum-functioneaza" className="py-1 text-sm font-medium text-white/65 transition-colors hover:text-white">
             {t.nav.howItWorks}
           </Link>
 
           {userEmail ? (
             <>
               {(rol === "admin" || rol === "moderator") && (
-                <Link href="/admin" className="opacity-90 hover:opacity-100">
+                <Link href="/admin" className={linkClass("/admin")}>
                   {t.nav.admin}
                 </Link>
               )}
-              <Link href="/dashboard" className="opacity-90 hover:opacity-100">
+              <Link href="/dashboard" className={linkClass("/dashboard")}>
                 {t.nav.dashboard}
               </Link>
+              <span className="h-5 w-px bg-white/12" />
               <NotificationBell />
               <SettingsMenu />
-              <button onClick={handleLogout} className="opacity-90 hover:opacity-100">
+              <button
+                onClick={handleLogout}
+                className="text-sm font-medium text-white/65 transition-colors hover:text-white"
+              >
                 {t.nav.logout}
               </button>
             </>
           ) : (
             <>
-              <Link href="/login" className="opacity-90 hover:opacity-100">
+              <Link href="/login" className={linkClass("/login")}>
                 {t.nav.login}
               </Link>
               <SettingsMenu />
-              <LinkButton href="/inregistrare" variant="primary" size="sm" className="!bg-seal hover:!bg-seal-light">
+              <LinkButton href="/inregistrare" variant="seal" size="sm">
                 {t.nav.register}
               </LinkButton>
             </>
@@ -75,40 +97,44 @@ export function Header({ userEmail, rol }: HeaderProps) {
         <div className="flex items-center gap-1 md:hidden">
           {userEmail && <NotificationBell />}
           <SettingsMenu />
-          <button className="p-2" onClick={() => setOpen(!open)} aria-label="Meniu">
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <button
+            className="rounded-lg p-2 text-white/80 transition hover:bg-white/10 hover:text-white"
+            onClick={() => setOpen(!open)}
+            aria-label="Meniu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {open && (
-        <div className="border-t border-white/15 px-5 py-4 md:hidden">
-          <div className="flex flex-col gap-4 text-sm">
-            <Link href="/catalog" onClick={() => setOpen(false)}>
+        <div className="border-t border-white/8 bg-navy px-5 py-5 md:hidden">
+          <div className="flex flex-col gap-4">
+            <Link href="/catalog" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
               {t.nav.catalog}
             </Link>
             {userEmail ? (
               <>
                 {(rol === "admin" || rol === "moderator") && (
-                  <Link href="/admin" onClick={() => setOpen(false)}>
+                  <Link href="/admin" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                     {t.nav.admin}
                   </Link>
                 )}
-                <Link href="/dashboard" onClick={() => setOpen(false)}>
+                <Link href="/dashboard" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.dashboard}
                 </Link>
-                <button className="text-left" onClick={handleLogout}>
+                <button className="text-left text-sm font-medium text-white/80" onClick={handleLogout}>
                   {t.nav.logout}
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" onClick={() => setOpen(false)}>
+                <Link href="/login" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.login}
                 </Link>
-                <Link href="/inregistrare" onClick={() => setOpen(false)} className="font-semibold text-seal-light">
+                <LinkButton href="/inregistrare" variant="seal" size="sm" className="w-fit">
                   {t.nav.register}
-                </Link>
+                </LinkButton>
               </>
             )}
           </div>

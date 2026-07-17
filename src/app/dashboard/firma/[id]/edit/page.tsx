@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/Card";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Input, Label, Select, Textarea, FieldError, FieldHint } from "@/components/ui/Field";
 import { ReauthGate } from "@/components/ReauthGate";
+import { SkeletonPage } from "@/components/ui/Skeleton";
+import { EmailUnverifiedBanner } from "@/components/EmailUnverifiedBanner";
 import type { Company } from "@/types/database";
 
 export default function EditCompanyPage({
@@ -20,6 +22,7 @@ export default function EditCompanyPage({
   const { id } = use(params);
   const router = useRouter();
   const [company, setCompany] = useState<Company | null>(null);
+  const [emailNeconfirmat, setEmailNeconfirmat] = useState<string | null>(null);
   const [seSalveaza, setSeSalveaza] = useState(false);
   const [eroare, setEroare] = useState<string | null>(null);
   const [salvat, setSalvat] = useState(false);
@@ -48,10 +51,21 @@ export default function EditCompanyPage({
       .eq("id", id)
       .single()
       .then(({ data }) => setCompany(data as Company | null));
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user?.email) return;
+      const { data: profil } = await supabase
+        .from("profiles")
+        .select("email_verificat")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      if ((profil as { email_verificat: boolean } | null)?.email_verificat === false) {
+        setEmailNeconfirmat(data.user.email);
+      }
+    });
   }, [id]);
 
   if (!company) {
-    return <div className="mx-auto max-w-2xl px-5 py-16 text-center text-ink/50">Se încarcă...</div>;
+    return <SkeletonPage />;
   }
 
   function update(patch: Partial<Company>) {
@@ -99,6 +113,7 @@ export default function EditCompanyPage({
           descriere: company!.descriere,
           numar_angajati: company!.numar_angajati,
           dimensiune_echipa: company!.dimensiune_echipa,
+          timp_raspuns: company!.timp_raspuns,
           raza_deservire_km: company!.raza_deservire_km,
           cum_poate_ajuta_grupul: company!.cum_poate_ajuta_grupul,
           logo_url: company!.logo_url,
@@ -143,8 +158,10 @@ export default function EditCompanyPage({
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
+      {emailNeconfirmat && <EmailUnverifiedBanner email={emailNeconfirmat} />}
+
       <h1 className="text-xl font-semibold text-ink">Editează profilul firmei</h1>
-      <p className="mt-1 text-sm text-ink/60">{company.denumire}</p>
+      <p className="mt-1 text-sm text-ink-soft">{company.denumire}</p>
 
       <div className="mt-4 flex flex-wrap gap-3">
         <LinkButton href={`/dashboard/firma/${id}/contacte`} variant="secondary" size="sm">
@@ -168,7 +185,7 @@ export default function EditCompanyPage({
         )}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-ink">Profilul tău public</p>
-          <p className="mt-0.5 truncate text-xs text-ink/50">{urlProfil}</p>
+          <p className="mt-0.5 truncate text-xs text-ink-soft">{urlProfil}</p>
           <Button size="sm" variant="secondary" className="mt-2" onClick={copiazaLink}>
             {linkCopiat ? <Check className="h-3.5 w-3.5" /> : <Link2 className="h-3.5 w-3.5" />}
             {linkCopiat ? "Copiat!" : "Copiază link-ul"}
@@ -220,7 +237,7 @@ export default function EditCompanyPage({
                 onChange={(e) => e.target.files?.[0] && incarcaImagine("avatar", e.target.files[0])}
               />
             </div>
-            <FieldHint>Click pe banner/avatar pentru a încărca o imagine (max 5MB).</FieldHint>
+            <FieldHint>Click pe banner/avatar pentru a încărca o imagine (max 5MB). Recomandăm logo-ul firmei ca avatar.</FieldHint>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -287,7 +304,7 @@ export default function EditCompanyPage({
               {(company.tags ?? []).map((t) => (
                 <span key={t} className="inline-flex items-center gap-1 rounded-full bg-ink/8 px-2.5 py-1 text-xs text-ink">
                   {t}
-                  <button type="button" onClick={() => eliminaTag(t)} className="text-ink/40 hover:text-rust">
+                  <button type="button" onClick={() => eliminaTag(t)} className="text-ink-soft/70 hover:text-rust">
                     ×
                   </button>
                 </span>
@@ -320,13 +337,28 @@ export default function EditCompanyPage({
               </Select>
             </div>
             <div>
-              <Label>Rază deservire (km)</Label>
-              <Input
-                type="number"
-                value={company.raza_deservire_km ?? ""}
-                onChange={(e) => update({ raza_deservire_km: e.target.value ? Number(e.target.value) : null })}
-              />
+              <Label>Timp mediu de răspuns</Label>
+              <Select
+                value={company.timp_raspuns ?? ""}
+                onChange={(e) => update({ timp_raspuns: e.target.value as Company["timp_raspuns"] })}
+              >
+                <option value="">Nespecificat</option>
+                <option value="sub_1h">Sub 1 oră</option>
+                <option value="sub_24h">Sub 24 de ore</option>
+                <option value="2_3_zile">2-3 zile</option>
+                <option value="peste_3_zile">Peste 3 zile</option>
+              </Select>
             </div>
+          </div>
+
+          <div>
+            <Label>Rază deservire (km)</Label>
+            <Input
+              type="number"
+              value={company.raza_deservire_km ?? ""}
+              onChange={(e) => update({ raza_deservire_km: e.target.value ? Number(e.target.value) : null })}
+            />
+            <FieldHint>Afișată pe profilul public ca &ldquo;zonă deservită&rdquo;.</FieldHint>
           </div>
 
           <div>
@@ -350,7 +382,7 @@ export default function EditCompanyPage({
 
         <Card className="mt-6 border-rust/30 bg-rust/5">
           <p className="font-medium text-ink">Zonă periculoasă</p>
-          <p className="mt-1 text-sm text-ink/60">
+          <p className="mt-1 text-sm text-ink-soft">
             Ștergerea firmei e permanentă și elimină tot: profil, conexiuni, recenzii, portofoliu.
           </p>
           <Button variant="danger" size="sm" className="mt-3" onClick={sterge} disabled={seSterge}>

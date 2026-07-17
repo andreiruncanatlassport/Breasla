@@ -16,6 +16,7 @@ const CAMPURI_EDITABILE = [
   "instagram_url",
   "linkedin_url",
   "tags",
+  "timp_raspuns",
   "numar_angajati",
   "dimensiune_echipa",
   "raza_deservire_km",

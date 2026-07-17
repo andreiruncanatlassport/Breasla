@@ -26,18 +26,16 @@ export function RecentCompaniesTicker() {
   if (firme.length === 0) return null;
 
   return (
-    <div className="relative border-t border-line bg-paper-white/60 py-4">
+    <div className="relative border-t border-line bg-surface/60 py-4 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center gap-4 overflow-x-auto px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-ink/45">
-          Recent verificate
-        </span>
+        <span className="stamp-label shrink-0 text-ink-soft/70">Recent verificate</span>
         {firme.map((f) => (
           <Link
             key={f.id}
             href={`/firma/${f.id}`}
-            className="flex shrink-0 items-center gap-2 rounded-full border border-line bg-paper-white px-3 py-1.5 text-xs font-medium text-ink/75 transition hover:border-seal hover:text-ink"
+            className="lift-on-hover flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-ink-soft shadow-[var(--shadow-sm)] transition hover:border-seal hover:text-ink"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-teal" />
+            <span className="h-1.5 w-1.5 rounded-full bg-teal shadow-[0_0_6px_var(--color-teal)]" />
             {f.denumire}
           </Link>
         ))}

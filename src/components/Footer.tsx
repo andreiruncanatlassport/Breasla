@@ -1,26 +1,57 @@
 import Link from "next/link";
+import { BreaslaMark } from "@/components/ui/BreaslaMark";
+
+const LINKURI = [
+  { href: "/catalog", label: "Catalog firme" },
+  { href: "/inregistrare", label: "Înregistrare" },
+  { href: "/termeni", label: "Termeni & Condiții" },
+  { href: "/regulament", label: "Regulament" },
+  { href: "/confidentialitate", label: "Confidențialitate" },
+];
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-line bg-paper-white">
-      <div className="mx-auto max-w-6xl px-5 py-10 text-sm text-ink/60">
-        <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
-          <div>
-            <p className="font-display text-base text-ink">Breasla</p>
-            <p className="mt-1 max-w-xs">
-              Registrul antreprenorilor din România — găsește colaboratori verificați, în orice domeniu.
+    <footer className="relative mt-auto overflow-hidden border-t border-white/10 bg-gradient-to-br from-navy to-[#0d3a62]">
+      <BreaslaMark
+        variant="white"
+        className="pointer-events-none absolute -left-10 -top-10 h-52 w-52 opacity-[0.05]"
+      />
+      <div className="relative mx-auto max-w-6xl px-5 py-14">
+        <div className="flex flex-col justify-between gap-10 sm:flex-row">
+          <div className="max-w-xs">
+            <div className="flex items-center gap-2.5">
+              <BreaslaMark variant="white" className="h-7 w-7" />
+              <span className="font-display text-lg font-semibold tracking-tight text-white">
+                Breasla.ro
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-white/60">
+              Registrul antreprenorilor din România — găsește colaboratori verificați, în orice
+              domeniu.
             </p>
           </div>
-          <div className="flex flex-wrap gap-x-8 gap-y-2">
-            <Link href="/catalog" className="hover:text-ink">Catalog</Link>
-            <Link href="/inregistrare" className="hover:text-ink">Înregistrare</Link>
-            <Link href="/regulament" className="hover:text-ink">Regulament</Link>
-            <Link href="/confidentialitate" className="hover:text-ink">Confidențialitate</Link>
-          </div>
+
+          <nav className="grid grid-cols-2 gap-x-10 gap-y-2.5 sm:flex sm:flex-col">
+            {LINKURI.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="text-sm text-white/60 transition-all duration-200 hover:translate-x-0.5 hover:text-seal-light"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
         </div>
-        <p className="mt-8 text-xs text-ink/40">
-          Datele firmelor sunt preluate din surse publice oficiale (ANAF). © {new Date().getFullYear()} Breasla.
-        </p>
+
+        <div className="mt-12 flex flex-col justify-between gap-2 border-t border-white/10 pt-6 sm:flex-row">
+          <p className="text-xs text-white/40">
+            Datele firmelor sunt preluate din surse publice oficiale (ANAF).
+          </p>
+          <p className="font-mono-num text-xs text-white/40">
+            © {new Date().getFullYear()} Breasla.ro
+          </p>
+        </div>
       </div>
     </footer>
   );

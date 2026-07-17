@@ -69,7 +69,7 @@ export default function PortofoliuPage({
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
       <h1 className="text-xl font-semibold text-ink">Portofoliu / Lucrări</h1>
-      <p className="mt-1 text-sm text-ink/60">
+      <p className="mt-1 text-sm text-ink-soft">
         Fiecare lucrare are propria pagină publică, cu poze și detalii.
       </p>
 
@@ -103,7 +103,7 @@ export default function PortofoliuPage({
               </div>
               <div className="p-4">
                 <p className="font-medium text-ink">{p.titlu}</p>
-                {p.locatie && <p className="text-xs text-ink/50">{p.locatie}{p.an ? ` · ${p.an}` : ""}</p>}
+                {p.locatie && <p className="text-xs text-ink-soft">{p.locatie}{p.an ? ` · ${p.an}` : ""}</p>}
                 <div className="mt-3 flex items-center justify-between">
                   <Link
                     href={`/dashboard/firma/${id}/portofoliu/${p.id}`}
@@ -111,7 +111,7 @@ export default function PortofoliuPage({
                   >
                     Editează poze & detalii
                   </Link>
-                  <button onClick={() => sterge(p.id)} className="text-ink/40 hover:text-rust">
+                  <button onClick={() => sterge(p.id)} className="text-ink-soft/70 hover:text-rust">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
@@ -120,7 +120,7 @@ export default function PortofoliuPage({
           ))}
         </div>
         {proiecte.length === 0 && (
-          <p className="mt-6 text-sm text-ink/50">Niciun proiect adăugat încă.</p>
+          <p className="mt-6 text-sm text-ink-soft">Niciun proiect adăugat încă.</p>
         )}
 
         <div className="mt-6">

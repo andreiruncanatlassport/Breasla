@@ -87,47 +87,49 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
                   className="rounded border-line accent-seal"
                 />
                 {parent.name_ro}
-                {isChecked(parent.id) && (
-                  <button
-                    type="button"
-                    onClick={() => setPrimary(parent.id)}
-                    className={
-                      "ml-2 rounded-full px-2 py-0.5 text-xs font-medium " +
-                      (form.categorii.find((c) => c.category_id === parent.id)?.is_primary
-                        ? "bg-seal text-paper-white"
-                        : "bg-ink/8 text-ink/60 hover:bg-ink/15")
-                    }
-                  >
-                    principal
-                  </button>
-                )}
               </label>
+              {isChecked(parent.id) && (
+                <button
+                  type="button"
+                  onClick={() => setPrimary(parent.id)}
+                  className={
+                    "ml-6 mt-1 rounded-full px-2 py-0.5 text-xs font-medium " +
+                    (form.categorii.find((c) => c.category_id === parent.id)?.is_primary
+                      ? "bg-seal text-white"
+                      : "bg-ink/8 text-ink-soft hover:bg-ink/15")
+                  }
+                >
+                  domeniu principal
+                </button>
+              )}
               {parent.children.length > 0 && (
                 <div className="ml-6 mt-1.5 grid grid-cols-1 gap-1 sm:grid-cols-2">
                   {parent.children.map((child) => (
-                    <label key={child.id} className="flex items-center gap-2 text-sm text-ink/75">
-                      <input
-                        type="checkbox"
-                        checked={isChecked(child.id)}
-                        onChange={() => toggle(child.id)}
-                        className="rounded border-line accent-seal"
-                      />
-                      {child.name_ro}
+                    <div key={child.id}>
+                      <label className="flex items-center gap-2 text-sm text-ink-soft">
+                        <input
+                          type="checkbox"
+                          checked={isChecked(child.id)}
+                          onChange={() => toggle(child.id)}
+                          className="rounded border-line accent-seal"
+                        />
+                        {child.name_ro}
+                      </label>
                       {isChecked(child.id) && (
                         <button
                           type="button"
                           onClick={() => setPrimary(child.id)}
                           className={
-                            "ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium " +
+                            "ml-6 mt-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-medium " +
                             (form.categorii.find((c) => c.category_id === child.id)?.is_primary
-                              ? "bg-seal text-paper-white"
-                              : "bg-ink/8 text-ink/50 hover:bg-ink/15")
+                              ? "bg-seal text-white"
+                              : "bg-ink/8 text-ink-soft hover:bg-ink/15")
                           }
                         >
-                          principal
+                          domeniu principal
                         </button>
                       )}
-                    </label>
+                    </div>
                   ))}
                 </div>
               )}
@@ -157,7 +159,7 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-ink/60">
+            <p className="text-sm text-ink-soft">
               Nu am găsit un bilanț public la ANAF pentru această firmă (posibil, firmă nouă).
               Poți introduce cifra de afaceri manual, sau poți sări peste acest pas.
             </p>

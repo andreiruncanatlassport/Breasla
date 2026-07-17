@@ -69,7 +69,7 @@ export default function ContactePage({
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
       <h1 className="text-xl font-semibold text-ink">Persoane de contact</h1>
-      <p className="mt-1 text-sm text-ink/60">
+      <p className="mt-1 text-sm text-ink-soft">
         Adaugă persoanele potrivite pe departamente (vânzări, suport, contabilitate...) — sunt
         vizibile pe profilul public al firmei.
       </p>
@@ -80,23 +80,23 @@ export default function ContactePage({
             <Card key={c.id} className="flex items-start justify-between gap-4">
               <div className="flex gap-3">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink/8">
-                  <UserRound className="h-4 w-4 text-ink/50" />
+                  <UserRound className="h-4 w-4 text-ink-soft" />
                 </div>
                 <div className="text-sm">
                   <p className="font-medium text-ink">{c.nume}</p>
-                  <p className="text-ink/55">
+                  <p className="text-ink-soft">
                     {[c.rol, c.departament].filter(Boolean).join(" · ") || "—"}
                   </p>
-                  <p className="mt-0.5 text-ink/55">{[c.telefon, c.email].filter(Boolean).join(" · ")}</p>
+                  <p className="mt-0.5 text-ink-soft">{[c.telefon, c.email].filter(Boolean).join(" · ")}</p>
                 </div>
               </div>
-              <button onClick={() => sterge(c.id)} className="text-ink/40 hover:text-rust">
+              <button onClick={() => sterge(c.id)} className="text-ink-soft/70 hover:text-rust">
                 <Trash2 className="h-4 w-4" />
               </button>
             </Card>
           ))}
           {contacte.length === 0 && (
-            <p className="text-sm text-ink/50">Niciun contact adăugat încă.</p>
+            <p className="text-sm text-ink-soft">Niciun contact adăugat încă.</p>
           )}
         </div>
 

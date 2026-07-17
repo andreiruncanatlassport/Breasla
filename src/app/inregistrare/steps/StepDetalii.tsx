@@ -168,7 +168,7 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
         <Label>Deservești și alte județe explicit? (opțional)</Label>
         <div className="mt-2 grid max-h-40 grid-cols-2 gap-x-4 gap-y-1.5 overflow-y-auto rounded-lg border border-line bg-paper-white p-3 sm:grid-cols-3">
           {judete.map((j) => (
-            <label key={j.cod} className="flex items-center gap-2 text-sm text-ink/80">
+            <label key={j.cod} className="flex items-center gap-2 text-sm text-ink">
               <input
                 type="checkbox"
                 checked={form.judete_suplimentare.includes(j.cod)}

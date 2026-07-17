@@ -25,7 +25,7 @@ export default async function AdminRecenziiPage() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">
       <h1 className="text-2xl font-semibold text-ink">Recenzii în așteptare</h1>
-      <p className="mt-1.5 text-sm text-ink/60">
+      <p className="mt-1.5 text-sm text-ink-soft">
         Aprobă doar recenziile cu o dovadă de colaborare credibilă (contract, comandă, corespondență).
       </p>
       <div className="mt-8">

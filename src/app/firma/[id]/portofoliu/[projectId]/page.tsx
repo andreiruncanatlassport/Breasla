@@ -26,12 +26,12 @@ export default async function ProiectPublicPage({
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-12">
-      <Link href={`/firma/${id}`} className="inline-flex items-center gap-1.5 text-sm text-ink/60 hover:text-ink">
+      <Link href={`/firma/${id}`} className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
         <ArrowLeft className="h-4 w-4" /> {denumireFirma}
       </Link>
 
       <h1 className="mt-4 font-display text-3xl font-semibold text-ink">{proiect.titlu}</h1>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink/55">
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-soft">
         {proiect.locatie && (
           <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {proiect.locatie}</span>
         )}
@@ -40,7 +40,7 @@ export default async function ProiectPublicPage({
         )}
       </div>
 
-      {proiect.descriere && <p className="mt-4 max-w-2xl leading-relaxed text-ink/75">{proiect.descriere}</p>}
+      {proiect.descriere && <p className="mt-4 max-w-2xl leading-relaxed text-ink-soft">{proiect.descriere}</p>}
 
       {proiect.cover_url && (
         <div className="relative mt-6 h-64 w-full overflow-hidden rounded-xl bg-ink/5 sm:h-96">

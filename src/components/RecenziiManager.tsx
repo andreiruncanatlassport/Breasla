@@ -41,7 +41,7 @@ export function RecenziiManager({ recenziiInitiale }: { recenziiInitiale: Recenz
   }
 
   if (recenzii.length === 0) {
-    return <p className="text-sm text-ink/50">Nicio recenzie în așteptare — bravo!</p>;
+    return <p className="text-sm text-ink-soft">Nicio recenzie în așteptare — bravo!</p>;
   }
 
   return (
@@ -50,7 +50,7 @@ export function RecenziiManager({ recenziiInitiale }: { recenziiInitiale: Recenz
         <Card key={r.id}>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm text-ink/60">
+              <p className="text-sm text-ink-soft">
                 <Link href={`/firma/${r.reviewer?.id}`} className="font-medium text-ink hover:text-seal">
                   {r.reviewer?.denumire}
                 </Link>{" "}
@@ -67,7 +67,7 @@ export function RecenziiManager({ recenziiInitiale }: { recenziiInitiale: Recenz
                   />
                 ))}
               </div>
-              {r.comentariu && <p className="mt-2 text-sm text-ink/75">{r.comentariu}</p>}
+              {r.comentariu && <p className="mt-2 text-sm text-ink-soft">{r.comentariu}</p>}
             </div>
             <Badge tone="warning">în așteptare</Badge>
           </div>

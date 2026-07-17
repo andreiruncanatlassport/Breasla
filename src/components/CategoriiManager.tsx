@@ -45,8 +45,8 @@ function RandCategorie({
             className="inline-flex items-center gap-1 rounded-full bg-ink/8 px-2 py-0.5 font-mono-num text-xs text-ink"
           >
             {c.caen_code}
-            <span className="text-ink/40">{c.caen_version}</span>
-            <button onClick={() => onRemove(c.id)} className="text-ink/40 hover:text-rust">
+            <span className="text-ink-soft/70">{c.caen_version}</span>
+            <button onClick={() => onRemove(c.id)} className="text-ink-soft/70 hover:text-rust">
               <Trash2 className="h-3 w-3" />
             </button>
           </span>

@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Button, LinkButton } from "@/components/ui/Button";
 import { Input, Label, Textarea, FieldError } from "@/components/ui/Field";
 import { ReauthGate } from "@/components/ReauthGate";
+import { SkeletonPage } from "@/components/ui/Skeleton";
 import type { CompanyProject, ProjectImage } from "@/types/database";
 
 export default function EditeazaProiectPage({
@@ -44,7 +45,7 @@ export default function EditeazaProiectPage({
   }, [projectId]);
 
   if (!proiect) {
-    return <div className="mx-auto max-w-2xl px-5 py-16 text-center text-ink/50">Se încarcă...</div>;
+    return <SkeletonPage />;
   }
 
   function update(patch: Partial<CompanyProject>) {
@@ -209,7 +210,7 @@ export default function EditeazaProiectPage({
               </div>
             ))}
           </div>
-          {imagini.length === 0 && <p className="mt-2 text-sm text-ink/50">Nicio poză adăugată încă.</p>}
+          {imagini.length === 0 && <p className="mt-2 text-sm text-ink-soft">Nicio poză adăugată încă.</p>}
         </Card>
 
         <div className="mt-6">

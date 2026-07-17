@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "seal" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 interface BaseProps {
@@ -14,21 +14,23 @@ interface BaseProps {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-primary text-primary-content hover:brightness-110 disabled:opacity-40",
+    "bg-primary text-primary-content shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] hover:brightness-110",
+  seal:
+    "gradient-seal text-white shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] hover:brightness-105",
   secondary:
-    "bg-transparent text-ink border border-ink/25 hover:border-ink hover:bg-ink/5",
-  ghost: "bg-transparent text-ink hover:bg-ink/5",
-  danger: "bg-rust text-white hover:brightness-110",
+    "bg-surface text-ink border border-line-strong shadow-[var(--shadow-sm)] hover:border-seal hover:shadow-[var(--shadow-md)]",
+  ghost: "bg-transparent text-ink-soft hover:bg-ink/6 hover:text-ink",
+  danger: "bg-rust text-white shadow-[var(--shadow-sm)] hover:brightness-110",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm rounded-md",
-  md: "px-5 py-2.5 text-sm rounded-lg",
-  lg: "px-7 py-3.5 text-base rounded-lg",
+  sm: "px-3 py-1.5 text-xs rounded-lg gap-1.5",
+  md: "px-4.5 py-2.5 text-sm rounded-xl gap-2",
+  lg: "px-6 py-3.5 text-base rounded-xl gap-2",
 };
 
 const shared =
-  "inline-flex items-center justify-center gap-2 font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60";
+  "press-on-click inline-flex items-center justify-center font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none disabled:hover:translate-y-0";
 
 export function Button({
   variant = "primary",
@@ -53,10 +55,12 @@ export function LinkButton({
   size = "md",
   className,
   children,
-}: BaseProps & { href: string }) {
+  target,
+}: BaseProps & { href: string; target?: string }) {
   return (
     <Link
       href={href}
+      target={target}
       className={clsx(shared, variantClasses[variant], sizeClasses[size], className)}
     >
       {children}

@@ -7,77 +7,47 @@ interface VerifiedStampProps {
 }
 
 const sizeMap = {
-  sm: { box: 56, font: 6.2, ring: 2 },
-  md: { box: 84, font: 8.5, ring: 2.5 },
-  lg: { box: 132, font: 12, ring: 3 },
+  sm: { pad: "pl-1 pr-3 py-1", dot: "h-4 w-4", text: "text-[10px]", gap: "gap-1.5", check: "1.6" },
+  md: { pad: "pl-1.5 pr-3.5 py-1.5", dot: "h-5 w-5", text: "text-xs", gap: "gap-2", check: "2" },
+  lg: { pad: "pl-2 pr-5 py-2.5", dot: "h-8 w-8", text: "text-sm", gap: "gap-2.5", check: "2.2" },
 };
 
 /**
- * Elementul de semnatura vizuala al platformei: o "stampila" rotativa,
- * folosita langa firmele verificate prin ANAF. Se foloseste cu masura —
- * pe hero si pe cardurile de firma verificata, nu decorativ peste tot.
+ * Insigna de "verificat prin ANAF" — un cerc degrade teal cu bifă, în stilul
+ * badge-urilor de status ale platformei (nu un decor separat). Se folosește
+ * lângă numele firmei, nu ca stampilă centrală decorativă.
  */
-export function VerifiedStamp({
-  label = "VERIFICAT ANAF",
-  size = "md",
-  className,
-}: VerifiedStampProps) {
+export function VerifiedStamp({ label = "Verificat ANAF", size = "md", className }: VerifiedStampProps) {
   const s = sizeMap[size];
-  const radius = s.box / 2 - s.ring * 2;
-
   return (
     <div
+      role="img"
+      aria-label={label}
       className={clsx(
-        "relative inline-flex items-center justify-center -rotate-6 select-none",
+        "inline-flex items-center rounded-full bg-teal/12 ring-1 ring-inset ring-teal/25",
+        "font-mono-num font-bold uppercase tracking-wider text-teal",
+        "transition-transform duration-200 hover:-translate-y-0.5",
+        s.pad,
+        s.gap,
+        s.text,
         className
       )}
-      style={{ width: s.box, height: s.box }}
-      aria-label={label}
-      role="img"
     >
-      <svg
-        viewBox={`0 0 ${s.box} ${s.box}`}
-        width={s.box}
-        height={s.box}
-        className="text-seal"
+      <span
+        className={clsx("flex shrink-0 items-center justify-center rounded-full", s.dot)}
+        style={{ background: "linear-gradient(135deg, var(--color-teal), var(--color-teal-light))" }}
       >
-        <circle
-          cx={s.box / 2}
-          cy={s.box / 2}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={s.ring}
-        />
-        <circle
-          cx={s.box / 2}
-          cy={s.box / 2}
-          r={radius - s.ring * 2.2}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={s.ring * 0.6}
-          strokeDasharray="2 3"
-          opacity={0.6}
-        />
-        <path
-          id="stampCircle"
-          d={`M ${s.box / 2}, ${s.box / 2} m -${radius - s.ring * 4}, 0 a ${radius - s.ring * 4},${radius - s.ring * 4} 0 1,1 ${(radius - s.ring * 4) * 2},0 a ${radius - s.ring * 4},${radius - s.ring * 4} 0 1,1 -${(radius - s.ring * 4) * 2},0`}
-          fill="none"
-        />
-        <text fontSize={s.font} fontWeight={700} letterSpacing="1.5" fill="currentColor">
-          <textPath href="#stampCircle" startOffset="50%" textAnchor="middle">
-            {label}
-          </textPath>
-        </text>
-        <path
-          d={`M ${s.box * 0.32} ${s.box * 0.52} l ${s.box * 0.12} ${s.box * 0.12} l ${s.box * 0.22} ${-s.box * 0.24}`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={s.ring * 1.3}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+        <svg viewBox="0 0 16 16" className="h-[55%] w-[55%]" fill="none">
+          <path
+            d="M3.5 8.5l3 3 6-6.5"
+            stroke="white"
+            strokeWidth={s.check}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      {label}
     </div>
   );
 }

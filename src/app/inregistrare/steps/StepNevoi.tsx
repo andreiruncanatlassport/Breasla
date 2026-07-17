@@ -60,7 +60,7 @@ function ListaEditabila({
           <button
             type="button"
             onClick={() => elimina(i)}
-            className="shrink-0 rounded-lg border border-line px-2.5 text-ink/50 hover:border-rust hover:text-rust"
+            className="shrink-0 rounded-lg border border-line px-2.5 text-ink-soft hover:border-rust hover:text-rust"
             aria-label="Șterge"
           >
             <Trash2 className="h-4 w-4" />
