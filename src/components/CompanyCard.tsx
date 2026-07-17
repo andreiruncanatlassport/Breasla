@@ -1,14 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Users, Star, Zap, Building2, ArrowUpRight } from "lucide-react";
+import { MapPin, Users, Star, Zap, Building2, ArrowUpRight, Tag, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/Card";
-
-const TIMP_RASPUNS_LABEL: Record<string, string> = {
-  sub_1h: "<1h",
-  sub_24h: "<24h",
-  "2_3_zile": "2-3 zile",
-  peste_3_zile: "3+ zile",
-};
+import { etichetaTimpRaspuns, esteFirmaNoua } from "@/lib/company-attrs";
 
 export interface CompanyCardData {
   id: string;
@@ -23,6 +17,9 @@ export interface CompanyCardData {
   rating_mediu?: number;
   rating_numar?: number;
   timp_raspuns?: string | null;
+  slug?: string | null;
+  discount_procent?: number | null;
+  created_at?: string | null;
 }
 
 const ACCENTS = [
@@ -42,10 +39,18 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
   const accent = accentFor(company.domeniu_principal ?? company.denumire);
 
   return (
-    <Link href={`/firma/${company.id}`} className="group block h-full active:scale-[0.98] transition-transform duration-150">
+    <Link href={`/firma/${company.slug ?? company.id}`} className="group block h-full active:scale-[0.98] transition-transform duration-150">
       <article className="lift-on-hover block-base relative flex h-full flex-col overflow-hidden p-0">
         {/* banda de accent, pe domeniu — se intensifica la hover */}
         <span className={`absolute inset-x-0 top-0 h-1 opacity-70 transition-opacity duration-300 group-hover:opacity-100 ${accent}`} />
+
+        {/* Reducere pentru membri — cel mai puternic motiv de click, deci cel
+            mai vizibil element de pe card. */}
+        {company.discount_procent ? (
+          <span className="absolute right-4 top-4 z-10 inline-flex items-center gap-1 rounded-full gradient-seal px-2.5 py-1 text-xs font-bold text-white shadow-[var(--shadow-md)]">
+            <Tag className="h-3 w-3" />-{company.discount_procent}%
+          </span>
+        ) : null}
 
         <div className="flex items-start gap-3.5 p-5 pb-4">
           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-ink/5 ring-1 ring-inset ring-line">
@@ -67,7 +72,9 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
             </h3>
           </div>
 
-          <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-soft/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-seal" />
+          {!company.discount_procent && (
+            <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-soft/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-seal" />
+          )}
         </div>
 
         {company.descriere && (
@@ -85,9 +92,14 @@ export function CompanyCard({ company }: { company: CompanyCardData }) {
               <span className="opacity-60">({company.rating_numar})</span>
             </Badge>
           )}
+          {esteFirmaNoua(company.created_at) && (
+            <Badge tone="violet">
+              <Sparkles className="h-3 w-3" /> nou
+            </Badge>
+          )}
           {company.timp_raspuns && (
             <Badge tone="success">
-              <Zap className="h-3 w-3" /> {TIMP_RASPUNS_LABEL[company.timp_raspuns]}
+              <Zap className="h-3 w-3" /> {etichetaTimpRaspuns(company.timp_raspuns)}
             </Badge>
           )}
           {(company.judet_nume || company.localitate) && (

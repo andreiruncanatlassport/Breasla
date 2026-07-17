@@ -36,6 +36,14 @@ sări peste niciunul. Îți ia cam 30-45 de minute prima dată.
 - **Firme salvate (favorite)**, notificări pentru cereri de conexiune, contor de vizualizări,
   cod QR + link rapid de distribuit pentru fiecare profil.
 - **Rating mediu și timp de răspuns** vizibile direct în catalog, nu doar pe profil.
+- **Reduceri între membri**: fiecare firmă poate oferi un discount celorlalți membri verificați,
+  afișat ca insignă pe card și ca bloc dedicat pe profil — plus filtru "Oferă reduceri".
+- **Cereri de ofertă (RFQ)**: descrii o nevoie (buget, termen, domeniu) și o trimiți către până la
+  10 firme deodată; răspunsurile, cu preț estimat, vin într-un singur loc.
+- **Sortare și filtre avansate** în catalog: după rating, cele mai noi, vechime, nume; filtre după
+  dimensiune echipă, mărimea proiectelor preluate, reduceri, firme noi.
+- **Adrese prietenoase (SEO)**: `/firma/instalatii-popescu` în loc de un cod lung. Link-urile
+  vechi cu UUID continuă să funcționeze.
 - **Verificare email proprie, opțională și neblocantă**: contul e activ imediat; un banner roșu
   "Neverificat" în Dashboard permite verificarea printr-un cod, când dorește utilizatorul.
 - **Termeni & Condiții, Regulament, și Politică de confidențialitate (GDPR)**, cu bifă
@@ -98,8 +106,9 @@ nu se piardă ordinea în care le rulezi (ordinea de **rulare** contează, nu or
    așteaptă succesul.
 6. Repetă identic, **în ordine**, pentru `0003_seed_judete.sql`, `0004_seed_categories.sql`,
    `0005_search_function.sql`, `0006_profile_reviews_reauth.sql`, `0007_storage.sql`,
-   `0008_rating_response_time.sql`, `0009_terms_acceptance.sql`, și
-   `0010_email_verification.sql`. Fiecare fișier depinde de cel dinainte.
+   `0008_rating_response_time.sql`, `0009_terms_acceptance.sql`,
+   `0010_email_verification.sql`, și `0011_discounts_rfq_slugs.sql`. Fiecare fișier depinde de
+   cel dinainte.
 7. Dacă un fișier dă eroare, cel mai probabil ai sărit un pas sau ai rulat fișierele într-o altă
    ordine. Verifică în **Table Editor** dacă tabelele așteptate există deja; dacă nu, reia de la
    0001.

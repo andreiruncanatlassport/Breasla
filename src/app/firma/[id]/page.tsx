@@ -1,14 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart } from "lucide-react";
+import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart, Layers, FileText } from "lucide-react";
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { VerifiedStamp } from "@/components/ui/VerifiedStamp";
 import { ConnectButton } from "@/components/ConnectButton";
+import { LinkButton } from "@/components/ui/Button";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import { ReviewForm } from "@/components/ReviewForm";
+import { ReviewSection, type MotivBlocare } from "@/components/ReviewSection";
+import { etichetaProiectMarime } from "@/lib/company-attrs";
 import type { Company, Profile, CompanyContact, CompanyProject } from "@/types/database";
 
 const TIMP_RASPUNS_LABEL: Record<string, string> = {
@@ -23,17 +25,22 @@ export default async function CompanyPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: param } = await params;
   const supabase = await createClient();
+
+  // Acceptam si slug ("instalatii-popescu"), si UUID (pentru link-urile vechi,
+  // deja distribuite, care trebuie sa functioneze in continuare).
+  const esteUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(param);
 
   const { data: companyData } = await supabase
     .from("companies")
     .select("*")
-    .eq("id", id)
+    .eq(esteUuid ? "id" : "slug", param)
     .maybeSingle();
 
   if (!companyData) notFound();
   const company = companyData as Company;
+  const id = company.id;
 
   // vizualizare (best-effort, nu blocheaza randarea daca esueaza)
   createServiceRoleClient()
@@ -109,18 +116,29 @@ export default async function CompanyPage({
   let connectionId: string | null = null;
   let stareConexiune: "none" | "pending_sent" | "pending_received" | "accepted" | "declined" = "none";
   let firmaVizitatorId: string | null = null;
-  let poateRecenza = false;
+  let motivRecenzie: MotivBlocare = "neautentificat";
 
   if (user) {
-    const { data: myCompany } = await supabase
+    // Luam toate firmele userului, ca sa distingem intre "n-are firma" si
+    // "are firma dar nu e verificata inca" — mesaje diferite pentru utilizator.
+    const { data: firmeleMele } = await supabase
       .from("companies")
-      .select("id")
-      .eq("owner_id", user.id)
-      .eq("status", "approved")
-      .limit(1)
-      .maybeSingle();
+      .select("id, status")
+      .eq("owner_id", user.id);
 
-    firmaVizitatorId = (myCompany as { id: string } | null)?.id ?? null;
+    const firme = (firmeleMele as { id: string; status: string }[] | null) ?? [];
+    const firmaAprobata = firme.find((f) => f.status === "approved");
+    firmaVizitatorId = firmaAprobata?.id ?? null;
+
+    if (firme.length === 0) {
+      motivRecenzie = "fara_firma";
+    } else if (!firmaAprobata) {
+      motivRecenzie = "firma_neverificata";
+    } else if (firme.some((f) => f.id === id)) {
+      motivRecenzie = "propria_firma";
+    } else {
+      motivRecenzie = "poate";
+    }
 
     if (firmaVizitatorId && firmaVizitatorId !== id) {
       const { data: conn } = await supabase
@@ -146,7 +164,7 @@ export default async function CompanyPage({
         .eq("reviewed_company_id", id)
         .maybeSingle();
 
-      poateRecenza = !recenzieExistenta;
+      if (recenzieExistenta) motivRecenzie = "deja_recenzat";
     }
   }
 
@@ -224,6 +242,27 @@ export default async function CompanyPage({
         </div>
       </div>
 
+      {company.discount_procent ? (
+        <div className="mt-6 overflow-hidden rounded-2xl gradient-seal p-[1.5px] shadow-[var(--shadow-md)]">
+          <div className="rounded-[calc(1.25rem-1px)] bg-surface p-5">
+            <div className="flex flex-wrap items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl gradient-seal text-white shadow-[var(--shadow-sm)]">
+                <span className="font-mono-num text-lg font-bold">-{company.discount_procent}%</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="stamp-label text-seal">Reducere pentru membrii Breslei</p>
+                <p className="mt-1.5 font-semibold text-ink">
+                  {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din Breasla`}
+                </p>
+                {company.discount_conditii && (
+                  <p className="mt-1 text-sm text-ink-soft">{company.discount_conditii}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {company.descriere && (
         <p className="mt-8 max-w-2xl text-base leading-relaxed text-ink-soft">{company.descriere}</p>
       )}
@@ -246,6 +285,11 @@ export default async function CompanyPage({
         {company.timp_raspuns && (
           <Badge tone="success">
             <Zap className="mr-1 h-3 w-3 inline" /> {TIMP_RASPUNS_LABEL[company.timp_raspuns]}
+          </Badge>
+        )}
+        {company.proiect_marime && (
+          <Badge tone="violet">
+            <Layers className="mr-1 h-3 w-3 inline" /> Proiecte {etichetaProiectMarime(company.proiect_marime)}
           </Badge>
         )}
         {company.data_inregistrare && (
@@ -318,13 +362,18 @@ export default async function CompanyPage({
           ) : (
             <p className="mt-3 text-sm text-ink-soft">Vizibil doar pentru firmele conectate.</p>
           )}
-          <div className="mt-4">
+          <div className="mt-4 space-y-2.5">
             <ConnectButton
               targetCompanyId={company.id}
               connectionId={connectionId}
               stareInitiala={stareConexiune}
               autentificat={Boolean(user)}
             />
+            {firmaVizitatorId && firmaVizitatorId !== id && (
+              <LinkButton href={`/dashboard/cereri/noua?catre=${id}`} variant="secondary" size="sm">
+                <FileText className="h-3.5 w-3.5" /> Cere ofertă
+              </LinkButton>
+            )}
           </div>
         </Card>
       </div>
@@ -411,30 +460,16 @@ export default async function CompanyPage({
           Recenzii {company.rating_numar > 0 && `(${company.rating_numar})`}
         </SectionLabel>
 
-        {recenzii.length > 0 && (
-          <div className="mt-3 space-y-3">
-            {recenzii.map((r) => (
-              <Card key={r.id}>
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`h-3.5 w-3.5 ${i < r.rating ? "fill-seal text-seal" : "text-ink/20"}`} />
-                  ))}
-                  <Link href={`/firma/${r.reviewer?.id}`} className="text-xs font-medium text-ink-soft hover:text-seal">
-                    {r.reviewer?.denumire}
-                  </Link>
-                </div>
-                {r.comentariu && <p className="mt-2 text-sm text-ink-soft">{r.comentariu}</p>}
-              </Card>
-            ))}
-          </div>
-        )}
-        {recenzii.length === 0 && <p className="mt-2 text-sm text-ink-soft">Nicio recenzie publicată încă.</p>}
-
-        {poateRecenza && firmaVizitatorId && (
-          <div className="mt-4">
-            <ReviewForm reviewedCompanyId={id} reviewerCompanyId={firmaVizitatorId} />
-          </div>
-        )}
+        <div className="mt-4">
+          <ReviewSection
+            reviewedCompanyId={id}
+            reviewerCompanyId={firmaVizitatorId}
+            recenzii={recenzii}
+            ratingMediu={company.rating_mediu}
+            ratingNumar={company.rating_numar}
+            motiv={motivRecenzie}
+          />
+        </div>
       </div>
     </div>
   );

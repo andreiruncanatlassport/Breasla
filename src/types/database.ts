@@ -94,6 +94,11 @@ export interface Company {
   timp_raspuns: "sub_1h" | "sub_24h" | "2_3_zile" | "peste_3_zile" | null;
   rating_mediu: number;
   rating_numar: number;
+  slug: string | null;
+  discount_procent: number | null;
+  discount_descriere: string | null;
+  discount_conditii: string | null;
+  proiect_marime: "sub_5k" | "5k_25k" | "25k_100k" | "100k_500k" | "peste_500k" | null;
 
   status: CompanyStatus;
   motiv_respingere: string | null;
@@ -211,6 +216,40 @@ export interface Review {
 export interface CompanyFavorite {
   profile_id: string;
   company_id: string;
+  created_at: string;
+}
+
+export type RfqStatus = "deschis" | "inchis" | "anulat";
+
+export interface Rfq {
+  id: string;
+  requester_company_id: string;
+  titlu: string;
+  descriere: string;
+  category_id: string | null;
+  judet_cod: string | null;
+  buget_min: number | null;
+  buget_max: number | null;
+  termen_limita: string | null;
+  status: RfqStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RfqRecipient {
+  id: string;
+  rfq_id: string;
+  company_id: string;
+  vazut_la: string | null;
+  created_at: string;
+}
+
+export interface RfqResponse {
+  id: string;
+  rfq_id: string;
+  company_id: string;
+  mesaj: string;
+  pret_estimat: number | null;
   created_at: string;
 }
 

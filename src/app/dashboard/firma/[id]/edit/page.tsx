@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Camera, Loader2, Trash2, Users, Images, Link2, Check } from "lucide-react";
+import { Camera, Loader2, Trash2, Users, Images, Link2, Check, Tag } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { incarcaImagineFirma } from "@/lib/upload";
 import { Card } from "@/components/ui/Card";
@@ -12,6 +12,7 @@ import { Input, Label, Select, Textarea, FieldError, FieldHint } from "@/compone
 import { ReauthGate } from "@/components/ReauthGate";
 import { SkeletonPage } from "@/components/ui/Skeleton";
 import { EmailUnverifiedBanner } from "@/components/EmailUnverifiedBanner";
+import { PROIECT_MARIME_OPTIUNI } from "@/lib/company-attrs";
 import type { Company } from "@/types/database";
 
 export default function EditCompanyPage({
@@ -114,6 +115,10 @@ export default function EditCompanyPage({
           numar_angajati: company!.numar_angajati,
           dimensiune_echipa: company!.dimensiune_echipa,
           timp_raspuns: company!.timp_raspuns,
+          discount_procent: company!.discount_procent,
+          discount_descriere: company!.discount_descriere,
+          discount_conditii: company!.discount_conditii,
+          proiect_marime: company!.proiect_marime,
           raza_deservire_km: company!.raza_deservire_km,
           cum_poate_ajuta_grupul: company!.cum_poate_ajuta_grupul,
           logo_url: company!.logo_url,
@@ -359,6 +364,68 @@ export default function EditCompanyPage({
               onChange={(e) => update({ raza_deservire_km: e.target.value ? Number(e.target.value) : null })}
             />
             <FieldHint>Afișată pe profilul public ca &ldquo;zonă deservită&rdquo;.</FieldHint>
+          </div>
+
+          <div className="rounded-2xl border border-seal/25 bg-seal/6 p-5">
+            <div className="flex items-center gap-2">
+              <Tag className="h-4 w-4 text-seal" />
+              <p className="font-semibold text-ink">Reducere pentru membrii Breslei</p>
+            </div>
+            <FieldHint>
+              Oferă o reducere celorlalte firme verificate. Apare ca insignă pe cardul tău din
+              catalog și e unul dintre cele mai puternice motive de contact.
+            </FieldHint>
+
+            <div className="mt-3 grid gap-4 sm:grid-cols-[7rem_1fr]">
+              <div>
+                <Label>Procent</Label>
+                <Select
+                  value={company.discount_procent ?? ""}
+                  onChange={(e) =>
+                    update({ discount_procent: e.target.value ? Number(e.target.value) : null })
+                  }
+                >
+                  <option value="">Fără</option>
+                  {[5, 10, 15, 20, 25, 30, 40, 50].map((p) => (
+                    <option key={p} value={p}>{p}%</option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <Label>La ce se aplică</Label>
+                <Input
+                  value={company.discount_descriere ?? ""}
+                  onChange={(e) => update({ discount_descriere: e.target.value })}
+                  placeholder="ex: 10% la toate lucrările de instalații"
+                  disabled={!company.discount_procent}
+                />
+              </div>
+            </div>
+            <div className="mt-3">
+              <Label>Condiții (opțional)</Label>
+              <Input
+                value={company.discount_conditii ?? ""}
+                onChange={(e) => update({ discount_conditii: e.target.value })}
+                placeholder="ex: pentru comenzi de peste 5.000 lei, menționează Breasla"
+                disabled={!company.discount_procent}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>Mărimea proiectelor pe care le preiei de obicei</Label>
+            <Select
+              value={company.proiect_marime ?? ""}
+              onChange={(e) => update({ proiect_marime: e.target.value as Company["proiect_marime"] })}
+            >
+              <option value="">Nespecificat</option>
+              {PROIECT_MARIME_OPTIUNI.map((o) => (
+                <option key={o.id} value={o.id}>{o.lung}</option>
+              ))}
+            </Select>
+            <FieldHint>
+              Ajută la potriviri corecte — nu primești cereri prea mici sau prea mari pentru tine.
+            </FieldHint>
           </div>
 
           <div>

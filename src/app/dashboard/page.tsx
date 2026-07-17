@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ExternalLink, Bookmark, Building2, Inbox, Send, Handshake } from "lucide-react";
+import { Pencil, ExternalLink, Bookmark, Building2, Inbox, Send, Handshake, FileText, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
@@ -61,6 +61,26 @@ export default async function DashboardPage() {
       .or(orFilter)
       .order("created_at", { ascending: false });
     conexiuni = (data as unknown as ConnectionRow[]) ?? [];
+  }
+
+  // Cereri de oferta: trimise de mine + primite de firmele mele
+  let cereriTrimise: { id: string; titlu: string; status: string; created_at: string }[] = [];
+  let cereriPrimite: { rfq_id: string; rfqs: { id: string; titlu: string; status: string; created_at: string } | null }[] = [];
+  if (companyIds.length > 0) {
+    const [{ data: trimise }, { data: primite }] = await Promise.all([
+      supabase
+        .from("rfqs")
+        .select("id, titlu, status, created_at")
+        .in("requester_company_id", companyIds)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("rfq_recipients")
+        .select("rfq_id, rfqs(id, titlu, status, created_at)")
+        .in("company_id", companyIds)
+        .order("created_at", { ascending: false }),
+    ]);
+    cereriTrimise = (trimise as typeof cereriTrimise) ?? [];
+    cereriPrimite = (primite as unknown as typeof cereriPrimite) ?? [];
   }
 
   const { data: favoriteData } = await supabase
@@ -175,6 +195,62 @@ export default async function DashboardPage() {
           })}
         </div>
       </section>
+      {/* Cereri de oferta */}
+      <section className="mt-8">
+        <div className="flex items-center justify-between gap-3">
+          <SectionLabel icon={<FileText className="h-3.5 w-3.5" />}>Cereri de ofertă</SectionLabel>
+          <LinkButton href="/dashboard/cereri/noua" variant="seal" size="sm" className="shrink-0">
+            <Plus className="h-3.5 w-3.5" /> Cerere nouă
+          </LinkButton>
+        </div>
+
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-soft/70">
+              Trimise de mine
+            </p>
+            <div className="space-y-2">
+              {cereriTrimise.length === 0 && (
+                <p className="text-sm text-ink-soft">Nicio cerere trimisă încă.</p>
+              )}
+              {cereriTrimise.map((c) => (
+                <Card key={c.id} className="lift-on-hover p-4">
+                  <Link href={`/dashboard/cereri/${c.id}`} className="block">
+                    <p className="text-sm font-medium text-ink">{c.titlu}</p>
+                    <p className="mt-1 font-mono-num text-xs text-ink-soft">
+                      {new Date(c.created_at).toLocaleDateString("ro-RO")}
+                    </p>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-soft/70">
+              Primite
+            </p>
+            <div className="space-y-2">
+              {cereriPrimite.length === 0 && (
+                <p className="text-sm text-ink-soft">Nicio cerere primită încă.</p>
+              )}
+              {cereriPrimite.map((c) =>
+                c.rfqs ? (
+                  <Card key={c.rfq_id} className="lift-on-hover p-4">
+                    <Link href={`/dashboard/cereri/${c.rfqs.id}`} className="block">
+                      <p className="text-sm font-medium text-ink">{c.rfqs.titlu}</p>
+                      <p className="mt-1 font-mono-num text-xs text-ink-soft">
+                        {new Date(c.rfqs.created_at).toLocaleDateString("ro-RO")}
+                      </p>
+                    </Link>
+                  </Card>
+                ) : null
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Favorite */}
       <section className="mt-8">
         <SectionLabel icon={<Bookmark className="h-3.5 w-3.5" />}>Firme salvate</SectionLabel>

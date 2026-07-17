@@ -7,6 +7,7 @@ import type { Category, Judet } from "@/types/database";
 
 interface CompanyRow {
   id: string;
+  slug: string | null;
   denumire: string;
   logo_url: string | null;
   judet_cod: string | null;
@@ -16,6 +17,21 @@ interface CompanyRow {
   rating_mediu: number;
   rating_numar: number;
   timp_raspuns: string | null;
+  discount_procent: number | null;
+  proiect_marime: string | null;
+  data_inregistrare: string | null;
+  created_at: string;
+}
+
+const CAMPURI =
+  "id, slug, denumire, logo_url, judet_cod, localitate, dimensiune_echipa, descriere, " +
+  "rating_mediu, rating_numar, timp_raspuns, discount_procent, proiect_marime, " +
+  "data_inregistrare, created_at";
+
+/** Pragul de la care o firma nu mai e considerata "noua". Extras intr-o
+ *  functie ca sa nu apelam Date.now() direct in randare. */
+function pragFirmeNoi(): string {
+  return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 }
 
 export default async function CatalogPage({
@@ -66,19 +82,43 @@ export default async function CatalogPage({
   // ---- interogarea principala ----------------------------------------------
   let query = supabase
     .from("companies")
-    .select(
-      categoryId
-        ? "id, denumire, logo_url, judet_cod, localitate, dimensiune_echipa, descriere, rating_mediu, rating_numar, timp_raspuns, company_categories!inner(category_id)"
-        : "id, denumire, logo_url, judet_cod, localitate, dimensiune_echipa, descriere, rating_mediu, rating_numar, timp_raspuns"
-    )
+    .select(categoryId ? `${CAMPURI}, company_categories!inner(category_id)` : CAMPURI)
     .eq("status", "approved")
-    .order("created_at", { ascending: false })
     .limit(60);
+
+  // Sortare — implicit cele mai bine cotate, apoi cele mai noi. Firmele fara
+  // recenzii nu sunt penalizate: raman dupa cele cotate, ordonate cronologic.
+  const sortare = params.sortare ?? "relevanta";
+  switch (sortare) {
+    case "rating_desc":
+      query = query.order("rating_mediu", { ascending: false }).order("rating_numar", { ascending: false });
+      break;
+    case "recente":
+      query = query.order("created_at", { ascending: false });
+      break;
+    case "vechime_desc":
+      query = query.order("data_inregistrare", { ascending: true, nullsFirst: false });
+      break;
+    case "nume_asc":
+      query = query.order("denumire", { ascending: true });
+      break;
+    default:
+      query = query
+        .order("rating_numar", { ascending: false })
+        .order("rating_mediu", { ascending: false })
+        .order("created_at", { ascending: false });
+  }
 
   if (params.q) query = query.ilike("denumire", `%${params.q}%`);
   if (params.judet) query = query.eq("judet_cod", params.judet);
   if (categoryId) query = query.eq("company_categories.category_id", categoryId);
   if (distanteMap) query = query.in("id", Array.from(distanteMap.keys()));
+  if (params.echipa) query = query.eq("dimensiune_echipa", params.echipa);
+  if (params.proiect) query = query.eq("proiect_marime", params.proiect);
+  if (params.reduceri === "1") query = query.not("discount_procent", "is", null);
+  if (params.noi === "1") {
+    query = query.gte("created_at", pragFirmeNoi());
+  }
 
   const { data: companiesData, error } = await query;
   if (error) console.error("Eroare interogare catalog:", error);
@@ -103,6 +143,9 @@ export default async function CatalogPage({
 
   let cards: CompanyCardData[] = companies.map((c) => ({
     id: c.id,
+    slug: c.slug,
+    discount_procent: c.discount_procent,
+    created_at: c.created_at,
     denumire: c.denumire,
     logo_url: c.logo_url,
     judet_nume: c.judet_cod ? judeteMap.get(c.judet_cod) ?? null : null,
