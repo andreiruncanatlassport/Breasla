@@ -284,3 +284,87 @@ export interface Database {
     Functions: Record<string, never>;
   };
 }
+
+// ---------------------------------------------------------------------------
+// Înțelegeri (deals), chat, notificări
+// ---------------------------------------------------------------------------
+export type DealStatus = "draft" | "negociere" | "acceptat" | "finalizat" | "anulat";
+export type DealVersionStatus = "propusa" | "acceptata" | "respinsa" | "inlocuita";
+
+export interface DealClauza {
+  titlu: string;
+  continut: string;
+}
+
+export interface DealEtapa {
+  titlu: string;
+  descriere?: string;
+  termen?: string | null;
+  suma?: number | null;
+}
+
+export interface Deal {
+  id: string;
+  rfq_id: string | null;
+  company_a_id: string;
+  company_b_id: string;
+  titlu: string;
+  status: DealStatus;
+  versiune_acceptata_id: string | null;
+  finalizat_de_a_la: string | null;
+  finalizat_de_b_la: string | null;
+  anulat_de: string | null;
+  motiv_anulare: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DealVersion {
+  id: string;
+  deal_id: string;
+  numar: number;
+  propus_de: string;
+  descriere_lucrare: string | null;
+  pret_total: number | null;
+  moneda: "RON" | "EUR";
+  modalitate_plata: string | null;
+  termen_start: string | null;
+  termen_final: string | null;
+  clauze: DealClauza[];
+  etape: DealEtapa[];
+  nota_modificare: string | null;
+  status: DealVersionStatus;
+  raspuns_la: string | null;
+  created_at: string;
+}
+
+export interface DealMessage {
+  id: string;
+  deal_id: string;
+  sender_company_id: string;
+  continut: string;
+  sistem: boolean;
+  citit: boolean;
+  created_at: string;
+}
+
+export interface ClauseTemplate {
+  id: string;
+  category_id: string | null;
+  titlu: string;
+  continut: string;
+  ordine: number;
+  created_at: string;
+}
+
+export interface Notification {
+  id: string;
+  profile_id: string;
+  tip: string;
+  titlu: string;
+  mesaj: string | null;
+  link: string | null;
+  citit: boolean;
+  email_trimis: boolean;
+  created_at: string;
+}

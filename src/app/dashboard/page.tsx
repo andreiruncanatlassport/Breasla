@@ -83,6 +83,18 @@ export default async function DashboardPage() {
     cereriPrimite = (primite as unknown as typeof cereriPrimite) ?? [];
   }
 
+  // Înțelegeri active
+  let intelegeri: { id: string; titlu: string; status: string; company_a_id: string; company_b_id: string; updated_at: string }[] = [];
+  if (companyIds.length > 0) {
+    const orFilter = companyIds.map((id) => `company_a_id.eq.${id},company_b_id.eq.${id}`).join(",");
+    const { data } = await supabase
+      .from("deals")
+      .select("id, titlu, status, company_a_id, company_b_id, updated_at")
+      .or(orFilter)
+      .order("updated_at", { ascending: false });
+    intelegeri = (data as typeof intelegeri) ?? [];
+  }
+
   const { data: favoriteData } = await supabase
     .from("company_favorites")
     .select("companies(id, denumire)")
@@ -248,6 +260,41 @@ export default async function DashboardPage() {
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Înțelegeri */}
+      <section className="mt-8">
+        <SectionLabel icon={<Handshake className="h-3.5 w-3.5" />}>Înțelegeri</SectionLabel>
+        <div className="mt-3 space-y-2">
+          {intelegeri.length === 0 && (
+            <p className="text-sm text-ink-soft">
+              Nicio înțelegere încă. Pornesc dintr-un răspuns la o cerere de ofertă.
+            </p>
+          )}
+          {intelegeri.map((d) => (
+            <Card key={d.id} className="lift-on-hover flex items-center justify-between gap-3 p-4">
+              <Link href={`/dashboard/intelegeri/${d.id}`} className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-ink">{d.titlu}</p>
+                <p className="mt-0.5 font-mono-num text-xs text-ink-soft">
+                  {new Date(d.updated_at).toLocaleDateString("ro-RO")}
+                </p>
+              </Link>
+              <Badge
+                tone={
+                  d.status === "finalizat" || d.status === "acceptat" ? "success"
+                  : d.status === "anulat" ? "danger"
+                  : "warning"
+                }
+              >
+                {d.status === "draft" ? "ciornă"
+                  : d.status === "negociere" ? "în negociere"
+                  : d.status === "acceptat" ? "acceptată"
+                  : d.status === "finalizat" ? "finalizată"
+                  : "anulată"}
+              </Badge>
+            </Card>
+          ))}
         </div>
       </section>
 

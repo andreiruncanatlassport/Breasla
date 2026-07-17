@@ -40,6 +40,16 @@ sări peste niciunul. Îți ia cam 30-45 de minute prima dată.
   afișat ca insignă pe card și ca bloc dedicat pe profil — plus filtru "Oferă reduceri".
 - **Cereri de ofertă (RFQ)**: descrii o nevoie (buget, termen, domeniu) și o trimiți către până la
   10 firme deodată; răspunsurile, cu preț estimat, vin într-un singur loc.
+- **Înțelegeri**: din orice răspuns la o cerere pornești o înțelegere cu **chat** și **negociere
+  de termeni pe versiuni** (preț, plată, termene, etape, clauze). Fiecare propunere e o versiune
+  nouă, cu istoric complet — se vede cine ce a schimbat și de ce. Clauzele se aleg dintr-o
+  bibliotecă (generice + specifice domeniului) sau se scriu de la zero.
+- **Document de înțelegere, exportabil PDF**, cu antet Breasla și datele oficiale ale ambelor firme.
+- **Recenzii verificate automat**: după ce ambele firme marchează colaborarea ca finalizată,
+  recenzia se publică fără dovadă și fără moderare — platforma *e* dovada. Profilul arată și
+  numărul de colaborări finalizate prin Breasla.
+- **Notificări** în aplicație (clopoțelul din header) și pe email pentru mesaje, cereri, răspunsuri
+  și propuneri de termeni.
 - **Sortare și filtre avansate** în catalog: după rating, cele mai noi, vechime, nume; filtre după
   dimensiune echipă, mărimea proiectelor preluate, reduceri, firme noi.
 - **Adrese prietenoase (SEO)**: `/firma/instalatii-popescu` în loc de un cod lung. Link-urile
@@ -107,8 +117,10 @@ nu se piardă ordinea în care le rulezi (ordinea de **rulare** contează, nu or
 6. Repetă identic, **în ordine**, pentru `0003_seed_judete.sql`, `0004_seed_categories.sql`,
    `0005_search_function.sql`, `0006_profile_reviews_reauth.sql`, `0007_storage.sql`,
    `0008_rating_response_time.sql`, `0009_terms_acceptance.sql`,
-   `0010_email_verification.sql`, `0011_discounts_rfq_slugs.sql`, și
-   `0012_fix_rfq_policies.sql`. Fiecare fișier depinde de cel dinainte.
+   `0010_email_verification.sql`, `0011_discounts_rfq_slugs.sql`,
+   `0012_fix_rfq_policies.sql`, `0013_deals_chat_notifications.sql`,
+   `0014_seed_clauses.sql`, și `0015_reviews_from_deals.sql`. Fiecare fișier depinde de cel
+   dinainte.
 7. Dacă un fișier dă eroare, cel mai probabil ai sărit un pas sau ai rulat fișierele într-o altă
    ordine. Verifică în **Table Editor** dacă tabelele așteptate există deja; dacă nu, reia de la
    0001.
@@ -177,6 +189,28 @@ Fără un furnizor de email propriu, Supabase folosește un serviciu de test cu 
 firme. Pentru lansare, configurează un furnizor SMTP propriu din **Project Settings → Auth →
 SMTP Settings** — de exemplu [Resend](https://resend.com) are un nivel gratuit generos și se
 configurează în câteva minute.
+
+#### 3.5.3 Notificări pe email (Resend)
+
+Aplicația trimite notificări pe email (mesaj nou, cerere de ofertă, propunere de termeni etc.)
+prin [Resend](https://resend.com) — gratuit până la 3.000 emailuri/lună.
+
+**Fără configurare, aplicația funcționează normal**: notificările apar în clopoțelul din header,
+doar că nu ajung și pe email. Recomand totuși să-l configurezi — altfel oamenii află de un mesaj
+nou abia când intră pe site, iar negocierile se blochează.
+
+1. Cont pe [resend.com](https://resend.com) → **API Keys** → creează o cheie.
+2. **Domains** → adaugă `breasla.ro` și urmează pașii de verificare DNS (sau folosește domeniul lor
+   de test la început).
+3. În Railway → **Variables**, adaugă:
+
+   | Nume variabilă | Valoare |
+   |---|---|
+   | `RESEND_API_KEY` | cheia de la pasul 1 |
+   | `EMAIL_FROM` | ex: `notificari@breasla.ro` (trebuie să fie pe domeniul verificat) |
+
+> Aceeași cheie Resend o poți folosi și pentru SMTP-ul Supabase (3.5.2) — sunt lucruri diferite:
+> Supabase trimite emailurile de autentificare, iar Resend, aici, notificările din aplicație.
 
 ---
 

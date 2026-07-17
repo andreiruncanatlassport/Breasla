@@ -4,6 +4,7 @@ import { ArrowLeft, Calendar, Wallet, MapPin, Send, Inbox } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { RfqResponseForm } from "@/components/RfqResponseForm";
+import { StartDealButton } from "@/components/deal/StartDealButton";
 import type { Rfq } from "@/types/database";
 
 export default async function CerereDetaliuPage({
@@ -167,6 +168,20 @@ export default async function CerereDetaliuPage({
               <p className="mt-2.5 whitespace-pre-wrap text-sm leading-relaxed text-ink-soft">
                 {r.mesaj}
               </p>
+
+              {/* Pasul urmator: din raspuns -> intelegere cu chat si termeni */}
+              {suntAutor && r.companies && rfq.status === "deschis" && (
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+                  <p className="text-xs text-ink-soft">
+                    Vă convine oferta? Continuați cu stabilirea termenilor.
+                  </p>
+                  <StartDealButton
+                    companyBId={r.companies.id}
+                    titlu={rfq.titlu}
+                    rfqId={rfq.id}
+                  />
+                </div>
+              )}
             </Card>
           ))}
         </div>

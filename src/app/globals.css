@@ -392,3 +392,58 @@ h1 { letter-spacing: -0.032em; }
   scrollbar-width: thin;
   scrollbar-color: var(--color-line-strong) transparent;
 }
+
+/* ==========================================================================
+   DOCUMENTUL DE ÎNȚELEGERE — stiluri de ecran și de tipărire
+   Culorile sunt fixe (nu tokeni de tema): documentul trebuie sa arate identic
+   la tiparire, indiferent daca utilizatorul e pe tema deschisa sau intunecata.
+   ========================================================================== */
+.doc {
+  width: 210mm;
+  max-width: 100%;
+  color-scheme: light;
+}
+
+.doc-titlu {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: #0a2540;
+  letter-spacing: -0.01em;
+}
+
+.doc-eticheta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #667085;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  /* Ascundem tot ce nu tine de document: antet de site, subsol, butoane */
+  header, footer.mt-auto, .no-print {
+    display: none !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+  }
+
+  .doc {
+    width: auto;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Nu rupem clauzele sau tabelele intre pagini */
+  .break-inside-avoid, li, tr, section {
+    break-inside: avoid;
+  }
+}
