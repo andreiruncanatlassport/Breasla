@@ -218,7 +218,7 @@ export default function EditCompanyPage({
               />
             </div>
 
-            <div className="relative -mt-8 ml-4 h-16 w-16 overflow-hidden rounded-full border-4 border-paper-white bg-paper-white">
+            <div className="relative -mt-8 ml-4 h-16 w-16 overflow-hidden rounded-full border-4 border-surface bg-surface">
               {company.logo_url && (
                 <Image src={company.logo_url} alt="Logo" fill className="object-cover" unoptimized />
               )}

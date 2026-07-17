@@ -90,7 +90,7 @@ export function EmailUnverifiedBanner({ email }: { email: string }) {
               value={cod}
               onChange={(e) => setCod(e.target.value)}
               placeholder="Cod din 6 cifre"
-              className="font-mono-num w-40 rounded-lg border border-line bg-paper-white px-3 py-1.5 text-sm text-ink outline-none focus:border-seal"
+              className="font-mono-num w-40 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-ink outline-none focus:border-seal"
             />
             <button
               onClick={confirmaCod}

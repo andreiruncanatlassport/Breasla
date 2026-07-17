@@ -11,7 +11,7 @@ const LINKURI = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-auto overflow-hidden border-t border-white/10 bg-gradient-to-br from-navy to-[#0d3a62]">
+    <footer className="relative mt-auto overflow-hidden border-t border-white/10 bg-navy">
       <BreaslaMark
         variant="white"
         className="pointer-events-none absolute -left-10 -top-10 h-52 w-52 opacity-[0.05]"

@@ -76,7 +76,7 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
           primul pe profilul firmei.
         </FieldHint>
 
-        <div className="mt-3 max-h-96 space-y-4 overflow-y-auto rounded-lg border border-line bg-paper-white p-4">
+        <div className="mt-3 max-h-96 space-y-4 overflow-y-auto rounded-lg border border-line bg-surface p-4">
           {tree.map((parent) => (
             <div key={parent.id}>
               <label className="flex items-center gap-2 text-sm font-semibold text-ink">

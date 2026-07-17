@@ -28,7 +28,7 @@ export interface CompanyCardData {
 const ACCENTS = [
   "bg-gradient-to-r from-seal to-seal-light",
   "bg-gradient-to-r from-teal to-teal-light",
-  "bg-gradient-to-r from-navy to-[#123a5e]",
+  "bg-gradient-to-r from-navy to-navy",
 ];
 
 function accentFor(key: string) {

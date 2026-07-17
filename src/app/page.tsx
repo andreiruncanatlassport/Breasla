@@ -36,7 +36,7 @@ export default function HomePage() {
   return (
     <>
       {/* ================= HERO ================= */}
-      <section className="relative overflow-hidden border-b border-line bg-gradient-to-br from-white via-[#fdf1e8] to-[#e9f6f6]">
+      <section className="hero-wash relative overflow-hidden border-b border-line">
         <div aria-hidden className="absolute inset-0 grid-registry opacity-60" />
         <div
           aria-hidden
@@ -84,17 +84,17 @@ export default function HomePage() {
             </div>
 
             <div className="mt-12 flex flex-wrap gap-3">
-              <div className="rounded-2xl border border-white bg-white/70 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
-                <p className="font-mono-num bg-gradient-to-br from-ink to-navy bg-clip-text text-2xl font-bold text-transparent">
+              <div className="rounded-2xl border border-line bg-surface/75 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
+                <p className="font-mono-num text-2xl font-bold text-ink">
                   {firme.toLocaleString("ro-RO")}
                 </p>
                 <p className="mt-0.5 text-xs text-ink-soft">firme verificate</p>
               </div>
-              <div className="rounded-2xl border border-white bg-white/70 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
+              <div className="rounded-2xl border border-line bg-surface/75 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
                 <p className="font-mono-num text-2xl font-bold text-seal">{domenii}</p>
                 <p className="mt-0.5 text-xs text-ink-soft">domenii</p>
               </div>
-              <div className="rounded-2xl border border-white bg-white/70 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
+              <div className="rounded-2xl border border-line bg-surface/75 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
                 <p className="font-mono-num text-2xl font-bold text-teal">{judete}</p>
                 <p className="mt-0.5 text-xs text-ink-soft">județe</p>
               </div>
@@ -157,7 +157,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-2xl shadow-[var(--shadow-md)] ${
-                    i === 0 ? "gradient-seal" : i === 1 ? "bg-gradient-to-br from-teal to-teal-light" : "bg-gradient-to-br from-navy to-[#123a5e]"
+                    i === 0 ? "gradient-seal" : i === 1 ? "bg-gradient-to-br from-teal to-teal-light" : "bg-gradient-to-br from-violet to-seal"
                   }`}
                 >
                   <step.icon className="h-5 w-5 text-white" strokeWidth={1.8} />
@@ -212,7 +212,7 @@ export default function HomePage() {
       </section>
 
       {/* ================= CTA FINAL ================= */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-[#fdf1e8] to-[#e9f6f6]">
+      <section className="hero-wash relative overflow-hidden">
         <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
           <BreaslaMark className="mx-auto h-14 w-14 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
           <h2 className="mt-6 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">

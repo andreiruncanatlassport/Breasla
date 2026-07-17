@@ -75,29 +75,41 @@
 }
 
 .dark {
-  --ink: #eceef4;
-  --ink-soft: #98a2b3;
-  --paper: #070a12;
-  --paper-white: #10141f;
-  --surface: #10141f;
-  --surface-raised: #171c2b;
-  --navy: #05070d;
-  --seal: #ff9552;
-  --seal-light: #ffb27a;
-  --ember: #ff8a4d;
-  --teal: #3fc0c7;
-  --teal-light: #63d6dc;
-  --violet: #9b7ff0;
-  --rust: #f07665;
-  --line: #232a3d;
-  --line-strong: #333c54;
-  --primary: #ff9552;
-  --primary-content: #0a2540;
+  /* ---- DARK ----
+     Neutre calde (nu albastru rece), ca sa se acorde cu portocaliul siglei.
+     Ierarhie clara pe 4 niveluri de suprafata: pagina < card < card ridicat <
+     banda navy. Textul e deschis pe fundal intunecat, cu doua trepte de
+     contrast (ink pentru continut, ink-soft pentru secundar) — ambele
+     verificate sa depaseasca pragul AA. */
+  --ink: #f1f3f7;
+  --ink-soft: #a6b0bf;
+  --paper: #0b0e14;
+  --paper-white: #141922;
+  --surface: #141922;
+  --surface-raised: #1c222e;
+  --navy: #070a0f;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.5), 0 12px 28px -4px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.55), 0 24px 48px -8px rgba(0, 0, 0, 0.6);
+  /* Accentele sunt luminate si usor desaturate: pe fundal intunecat, culorile
+     saturate "vibreaza" si obosesc ochiul. */
+  --seal: #ff9d5c;
+  --seal-light: #ffbc8a;
+  --ember: #ff8552;
+  --teal: #4cc9d0;
+  --teal-light: #74dbe1;
+  --violet: #a48bf5;
+  --rust: #ff8574;
+
+  --line: #262d3a;
+  --line-strong: #3a4353;
+  --primary: #ff9d5c;
+  --primary-content: #0b0e14;
+
+  /* Pe intuneric umbrele nu se vad; ierarhia vine din suprafete mai deschise
+     + un contur subtil de lumina in partea de sus a blocurilor ridicate. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.6), 0 4px 14px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 6px 12px -2px rgba(0, 0, 0, 0.6), 0 16px 32px -6px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 10px 20px -4px rgba(0, 0, 0, 0.65), 0 28px 56px -10px rgba(0, 0, 0, 0.7);
 }
 
 /* ---- Variante de font (panoul de Setari) ---- */
@@ -177,12 +189,36 @@ h1 { letter-spacing: -0.032em; }
     radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 14%, transparent) 0px, transparent 45%),
     radial-gradient(at 25% 92%, color-mix(in srgb, var(--color-ember) 12%, transparent) 0px, transparent 50%);
 }
+/* Pe intuneric, spalarile de culoare intense arata ca o eroare de culoare.
+   Le reducem la niste halouri discrete, care doar sugereaza adancime. */
 .dark .mesh-hero {
+  background-color: var(--paper);
   background-image:
-    radial-gradient(at 12% 8%, color-mix(in srgb, var(--color-seal) 18%, transparent) 0px, transparent 55%),
-    radial-gradient(at 88% 12%, color-mix(in srgb, var(--color-violet) 20%, transparent) 0px, transparent 50%),
-    radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 14%, transparent) 0px, transparent 45%),
-    radial-gradient(at 25% 92%, color-mix(in srgb, var(--color-ember) 10%, transparent) 0px, transparent 50%);
+    radial-gradient(at 12% 8%, color-mix(in srgb, var(--color-seal) 10%, transparent) 0px, transparent 45%),
+    radial-gradient(at 88% 12%, color-mix(in srgb, var(--color-violet) 9%, transparent) 0px, transparent 42%),
+    radial-gradient(at 72% 88%, color-mix(in srgb, var(--color-teal) 7%, transparent) 0px, transparent 40%);
+}
+
+/* Fundalul de hero/CTA — degrade cald pe tema deschisa, intunecat pe cea
+   intunecata. Anterior era hardcodat cu alb+crem, deci ramanea luminos si pe
+   tema dark: de aici senzatia ca "se coloreaza elementele gresit".
+   Folosim culori explicite (nu color-mix), ca sa nu existe fallback stralucitor
+   pe browserele mai vechi. */
+.hero-wash {
+  background-image: linear-gradient(
+    to bottom right,
+    #ffffff 0%,
+    #fdf1e8 45%,
+    #e9f6f6 100%
+  );
+}
+.dark .hero-wash {
+  background-image: linear-gradient(
+    to bottom right,
+    #0b0e14 0%,
+    #16120f 45%,
+    #0d1719 100%
+  );
 }
 
 /* Grila fina de "registru" — evoca hartia de caiet oficial */
@@ -218,6 +254,20 @@ h1 { letter-spacing: -0.032em; }
   border: 1px solid var(--color-line);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-lg);
+}
+
+/* Pe tema intunecata umbrele nu se citesc — ierarhia vine dintr-un contur
+   subtil de lumina in partea de sus, ca si cum blocul ar fi luminat de sus. */
+.dark .block-base,
+.dark .block-raised {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.045),
+    var(--shadow-md);
+}
+.dark .block-raised {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    var(--shadow-lg);
 }
 
 /* Bloc "scobit": pentru zone de input/filtre — pare adancit in pagina */

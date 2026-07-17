@@ -391,7 +391,7 @@ export default async function CompanyPage({
               <Link
                 key={p.id}
                 href={`/firma/${id}/portofoliu/${p.id}`}
-                className="lift-on-hover overflow-hidden rounded-xl border border-line bg-paper-white"
+                className="lift-on-hover overflow-hidden rounded-xl border border-line bg-surface"
               >
                 <div className="relative h-28 w-full bg-ink/5">
                   {p.cover_url && <Image src={p.cover_url} alt={p.titlu} fill className="object-cover" unoptimized />}
