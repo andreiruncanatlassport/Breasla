@@ -84,7 +84,7 @@ export default async function DocumentPage({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logo-mark.png" alt="" className="h-11 w-11 object-contain" />
               <div>
-                <p className="font-display text-lg font-bold tracking-tight text-[#0a2540]">Breasla.ro</p>
+                <p className="font-display text-lg font-bold tracking-tight text-[#0a2540]">Rețeaua Antreprenorilor Creștini</p>
                 <p className="text-[10px] uppercase tracking-[0.14em] text-[#f0722a]">
                   Registrul antreprenorilor din România
                 </p>
@@ -213,14 +213,14 @@ export default async function DocumentPage({
           <footer className="mt-8 border-t border-[#e6e5e0] pt-4">
             <p className="text-[10px] leading-relaxed text-[#667085]">
               <strong className="text-[#344054]">Important:</strong> acest document este un rezumat
-              al înțelegerii dintre cele două firme, generat prin platforma Breasla.ro ca bază de
+              al înțelegerii dintre cele două firme, generat prin platforma Rețelei Antreprenorilor Creștini ca bază de
               discuție și lucru. <strong className="text-[#344054]">Nu este un contract redactat
               juridic</strong> și nu ține loc de consultanță de specialitate. Pentru un contract cu
               valoare juridică deplină, consultați un avocat. Datele firmelor provin din surse
               publice oficiale (ANAF), la data preluării.
             </p>
             <p className="mt-2 font-mono text-[9px] text-[#98a2b3]">
-              Generat prin Breasla.ro · Dosar {id.slice(0, 8).toUpperCase()} · v{v.numar} ·{" "}
+              Generat prin Rețeaua Antreprenorilor Creștini · Dosar {id.slice(0, 8).toUpperCase()} · v{v.numar} ·{" "}
               {formatData(new Date().toISOString())}
             </p>
           </footer>

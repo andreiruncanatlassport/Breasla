@@ -26,7 +26,7 @@ export async function geocodeAddress(
   const res = await fetch(url, {
     headers: {
       // Nominatim cere un User-Agent identificabil — inlocuieste cu domeniul tau real.
-      "User-Agent": "Breasla-App/1.0 (contact@breasla.ro)",
+      "User-Agent": "ReteauaAC-App/1.0 (contact@domeniul-tau.ro)",
     },
     cache: "no-store",
   });

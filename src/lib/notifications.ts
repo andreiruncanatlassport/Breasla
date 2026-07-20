@@ -19,7 +19,10 @@ export type TipNotificare =
   | "conexiune_cerere"
   | "conexiune_acceptata"
   | "recenzie_primita"
-  | "firma_aprobata";
+  | "firma_aprobata"
+  | "mesaj_nou"
+  | "oportunitate_raspuns"
+  | "eveniment_reminder";
 
 interface CreeazaNotificareInput {
   profileId: string;
@@ -29,7 +32,7 @@ interface CreeazaNotificareInput {
   link?: string;
 }
 
-const NUME_EXPEDITOR = "Breasla";
+const NUME_EXPEDITOR = "Rețeaua Antreprenorilor Creștini";
 
 function urlSite(): string {
   return process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
@@ -44,14 +47,14 @@ function sablonEmail(titlu: string, mesaj: string | undefined, link: string | un
     <table role="presentation" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e6e5e0;border-radius:16px;overflow:hidden;">
       <tr><td style="height:4px;background:linear-gradient(90deg,#f0722a,#d85f1b);"></td></tr>
       <tr><td style="padding:28px;">
-        <p style="margin:0 0 4px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#f0722a;font-weight:600;">Breasla</p>
+        <p style="margin:0 0 4px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#f0722a;font-weight:600;">Rețeaua Antreprenorilor Creștini</p>
         <h1 style="margin:0 0 12px;font-size:20px;color:#101828;">${titlu}</h1>
         ${mesaj ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#475467;">${mesaj}</p>` : ""}
-        <a href="${linkComplet}" style="display:inline-block;background:#0a2540;color:#ffffff;text-decoration:none;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;">Vezi în Breasla</a>
+        <a href="${linkComplet}" style="display:inline-block;background:#0a2540;color:#ffffff;text-decoration:none;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;">Vezi în platformă</a>
       </td></tr>
       <tr><td style="padding:16px 28px;background:#faf9f7;border-top:1px solid #e6e5e0;">
         <p style="margin:0;font-size:12px;color:#98a2b3;">
-          Primești acest email pentru că ai un cont pe Breasla.ro.
+          Primești acest email pentru că ai un cont pe Rețeaua Antreprenorilor Creștini.
         </p>
       </td></tr>
     </table>

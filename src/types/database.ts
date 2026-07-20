@@ -368,3 +368,124 @@ export interface Notification {
   email_trimis: boolean;
   created_at: string;
 }
+
+// ============================================================================
+// STIRI & EVENIMENTE
+// ============================================================================
+export type NewsStatus = "draft" | "publicat";
+
+export interface NewsArticle {
+  id: string;
+  autor_id: string | null;
+  titlu: string;
+  slug: string;
+  rezumat: string | null;
+  continut: string;
+  imagine_url: string | null;
+  status: NewsStatus;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type EventTip = "conferinta" | "workshop" | "networking" | "altul";
+export type EventStatus = "draft" | "publicat" | "anulat";
+
+export interface EventItem {
+  id: string;
+  autor_id: string | null;
+  titlu: string;
+  slug: string;
+  descriere: string;
+  imagine_url: string | null;
+  tip: EventTip;
+  locatie: string | null;
+  online: boolean;
+  link_extern: string | null;
+  data_inceput: string;
+  data_sfarsit: string | null;
+  capacitate: number | null;
+  status: EventStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EventRegistration {
+  id: string;
+  event_id: string;
+  profile_id: string;
+  nota: string | null;
+  created_at: string;
+}
+
+// ============================================================================
+// MESAJE DIRECTE (deschise, intre orice doi membri)
+// ============================================================================
+export interface Conversation {
+  id: string;
+  created_at: string;
+  last_message_at: string;
+}
+
+export interface ConversationParticipant {
+  conversation_id: string;
+  profile_id: string;
+  last_read_at: string | null;
+  created_at: string;
+}
+
+export interface DirectMessage {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  continut: string;
+  created_at: string;
+}
+
+// ============================================================================
+// DIRECTOR DE MEMBRI (profil public de persoana)
+// ============================================================================
+export interface MemberDirectoryEntry {
+  id: string;
+  nume_complet: string;
+  avatar_url: string | null;
+  titlu: string | null;
+  bio: string | null;
+  oras: string | null;
+  created_at: string;
+  company_id: string | null;
+  company_denumire: string | null;
+  company_slug: string | null;
+  company_logo_url: string | null;
+}
+
+// ============================================================================
+// OPORTUNITATI (board public)
+// ============================================================================
+export type OpportunityTip = "proiect" | "achizitie" | "colaborare" | "cerere_servicii";
+export type OpportunityStatus = "deschisa" | "inchisa";
+
+export interface Opportunity {
+  id: string;
+  company_id: string;
+  titlu: string;
+  descriere: string;
+  tip: OpportunityTip;
+  category_id: string | null;
+  judet_cod: string | null;
+  buget_min: number | null;
+  buget_max: number | null;
+  termen_limita: string | null;
+  status: OpportunityStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OpportunityResponse {
+  id: string;
+  opportunity_id: string;
+  company_id: string;
+  mesaj: string;
+  pret_estimat: number | null;
+  created_at: string;
+}

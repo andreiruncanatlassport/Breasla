@@ -44,7 +44,7 @@ export function etichetaProiectMarime(id: string | null | undefined, lung = fals
   return o ? (lung ? o.lung : o.scurt) : null;
 }
 
-/** O firmă e considerată "nouă în Breasla" în primele 30 de zile. */
+/** O firmă e considerată "nouă în Rețeaua Antreprenorilor Creștini" în primele 30 de zile. */
 export function esteFirmaNoua(createdAt: string | null | undefined): boolean {
   if (!createdAt) return false;
   const zile = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24);

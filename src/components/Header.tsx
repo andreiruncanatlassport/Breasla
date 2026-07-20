@@ -8,7 +8,7 @@ import { useSettings } from "@/lib/settings/context";
 import { LinkButton } from "@/components/ui/Button";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { NotificationBell } from "@/components/NotificationBell";
-import { BreaslaMark } from "@/components/ui/BreaslaMark";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
@@ -43,22 +43,43 @@ export function Header({ userEmail, rol }: HeaderProps) {
       <div className="h-0.5 w-full gradient-seal opacity-80" />
 
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="group flex items-center gap-2.5">
-          <BreaslaMark variant="white" className="h-7 w-7 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
-          <span className="font-display text-lg font-semibold tracking-tight text-white">
-            Breasla
+        <Link href="/" className="group flex items-center gap-2.5" title="Rețeaua Antreprenorilor Creștini">
+          <BrandMark variant="white" className="h-8 w-8 shrink-0 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
+          <span className="hidden font-display text-lg font-semibold tracking-tight text-white sm:inline">
+            R.A.C.
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-5 md:flex">
           <Link href="/catalog" className={linkClass("/catalog")}>
             {t.nav.catalog}
             {pathname === "/catalog" && (
               <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
             )}
           </Link>
-          <Link href="/#cum-functioneaza" className="py-1 text-sm font-medium text-white/65 transition-colors hover:text-white">
-            {t.nav.howItWorks}
+          <Link href="/oportunitati" className={linkClass("/oportunitati")}>
+            Oportunități
+            {pathname === "/oportunitati" && (
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+            )}
+          </Link>
+          <Link href="/membri" className={linkClass("/membri")}>
+            Membri
+            {pathname === "/membri" && (
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+            )}
+          </Link>
+          <Link href="/stiri" className={linkClass("/stiri")}>
+            Știri
+            {pathname === "/stiri" && (
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+            )}
+          </Link>
+          <Link href="/evenimente" className={linkClass("/evenimente")}>
+            Evenimente
+            {pathname === "/evenimente" && (
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+            )}
           </Link>
 
           {userEmail ? (
@@ -68,6 +89,9 @@ export function Header({ userEmail, rol }: HeaderProps) {
                   {t.nav.admin}
                 </Link>
               )}
+              <Link href="/mesaje" className={linkClass("/mesaje")}>
+                Mesaje
+              </Link>
               <Link href="/dashboard" className={linkClass("/dashboard")}>
                 {t.nav.dashboard}
               </Link>
@@ -113,6 +137,18 @@ export function Header({ userEmail, rol }: HeaderProps) {
             <Link href="/catalog" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
               {t.nav.catalog}
             </Link>
+            <Link href="/oportunitati" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+              Oportunități
+            </Link>
+            <Link href="/membri" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+              Membri
+            </Link>
+            <Link href="/stiri" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+              Știri
+            </Link>
+            <Link href="/evenimente" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+              Evenimente
+            </Link>
             {userEmail ? (
               <>
                 {(rol === "admin" || rol === "moderator") && (
@@ -120,6 +156,9 @@ export function Header({ userEmail, rol }: HeaderProps) {
                     {t.nav.admin}
                   </Link>
                 )}
+                <Link href="/mesaje" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+                  Mesaje
+                </Link>
                 <Link href="/dashboard" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.dashboard}
                 </Link>

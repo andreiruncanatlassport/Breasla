@@ -127,6 +127,12 @@ export default async function DashboardPage() {
         <LinkButton href="/inregistrare" variant="secondary" size="sm">Adaugă altă firmă</LinkButton>
       </div>
 
+      <div className="mt-6 flex flex-wrap gap-2">
+        <LinkButton href="/dashboard/profil" variant="secondary" size="sm">Profilul meu public</LinkButton>
+        <LinkButton href="/mesaje" variant="secondary" size="sm">Mesajele mele</LinkButton>
+        <LinkButton href="/oportunitati/noua" variant="secondary" size="sm">Postează o oportunitate</LinkButton>
+      </div>
+
       {/* Firmele mele */}
       <section className="mt-8">
         <SectionLabel icon={<Building2 className="h-3.5 w-3.5" />}>Firmele mele</SectionLabel>

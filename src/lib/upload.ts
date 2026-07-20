@@ -44,6 +44,60 @@ export async function incarcaImagineFirma(
 }
 
 /**
+ * Incarca poza de profil a persoanei (pentru pagina de Membri), in bucket-ul
+ * public `profile-media`, sub folderul propriului user id.
+ */
+export async function incarcaAvatarProfil(profileId: string, fisier: File): Promise<RezultatUpload> {
+  if (fisier.size > MAX_IMAGE_MB * 1024 * 1024) {
+    throw new Error(`Imaginea e prea mare (max ${MAX_IMAGE_MB}MB).`);
+  }
+  if (!fisier.type.startsWith("image/")) {
+    throw new Error("Fișierul trebuie să fie o imagine.");
+  }
+
+  const supabase = createClient();
+  const path = `${profileId}/avatar-${Date.now()}.${extensieDin(fisier)}`;
+
+  const { error } = await supabase.storage.from("profile-media").upload(path, fisier, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from("profile-media").getPublicUrl(path);
+  return { path, publicUrl: data.publicUrl };
+}
+
+/**
+ * Incarca o imagine pentru o stire sau un eveniment, in bucket-ul public
+ * `site-media` (doar admin/moderator, verificat de politica RLS).
+ */
+export async function incarcaImagineSite(
+  sectiune: "stiri" | "evenimente",
+  itemId: string,
+  fisier: File
+): Promise<RezultatUpload> {
+  if (fisier.size > MAX_IMAGE_MB * 1024 * 1024) {
+    throw new Error(`Imaginea e prea mare (max ${MAX_IMAGE_MB}MB).`);
+  }
+  if (!fisier.type.startsWith("image/")) {
+    throw new Error("Fișierul trebuie să fie o imagine.");
+  }
+
+  const supabase = createClient();
+  const path = `${sectiune}/${itemId}/${Date.now()}.${extensieDin(fisier)}`;
+
+  const { error } = await supabase.storage.from("site-media").upload(path, fisier, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from("site-media").getPublicUrl(path);
+  return { path, publicUrl: data.publicUrl };
+}
+
+/**
  * Incarca o dovada de colaborare (contract etc.) in bucket-ul PRIVAT
  * `review-proofs`, sub folderul firmei care lasă recenzia.
  */

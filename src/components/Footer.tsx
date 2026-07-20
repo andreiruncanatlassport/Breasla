@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BreaslaMark } from "@/components/ui/BreaslaMark";
+import { BrandMark } from "@/components/ui/BrandMark";
 
 const LINKURI = [
   { href: "/catalog", label: "Catalog firme" },
@@ -12,7 +12,7 @@ const LINKURI = [
 export function Footer() {
   return (
     <footer className="relative mt-auto overflow-hidden border-t border-white/10 bg-navy">
-      <BreaslaMark
+      <BrandMark
         variant="white"
         className="pointer-events-none absolute -left-10 -top-10 h-52 w-52 opacity-[0.05]"
       />
@@ -20,9 +20,9 @@ export function Footer() {
         <div className="flex flex-col justify-between gap-10 sm:flex-row">
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
-              <BreaslaMark variant="white" className="h-7 w-7" />
-              <span className="font-display text-lg font-semibold tracking-tight text-white">
-                Breasla.ro
+              <BrandMark variant="white" className="h-9 w-9 shrink-0" />
+              <span className="font-display text-base font-semibold leading-tight tracking-tight text-white">
+                Rețeaua Antreprenorilor Creștini
               </span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-white/60">
@@ -49,7 +49,7 @@ export function Footer() {
             Datele firmelor sunt preluate din surse publice oficiale (ANAF).
           </p>
           <p className="font-mono-num text-xs text-white/40">
-            © {new Date().getFullYear()} Breasla.ro
+            © {new Date().getFullYear()} Rețeaua Antreprenorilor Creștini
           </p>
         </div>
       </div>

@@ -219,7 +219,7 @@ export function DealTerms({ deal, versiuni, firmaMeaId, numeFirme, categoryId }:
             <p className="font-semibold">Colaborare finalizată de ambele firme.</p>
             <p className="mt-1">
               Acum puteți lăsa recenzii — se publică automat, fără dovezi, pentru că înțelegerea s-a
-              desfășurat prin Breasla.
+              desfășurat prin Rețeaua Antreprenorilor Creștini.
             </p>
           </div>
         )}

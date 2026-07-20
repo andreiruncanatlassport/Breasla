@@ -38,7 +38,9 @@ export default async function AdminPage() {
           <p className="stamp-label text-seal">Panou de control</p>
           <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Administrare</h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <LinkButton href="/admin/stiri" variant="secondary" size="sm">Știri</LinkButton>
+          <LinkButton href="/admin/evenimente" variant="secondary" size="sm">Evenimente</LinkButton>
           <LinkButton href="/admin/recenzii" variant="secondary" size="sm">Recenzii</LinkButton>
           <LinkButton href="/admin/categorii" variant="secondary" size="sm">Categorii & CAEN</LinkButton>
         </div>

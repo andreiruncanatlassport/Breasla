@@ -37,12 +37,12 @@ function mesajBlocare(motiv: MotivBlocare): { text: string; actiune?: { href: st
   switch (motiv) {
     case "neautentificat":
       return {
-        text: "Doar firmele verificate din Breasla pot lăsa recenzii.",
+        text: "Doar firmele verificate din Rețeaua Antreprenorilor Creștini pot lăsa recenzii.",
         actiune: { href: "/login", eticheta: "Autentifică-te" },
       };
     case "fara_firma":
       return {
-        text: "Ca să lași o recenzie, trebuie să ai o firmă înregistrată în Breasla.",
+        text: "Ca să lași o recenzie, trebuie să ai o firmă înregistrată în Rețeaua Antreprenorilor Creștini.",
         actiune: { href: "/inregistrare", eticheta: "Înregistrează-ți firma" },
       };
     case "firma_neverificata":
@@ -127,7 +127,7 @@ export function ReviewSection({
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-teal" />
           <p>
             <strong className="text-ink">Recenzii verificate.</strong> Pot fi lăsate doar de firme
-            verificate din Breasla, care încarcă o dovadă a colaborării (contract, comandă,
+            verificate din Rețeaua Antreprenorilor Creștini, care încarcă o dovadă a colaborării (contract, comandă,
             corespondență). Dovada e văzută doar de administratori, iar recenzia se publică abia
             după aprobare — de aceea nu poate fi cumpărată sau falsificată.
           </p>

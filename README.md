@@ -1,4 +1,4 @@
-# Breasla — registrul antreprenorilor din România
+# Rețeaua Antreprenorilor Creștini — registrul antreprenorilor din România
 
 Un catalog de firme verificate prin ANAF, organizat pe domenii și zone, ca să găsești rapid
 subcontractanți/colaboratori de încredere.
@@ -6,9 +6,9 @@ subcontractanți/colaboratori de încredere.
 Acest README e scris pentru cineva cu **zero experiență de cod**. Urmează pașii în ordine — nu
 sări peste niciunul. Îți ia cam 30-45 de minute prima dată.
 
-> Numele platformei e **Breasla** (domeniul recomandat: `breasla.ro`). Dacă vreți totuși să-l
-> schimbați mai târziu, vezi secțiunea [Schimbarea numelui](#schimbarea-numelui) de la final —
-> durează 5 minute.
+> Numele platformei e **Rețeaua Antreprenorilor Creștini**. Domeniul e la alegerea ta — înlocuiește
+> `domeniul-tau.ro` cu domeniul real oriunde apare în acest README. Dacă vreți să schimbați numele
+> mai târziu, vezi secțiunea [Schimbarea numelui](#schimbarea-numelui) de la final.
 
 ---
 
@@ -44,10 +44,10 @@ sări peste niciunul. Îți ia cam 30-45 de minute prima dată.
   de termeni pe versiuni** (preț, plată, termene, etape, clauze). Fiecare propunere e o versiune
   nouă, cu istoric complet — se vede cine ce a schimbat și de ce. Clauzele se aleg dintr-o
   bibliotecă (generice + specifice domeniului) sau se scriu de la zero.
-- **Document de înțelegere, exportabil PDF**, cu antet Breasla și datele oficiale ale ambelor firme.
+- **Document de înțelegere, exportabil PDF**, cu antet Rețeaua Antreprenorilor Creștini și datele oficiale ale ambelor firme.
 - **Recenzii verificate automat**: după ce ambele firme marchează colaborarea ca finalizată,
   recenzia se publică fără dovadă și fără moderare — platforma *e* dovada. Profilul arată și
-  numărul de colaborări finalizate prin Breasla.
+  numărul de colaborări finalizate prin platformă.
 - **Notificări** în aplicație (clopoțelul din header) și pe email pentru mesaje, cereri, răspunsuri
   și propuneri de termeni.
 - **Sortare și filtre avansate** în catalog: după rating, cele mai noi, vechime, nume; filtre după
@@ -92,7 +92,7 @@ sări peste niciunul. Îți ia cam 30-45 de minute prima dată.
 ## 3. Pasul 1 — Creează proiectul Supabase
 
 1. Intră pe [supabase.com](https://supabase.com) → **New project**.
-2. Alege un nume (ex: `breasla`), o parolă puternică pentru baza de date (salveaz-o undeva sigur)
+2. Alege un nume (ex: `reteaua-ac`), o parolă puternică pentru baza de date (salveaz-o undeva sigur)
    și o regiune apropiată de România (ex: `eu-central-1`, Frankfurt).
 3. Așteaptă 1-2 minute până se creează proiectul.
 
@@ -174,7 +174,7 @@ implicit un link, nu un cod — trebuie să adaugi explicit codul în șablon:
 2. În conținutul HTML, adaugă variabila `{{ .Token }}` — de exemplu:
    ```html
    <h2>Codul tău de confirmare</h2>
-   <p>Introdu acest cod în Breasla: <strong>{{ .Token }}</strong></p>
+   <p>Introdu acest cod în Rețeaua Antreprenorilor Creștini: <strong>{{ .Token }}</strong></p>
    <p>Expiră în câteva minute.</p>
    ```
 3. Salvează. Testează din aplicație (Dashboard → butonul "Verifică acum" din bannerul roșu).
@@ -200,14 +200,14 @@ doar că nu ajung și pe email. Recomand totuși să-l configurezi — altfel oa
 nou abia când intră pe site, iar negocierile se blochează.
 
 1. Cont pe [resend.com](https://resend.com) → **API Keys** → creează o cheie.
-2. **Domains** → adaugă `breasla.ro` și urmează pașii de verificare DNS (sau folosește domeniul lor
+2. **Domains** → adaugă `domeniul-tau.ro` și urmează pașii de verificare DNS (sau folosește domeniul lor
    de test la început).
 3. În Railway → **Variables**, adaugă:
 
    | Nume variabilă | Valoare |
    |---|---|
    | `RESEND_API_KEY` | cheia de la pasul 1 |
-   | `EMAIL_FROM` | ex: `notificari@breasla.ro` (trebuie să fie pe domeniul verificat) |
+   | `EMAIL_FROM` | ex: `notificari@domeniul-tau.ro` (trebuie să fie pe domeniul verificat) |
 
 > Aceeași cheie Resend o poți folosi și pentru SMTP-ul Supabase (3.5.2) — sunt lucruri diferite:
 > Supabase trimite emailurile de autentificare, iar Resend, aici, notificările din aplicație.
@@ -221,7 +221,7 @@ Din folderul proiectului (unde ai descărcat acest cod), în terminal:
 ```bash
 git init
 git add .
-git commit -m "Primul commit — Breasla"
+git commit -m "Primul commit — Rețeaua Antreprenorilor Creștini"
 ```
 
 Apoi, pe [github.com](https://github.com), creează un repository nou (gol, fără README), și
@@ -333,13 +333,26 @@ Deschide `http://localhost:3000`.
 
 ---
 
-## 11. Schimbarea numelui
+## 11. Schimbarea numelui și a siglei
 
-Numele "Breasla" apare în 3 locuri ușor de găsit și schimbat, dacă vreți vreodată alt nume:
+Numele "Rețeaua Antreprenorilor Creștini" apare în câteva locuri ușor de găsit și schimbat, dacă
+vreți vreodată alt nume:
 
-1. `src/app/layout.tsx` — `title` din `metadata`.
-2. `src/components/Header.tsx` — textul de lângă logo.
-3. `src/components/Footer.tsx` — textul din footer.
+1. `src/app/layout.tsx` — `title` din `metadata` (titlul din tab-ul browserului).
+2. `src/components/Header.tsx` — varianta scurtă `R.A.C.` de lângă siglă (afișată doar de la
+   `sm:` în sus, ca să nu aglomereze meniul) și atributul `title` de pe link-ul către `/`.
+3. `src/components/Footer.tsx` — numele complet, din subsolul paginii.
+4. `src/lib/notifications.ts` — `NUME_EXPEDITOR` și textele din șablonul de email.
+
+Sigla (fișierul `BrandMark`, în `src/components/ui/BrandMark.tsx`) citește două imagini din
+`public/`:
+
+- `public/logo-mark.png` — varianta color, pe fundal deschis.
+- `public/logo-mark-white.png` — varianta albă, pe fundal navy (header, footer, secțiuni întunecate).
+
+Ca să schimbați sigla, înlocuiți direct aceste două fișiere PNG (fundal transparent) — restul
+aplicației se actualizează automat, fără alte modificări de cod, pentru că toate locurile unde
+apare sigla folosesc componenta `BrandMark`.
 
 Culoarea și stilul (navy + auriu, tema de "registru oficial + ștampilă") sunt definite central în
 `src/app/globals.css`, dacă vreți să le ajustați ulterior.

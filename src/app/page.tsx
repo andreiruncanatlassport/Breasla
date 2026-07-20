@@ -1,41 +1,49 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useSettings } from "@/lib/settings/context";
+import Link from "next/link";
+import { ArrowRight, Search, ShieldCheck, Users, LockKeyhole, Newspaper, CalendarDays, FileCheck2, Handshake } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 import { LinkButton } from "@/components/ui/Button";
-import { BreaslaMark } from "@/components/ui/BreaslaMark";
+import { BrandMark } from "@/components/ui/BrandMark";
 import { RecentCompaniesTicker } from "@/components/RecentCompaniesTicker";
-import { ArrowRight, ShieldCheck, Users, LockKeyhole, Search, FileCheck2, Handshake } from "lucide-react";
+import { HomeStats } from "@/components/HomeStats";
+import { NewsCard, type NewsCardData } from "@/components/NewsCard";
+import { EventCard, type EventCardData } from "@/components/EventCard";
 
 const STEP_TINTS = ["bg-seal", "bg-teal", "bg-navy"];
-const STATS_TARGET = { firme: 2480, domenii: 61, judete: 42 };
 
-function useCountUp(target: number, durationMs = 1400) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    let raf: number;
-    const start = performance.now();
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / durationMs);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setValue(Math.round(target * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, durationMs]);
-  return value;
-}
+export default async function HomePage() {
+  const supabase = await createClient();
 
-export default function HomePage() {
-  const { t } = useSettings();
-  const firme = useCountUp(STATS_TARGET.firme);
-  const domenii = useCountUp(STATS_TARGET.domenii);
-  const judete = useCountUp(STATS_TARGET.judete);
+  const [
+    { count: firmeCount },
+    { count: domeniiCount },
+    { count: judeteCount },
+    { data: stiriData },
+    { data: evenimenteData },
+  ] = await Promise.all([
+    supabase.from("companies").select("id", { count: "exact", head: true }).eq("status", "approved"),
+    supabase.from("categories").select("id", { count: "exact", head: true }),
+    supabase.from("judete").select("cod", { count: "exact", head: true }),
+    supabase
+      .from("news_articles")
+      .select("slug, titlu, rezumat, imagine_url, published_at")
+      .eq("status", "publicat")
+      .order("published_at", { ascending: false })
+      .limit(3),
+    supabase
+      .from("events")
+      .select("slug, titlu, imagine_url, tip, locatie, online, data_inceput, status")
+      .eq("status", "publicat")
+      .gte("data_inceput", new Date().toISOString())
+      .order("data_inceput", { ascending: true })
+      .limit(3),
+  ]);
+
+  const stiri = (stiriData as NewsCardData[]) ?? [];
+  const evenimente = (evenimenteData as EventCardData[]) ?? [];
 
   return (
     <>
-      {/* ================= HERO ================= */}
+      {/* ================= HERO (trimis) ================= */}
       <section className="hero-wash relative overflow-hidden border-b border-line">
         <div aria-hidden className="absolute inset-0 grid-registry opacity-60" />
         <div
@@ -53,55 +61,40 @@ export default function HomePage() {
           @keyframes float-b { 0%,100% { transform: translateY(0); } 50% { transform: translateY(14px); } }
         `}</style>
 
-        <div className="relative mx-auto grid max-w-6xl gap-14 px-5 py-20 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-28">
+        <div className="relative mx-auto grid max-w-6xl gap-14 px-5 py-16 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-20">
           <div className="animate-fade-up">
             <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-seal to-ember px-3.5 py-1.5 text-white shadow-[var(--shadow-md)]">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-70" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
               </span>
-              <span className="stamp-label">{t.home.eyebrow}</span>
+              <span className="stamp-label">Registrul antreprenorilor din România</span>
             </div>
 
-            <h1 className="mt-6 max-w-xl text-[2.6rem] font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
-              Un singur loc unde <span className="text-gradient-seal">antreprenorii</span> din
-              România se găsesc unii pe alții.
+            <h1 className="mt-6 max-w-xl text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-ink sm:text-5xl">
+              Comunitatea unde <span className="text-gradient-seal">antreprenorii</span> din
+              România se găsesc, colaborează și cresc împreună.
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft sm:text-lg">
-              {t.home.subtitle}
+              Firme verificate prin ANAF, oportunități de colaborare, mesagerie directă între
+              membri și noutățile comunității — toate într-un singur loc.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
               <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
-                {t.home.ctaPrimary}
+                Înregistrează-ți firma
                 <ArrowRight className="h-4 w-4" />
               </LinkButton>
               <LinkButton href="/catalog" variant="secondary" size="lg">
                 <Search className="h-4 w-4" />
-                {t.home.ctaSecondary}
+                Caută în catalog
               </LinkButton>
             </div>
 
-            <div className="mt-12 flex flex-wrap gap-3">
-              <div className="rounded-2xl border border-line bg-surface/75 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
-                <p className="font-mono-num text-2xl font-bold text-ink">
-                  {firme.toLocaleString("ro-RO")}
-                </p>
-                <p className="mt-0.5 text-xs text-ink-soft">firme verificate</p>
-              </div>
-              <div className="rounded-2xl border border-line bg-surface/75 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
-                <p className="font-mono-num text-2xl font-bold text-seal">{domenii}</p>
-                <p className="mt-0.5 text-xs text-ink-soft">domenii</p>
-              </div>
-              <div className="rounded-2xl border border-line bg-surface/75 px-5 py-3.5 shadow-[var(--shadow-md)] backdrop-blur-sm">
-                <p className="font-mono-num text-2xl font-bold text-teal">{judete}</p>
-                <p className="mt-0.5 text-xs text-ink-soft">județe</p>
-              </div>
-            </div>
+            <HomeStats firme={firmeCount ?? 0} domenii={domeniiCount ?? 0} judete={judeteCount ?? 0} />
           </div>
 
-          {/* Sigiliul — piesa vizuala centrala */}
           <div className="relative flex justify-center md:justify-end">
             <div
               aria-hidden
@@ -116,13 +109,10 @@ export default function HomePage() {
               }}
             />
             <div className="glow-seal relative flex h-56 w-56 items-center justify-center rounded-full bg-surface sm:h-72 sm:w-72">
-              <BreaslaMark className="h-16 w-16 sm:h-20 sm:w-20" />
+              <BrandMark className="h-16 w-16 sm:h-20 sm:w-20" />
               <span className="absolute -bottom-3.5 rounded-full gradient-seal px-4 py-1.5 text-xs font-semibold text-white shadow-[var(--shadow-lg)]">
-                {t.home.stampLabel}
+                Verificat
               </span>
-            </div>
-            <div className="absolute -right-4 top-6 flex items-center gap-1.5 rounded-xl bg-navy px-3 py-2 text-xs font-semibold text-white shadow-[var(--shadow-lg)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-light" /> Recenzii verificate
             </div>
           </div>
         </div>
@@ -130,20 +120,74 @@ export default function HomePage() {
         <RecentCompaniesTicker />
       </section>
 
+      {/* ================= EVENIMENTE ================= */}
+      <section className="relative mx-auto max-w-6xl px-5 py-16">
+        <div className="flex items-end justify-between gap-4">
+          <div className="max-w-xl">
+            <p className="stamp-label text-seal">Ce urmează</p>
+            <h2 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+              <CalendarDays className="h-6 w-6 text-seal" strokeWidth={1.8} />
+              Evenimente
+            </h2>
+          </div>
+          <Link href="/evenimente" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+            Toate evenimentele →
+          </Link>
+        </div>
+
+        {evenimente.length === 0 ? (
+          <p className="mt-6 text-sm text-ink-soft">Niciun eveniment programat momentan.</p>
+        ) : (
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {evenimente.map((e) => (
+              <EventCard key={e.slug} event={e} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ================= STIRI ================= */}
+      <section className="relative border-y border-line bg-surface/50">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <div className="flex items-end justify-between gap-4">
+            <div className="max-w-xl">
+              <p className="stamp-label text-seal">Comunitatea</p>
+              <h2 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+                <Newspaper className="h-6 w-6 text-seal" strokeWidth={1.8} />
+                Știri
+              </h2>
+            </div>
+            <Link href="/stiri" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+              Toate știrile →
+            </Link>
+          </div>
+
+          {stiri.length === 0 ? (
+            <p className="mt-6 text-sm text-ink-soft">Nicio știre publicată momentan.</p>
+          ) : (
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              {stiri.map((s) => (
+                <NewsCard key={s.slug} article={s} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ================= CUM FUNCTIONEAZA ================= */}
       <section id="cum-functioneaza" className="relative mx-auto max-w-6xl px-5 py-24">
         <div className="max-w-xl">
           <p className="stamp-label text-seal">Procesul</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-            {t.home.howTitle}
+            Trei pași până la primul colaborator
           </h2>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {[
-            { n: "01", icon: FileCheck2, title: t.home.step1Title, body: t.home.step1Body },
-            { n: "02", icon: Users, title: t.home.step2Title, body: t.home.step2Body },
-            { n: "03", icon: Handshake, title: t.home.step3Title, body: t.home.step3Body },
+            { n: "01", icon: FileCheck2, title: "Înregistrează-ți firma", body: "Completezi CUI-ul, restul datelor se preiau automat de la ANAF." },
+            { n: "02", icon: Users, title: "Explorează comunitatea", body: "Catalog de firme, membri, oportunități deschise și știri din breaslă." },
+            { n: "03", icon: Handshake, title: "Colaborează", body: "Trimiți mesaje, răspunzi la oportunități și construiești parteneriate." },
           ].map((step, i) => (
             <div
               key={step.n}
@@ -173,7 +217,7 @@ export default function HomePage() {
 
       {/* ================= INCREDERE ================= */}
       <section className="relative overflow-hidden border-y border-line bg-navy">
-        <BreaslaMark variant="white" className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 opacity-[0.06] rotate-6" />
+        <BrandMark variant="white" className="pointer-events-none absolute -right-16 -bottom-16 h-80 w-80 opacity-[0.06] rotate-6" />
         <div
           aria-hidden
           className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full opacity-15 blur-3xl gradient-seal"
@@ -187,15 +231,15 @@ export default function HomePage() {
           <div className="max-w-xl">
             <p className="stamp-label text-seal-light">Diferența</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              {t.home.trustTitle}
+              O breaslă, nu doar un catalog
             </h2>
           </div>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {[
-              { icon: ShieldCheck, text: t.home.trust1 },
-              { icon: LockKeyhole, text: t.home.trust2 },
-              { icon: Users, text: t.home.trust3 },
+              { icon: ShieldCheck, text: "Fiecare firmă e verificată prin ANAF înainte să apară public în catalog." },
+              { icon: LockKeyhole, text: "Datele personale ale reprezentanților rămân private — vizibile doar prin conexiune sau mesaj direct." },
+              { icon: Users, text: "Membri, oportunități și evenimente reale, nu doar un formular de contact." },
             ].map((item, i) => (
               <div
                 key={i}
@@ -214,7 +258,7 @@ export default function HomePage() {
       {/* ================= CTA FINAL ================= */}
       <section className="hero-wash relative overflow-hidden">
         <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
-          <BreaslaMark className="mx-auto h-14 w-14 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
+          <BrandMark className="mx-auto h-14 w-14 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
           <h2 className="mt-6 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Gata să-ți găsești următorul colaborator?
           </h2>
@@ -223,7 +267,7 @@ export default function HomePage() {
           </p>
           <div className="mt-8 flex justify-center gap-3">
             <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
-              {t.home.ctaPrimary}
+              Înregistrează-ți firma
               <ArrowRight className="h-4 w-4" />
             </LinkButton>
           </div>

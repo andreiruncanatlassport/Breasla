@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
 export const metadata: Metadata = {
-  title: "Breasla.ro — Registrul antreprenorilor din România",
+  title: "Rețeaua Antreprenorilor Creștini — Registrul antreprenorilor din România",
   description:
     "Catalog verificat prin ANAF cu firme din România, organizat pe domenii și zone, pentru a găsi rapid colaboratori și subcontractanți de încredere.",
 };

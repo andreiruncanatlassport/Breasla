@@ -30,7 +30,7 @@ interface SettingsContextValue extends StoredSettings {
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
 
-export const SETTINGS_STORAGE_KEY = "breasla-settings";
+export const SETTINGS_STORAGE_KEY = "rac-settings";
 
 const DEFAULT_SETTINGS: StoredSettings = {
   locale: "ro",

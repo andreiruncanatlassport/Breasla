@@ -9,6 +9,7 @@ import { VerifiedStamp } from "@/components/ui/VerifiedStamp";
 import { ConnectButton } from "@/components/ConnectButton";
 import { LinkButton } from "@/components/ui/Button";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { StartConversationButton } from "@/components/StartConversationButton";
 import { ReviewSection, type MotivBlocare } from "@/components/ReviewSection";
 import { etichetaProiectMarime } from "@/lib/company-attrs";
 import type { Company, Profile, CompanyContact, CompanyProject } from "@/types/database";
@@ -252,7 +253,7 @@ export default async function CompanyPage({
               <div className="min-w-0 flex-1">
                 <p className="stamp-label text-seal">Reducere pentru membrii Breslei</p>
                 <p className="mt-1.5 font-semibold text-ink">
-                  {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din Breasla`}
+                  {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din Rețeaua Antreprenorilor Creștini`}
                 </p>
                 {company.discount_conditii && (
                   <p className="mt-1 text-sm text-ink-soft">{company.discount_conditii}</p>
@@ -373,6 +374,14 @@ export default async function CompanyPage({
               <LinkButton href={`/dashboard/cereri/noua?catre=${id}`} variant="secondary" size="sm">
                 <FileText className="h-3.5 w-3.5" /> Cere ofertă
               </LinkButton>
+            )}
+            {user?.id !== company.owner_id && (
+              <StartConversationButton
+                profileId={company.owner_id}
+                numeDestinatar={profil?.nume_complet ?? company.denumire}
+                autentificat={Boolean(user)}
+                size="sm"
+              />
             )}
           </div>
         </Card>
