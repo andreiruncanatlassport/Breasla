@@ -58,6 +58,13 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
 
         {membru.bio && <p className="mt-5 max-w-md text-sm leading-relaxed text-ink-soft">{membru.bio}</p>}
 
+        {membru.cauta_suport && (
+          <div className="mt-5 max-w-md rounded-xl border border-seal/25 bg-seal/6 p-4 text-left">
+            <p className="stamp-label text-seal">Caută ajutor la</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink">{membru.cauta_suport}</p>
+          </div>
+        )}
+
         {user?.id !== membru.id && (
           <div className="mt-7">
             <StartConversationButton profileId={membru.id} numeDestinatar={membru.nume_complet} autentificat={Boolean(user)} />

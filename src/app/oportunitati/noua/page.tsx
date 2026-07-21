@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import { Send, Loader2, Camera, X, ImagePlus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { incarcaImagineFirma } from "@/lib/upload";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, Select, Textarea, FieldError, FieldHint, FieldGroup } from "@/components/ui/Field";
+import { SkeletonPage } from "@/components/ui/Skeleton";
 import { useSettings } from "@/lib/settings/context";
 import type { Category, Judet } from "@/types/database";
 
@@ -39,6 +41,8 @@ export default function OportunitateNouaPage() {
   const [seTrimite, setSeTrimite] = useState(false);
   const [seIncarcaImagine, setSeIncarcaImagine] = useState(false);
   const [eroare, setEroare] = useState<string | null>(null);
+  const [verificareGata, setVerificareGata] = useState(false);
+  const [autentificat, setAutentificat] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -54,7 +58,11 @@ export default function OportunitateNouaPage() {
       .order("nume")
       .then(({ data }) => setJudete((data as Judet[]) ?? []));
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
+      if (!user) {
+        setVerificareGata(true);
+        return;
+      }
+      setAutentificat(true);
       const { data } = await supabase
         .from("companies")
         .select("id")
@@ -63,6 +71,7 @@ export default function OportunitateNouaPage() {
         .limit(1)
         .maybeSingle();
       setCompanyId((data as { id: string } | null)?.id ?? null);
+      setVerificareGata(true);
     });
   }, []);
 
@@ -115,6 +124,41 @@ export default function OportunitateNouaPage() {
     } finally {
       setSeTrimite(false);
     }
+  }
+
+  if (!verificareGata) {
+    return <div className="mx-auto max-w-2xl px-5 py-12"><SkeletonPage /></div>;
+  }
+
+  if (!autentificat) {
+    return (
+      <div className="mx-auto max-w-2xl px-5 py-12">
+        <div className="block-inset p-6 text-center">
+          <p className="text-sm text-ink-soft">
+            <Link href="/login" className="font-semibold text-seal hover:underline">
+              {t.opportunities.loginLink}
+            </Link>{" "}
+            {t.opportunities.loginToPostSuffix}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!companyId) {
+    return (
+      <div className="mx-auto max-w-2xl px-5 py-12">
+        <div className="block-inset p-6 text-center">
+          <p className="text-sm text-ink-soft">
+            {t.opportunities.needCompany}{" "}
+            <Link href="/inregistrare/firma" className="font-semibold text-seal hover:underline">
+              {t.opportunities.registerLink}
+            </Link>
+            .
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

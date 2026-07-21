@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { UserRound, Building2 } from "lucide-react";
+import { UserRound, Building2, HelpingHand } from "lucide-react";
 
 export interface MemberCardData {
   id: string;
@@ -8,6 +8,7 @@ export interface MemberCardData {
   avatar_url: string | null;
   titlu: string | null;
   oras: string | null;
+  cauta_suport?: string | null;
   company_denumire: string | null;
   company_slug: string | null;
 }
@@ -34,6 +35,11 @@ export function MemberCard({ member }: { member: MemberCardData }) {
           </p>
         )}
         {member.oras && <p className="mt-1 text-xs text-ink-soft/70">{member.oras}</p>}
+        {member.cauta_suport && (
+          <p className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-seal/10 px-2 py-0.5 text-[10px] font-semibold text-seal">
+            <HelpingHand className="h-2.5 w-2.5" /> caută ajutor
+          </p>
+        )}
       </article>
     </Link>
   );

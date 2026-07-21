@@ -43,7 +43,7 @@ function mesajBlocare(motiv: MotivBlocare): { text: string; actiune?: { href: st
     case "fara_firma":
       return {
         text: "Ca să lași o recenzie, trebuie să ai o firmă înregistrată în Rețeaua Antreprenorilor Creștini.",
-        actiune: { href: "/inregistrare", eticheta: "Înregistrează-ți firma" },
+        actiune: { href: "/inregistrare/firma", eticheta: "Înregistrează-ți firma" },
       };
     case "firma_neverificata":
       return { text: "Firma ta trebuie să fie verificată înainte de a putea lăsa recenzii." };

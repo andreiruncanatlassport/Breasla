@@ -17,12 +17,14 @@ export default async function MembriPage({
 
   let query = supabase
     .from("member_directory")
-    .select("id, nume_complet, avatar_url, titlu, oras, company_denumire, company_slug")
+    .select("id, nume_complet, avatar_url, titlu, oras, cauta_suport, company_denumire, company_slug")
     .order("created_at", { ascending: false })
     .limit(90);
 
   if (q) {
-    query = query.or(`nume_complet.ilike.%${q}%,company_denumire.ilike.%${q}%,titlu.ilike.%${q}%`);
+    query = query.or(
+      `nume_complet.ilike.%${q}%,company_denumire.ilike.%${q}%,titlu.ilike.%${q}%,cauta_suport.ilike.%${q}%`
+    );
   }
 
   const { data } = await query;

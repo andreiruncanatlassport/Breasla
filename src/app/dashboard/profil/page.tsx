@@ -18,6 +18,7 @@ interface ProfilForm {
   titlu: string | null;
   bio: string | null;
   oras: string | null;
+  cauta_suport: string | null;
   public_vizibil: boolean;
 }
 
@@ -39,7 +40,7 @@ export default function DashboardProfilPage() {
       }
       const { data } = await supabase
         .from("profiles")
-        .select("id, nume_complet, avatar_url, titlu, bio, oras, public_vizibil")
+        .select("id, nume_complet, avatar_url, titlu, bio, oras, cauta_suport, public_vizibil")
         .eq("id", user.id)
         .single();
       setProfil(data as ProfilForm);
@@ -78,6 +79,7 @@ export default function DashboardProfilPage() {
           titlu: profil.titlu,
           bio: profil.bio,
           oras: profil.oras,
+          cauta_suport: profil.cauta_suport,
           avatar_url: profil.avatar_url,
           public_vizibil: profil.public_vizibil,
         }),
@@ -170,6 +172,20 @@ export default function DashboardProfilPage() {
               placeholder="Câteva rânduri despre experiența ta..."
               maxLength={600}
             />
+          </div>
+
+          <div>
+            <Label>La ce ajutor ai nevoie din partea comunității?</Label>
+            <Textarea
+              value={profil.cauta_suport ?? ""}
+              onChange={(e) => update({ cauta_suport: e.target.value })}
+              placeholder="Ex: networking, consultanță pe vânzări sau marketing, recomandări de contabil..."
+              maxLength={300}
+            />
+            <FieldHint>
+              Personal, nu al firmei — despre tine ca persoană, nu despre ce oferă firma ta. Ajută
+              alți membri să știe cum te pot sprijini.
+            </FieldHint>
           </div>
         </FieldGroup>
 

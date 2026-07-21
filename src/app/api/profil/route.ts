@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 const MAX_BIO = 600;
+const MAX_CAUTA_SUPORT = 300;
 
 /** Actualizeaza campurile publice ale profilului (pagina de Membri). */
 export async function PATCH(request: Request) {
@@ -22,6 +23,9 @@ export async function PATCH(request: Request) {
   if (typeof body.titlu === "string") update.titlu = body.titlu.trim().slice(0, 120) || null;
   if (typeof body.bio === "string") update.bio = body.bio.trim().slice(0, MAX_BIO) || null;
   if (typeof body.oras === "string") update.oras = body.oras.trim().slice(0, 120) || null;
+  if (typeof body.cauta_suport === "string") {
+    update.cauta_suport = body.cauta_suport.trim().slice(0, MAX_CAUTA_SUPORT) || null;
+  }
   if (typeof body.avatar_url === "string" || body.avatar_url === null) update.avatar_url = body.avatar_url;
   if (typeof body.public_vizibil === "boolean") update.public_vizibil = body.public_vizibil;
   if (typeof body.nume_complet === "string" && body.nume_complet.trim()) {
@@ -36,7 +40,7 @@ export async function PATCH(request: Request) {
     .from("profiles")
     .update(update as never)
     .eq("id", user.id)
-    .select("id, nume_complet, avatar_url, titlu, bio, oras, public_vizibil")
+    .select("id, nume_complet, avatar_url, titlu, bio, oras, cauta_suport, public_vizibil")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Label, Input, Select, FieldHint } from "@/components/ui/Field";
@@ -31,6 +32,7 @@ function buildTree(flat: Category[]): CategoryNode[] {
 
 export function StepDomenii({ form, update, onNext, onBack }: Props) {
   const [tree, setTree] = useState<CategoryNode[]>([]);
+  const [cautare, setCautare] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
@@ -67,17 +69,46 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
   const areDomeniu = form.categorii.length > 0;
   const areDomeniuPrincipal = form.categorii.some((c) => c.is_primary);
 
+  // filtram arborele dupa textul cautat — pastram un parinte daca el insusi
+  // se potriveste, sau daca oricare dintre copiii lui se potriveste
+  const q = cautare.trim().toLowerCase();
+  const treeFiltrat = q
+    ? tree
+        .map((parent) => {
+          const parentMatch = parent.name_ro.toLowerCase().includes(q);
+          const childrenMatch = parent.children.filter((c) => c.name_ro.toLowerCase().includes(q));
+          if (parentMatch) return parent;
+          if (childrenMatch.length > 0) return { ...parent, children: childrenMatch };
+          return null;
+        })
+        .filter((p): p is CategoryNode => p !== null)
+    : tree;
+
   return (
     <div className="space-y-6">
       <div>
         <Label required>Domenii de activitate</Label>
         <FieldHint>
-          Bifează toate domeniile relevante. Alege un domeniu principal (radio) — el va apărea
-          primul pe profilul firmei.
+          Bifează toate domeniile relevante (poți bifa oricâte, independent unele de altele —
+          bifarea unei categorii-părinte nu bifează automat subcategoriile). Apoi alege un singur
+          domeniu principal dintre cele bifate — el va apărea primul pe profilul firmei.
         </FieldHint>
 
+        <div className="relative mt-3">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft/50" />
+          <Input
+            value={cautare}
+            onChange={(e) => setCautare(e.target.value)}
+            placeholder="Caută un domeniu..."
+            className="pl-9"
+          />
+        </div>
+
         <div className="mt-3 max-h-96 space-y-4 overflow-y-auto rounded-lg border border-line bg-surface p-4">
-          {tree.map((parent) => (
+          {treeFiltrat.length === 0 && (
+            <p className="text-sm text-ink-soft">Niciun domeniu găsit pentru „{cautare}”.</p>
+          )}
+          {treeFiltrat.map((parent) => (
             <div key={parent.id}>
               <label className="flex items-center gap-2 text-sm font-semibold text-ink">
                 <input

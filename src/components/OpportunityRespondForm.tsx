@@ -45,7 +45,7 @@ export function OpportunityRespondForm({
       <div className="block-inset p-5 text-center">
         <p className="text-sm text-ink-soft">
           {t.opportunities.needCompany}{" "}
-          <Link href="/inregistrare" className="font-semibold text-seal hover:underline">
+          <Link href="/inregistrare/firma" className="font-semibold text-seal hover:underline">
             {t.opportunities.registerLink}
           </Link>
           .

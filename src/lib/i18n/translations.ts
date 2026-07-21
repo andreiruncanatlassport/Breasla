@@ -1,4 +1,12 @@
 interface Dictionary {
+  mobileNav: {
+    home: string;
+    companies: string;
+    members: string;
+    messages: string;
+    account: string;
+    login: string;
+  };
   nav: {
     catalog: string;
     opportunities: string;
@@ -16,6 +24,8 @@ interface Dictionary {
   home: {
     eyebrow: string;
     title: string;
+    titleAccent: string;
+    titleRest: string;
     subtitle: string;
     ctaPrimary: string;
     ctaSecondary: string;
@@ -42,6 +52,12 @@ interface Dictionary {
     trust3: string;
     ctaFinalTitle: string;
     ctaFinalBody: string;
+    quickNavTitle: string;
+    quickNavFirme: string;
+    quickNavMembri: string;
+    quickNavOportunitati: string;
+    quickNavEvenimente: string;
+    quickNavStiri: string;
   };
   footer: {
     tagline: string;
@@ -165,6 +181,7 @@ interface Dictionary {
     responsePlaceholder: string;
     respondError: string;
     loginToRespondSuffix: string;
+    loginToPostSuffix: string;
     postSubtitle: string;
     sectionAbout: string;
     fieldTitle: string;
@@ -217,6 +234,14 @@ interface Dictionary {
 
 export const translations: Record<"ro" | "en", Dictionary> = {
   ro: {
+    mobileNav: {
+      home: "Acasă",
+      companies: "Firme",
+      members: "Membri",
+      messages: "Mesaje",
+      account: "Cont",
+      login: "Intră",
+    },
     nav: {
       catalog: "Catalog firme",
       opportunities: "Oportunități",
@@ -226,17 +251,19 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       messages: "Mesaje",
       howItWorks: "Cum funcționează",
       login: "Autentificare",
-      register: "Înregistrează firma",
+      register: "Creează cont",
       dashboard: "Contul meu",
       admin: "Administrare",
       logout: "Deconectare",
     },
     home: {
-      eyebrow: "Registrul antreprenorilor din România",
-      title: "Comunitatea unde antreprenorii din România se găsesc, colaborează și cresc împreună.",
+      eyebrow: "Comunitatea Antreprenorilor Creștini",
+      title: "Antreprenori Creștini din România",
+      titleAccent: "Antreprenori Creștini",
+      titleRest: "din România",
       subtitle:
-        "Firme verificate prin ANAF, oportunități de colaborare, mesagerie directă între membri și noutățile comunității — toate într-un singur loc.",
-      ctaPrimary: "Înregistrează-ți firma",
+        "Comunitatea Antreprenorilor Creștini — locul unde antreprenorii cu aceleași valori se găsesc unii pe alții, colaborează și cresc împreună. Firme verificate prin ANAF, oportunități, mesaje directe și evenimente, toate într-un singur loc.",
+      ctaPrimary: "Creează-ți contul gratuit",
       ctaSecondary: "Caută în catalog",
       stampLabel: "Verificat prin ANAF",
       eventsEyebrow: "Ce urmează",
@@ -261,6 +288,12 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       trust3: "Membri, oportunități și evenimente reale, nu doar un formular de contact.",
       ctaFinalTitle: "Gata să-ți găsești următorul colaborator?",
       ctaFinalBody: "Înregistrarea durează câteva minute. Datele firmei se preiau automat de la ANAF.",
+      quickNavTitle: "Explorează comunitatea",
+      quickNavFirme: "Firme",
+      quickNavMembri: "Membri",
+      quickNavOportunitati: "Oportunități",
+      quickNavEvenimente: "Evenimente",
+      quickNavStiri: "Știri",
     },
     footer: {
       tagline: "Registrul antreprenorilor din România — găsește colaboratori verificați, în orice domeniu.",
@@ -384,6 +417,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       responsePlaceholder: "Descrie pe scurt cum poți ajuta, experiența relevantă...",
       respondError: "Scrie un mesaj pentru firma care a postat oportunitatea.",
       loginToRespondSuffix: "ca să răspunzi la această oportunitate.",
+      loginToPostSuffix: "ca să postezi o oportunitate.",
       postSubtitle: "Vizibilă tuturor firmelor din Rețeaua Antreprenorilor Creștini, până când o închizi. Diferă de o Cerere de ofertă (trimisă privat către firme alese de tine) — aici oricine poate răspunde.",
       sectionAbout: "Despre ce e vorba",
       fieldTitle: "Titlu",
@@ -434,6 +468,14 @@ export const translations: Record<"ro" | "en", Dictionary> = {
     },
   },
   en: {
+    mobileNav: {
+      home: "Home",
+      companies: "Companies",
+      members: "Members",
+      messages: "Messages",
+      account: "Account",
+      login: "Log in",
+    },
     nav: {
       catalog: "Company catalog",
       opportunities: "Opportunities",
@@ -443,17 +485,19 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       messages: "Messages",
       howItWorks: "How it works",
       login: "Log in",
-      register: "Register your company",
+      register: "Create account",
       dashboard: "My account",
       admin: "Admin",
       logout: "Log out",
     },
     home: {
-      eyebrow: "Romania's entrepreneur registry",
-      title: "The community where entrepreneurs across Romania find each other, collaborate, and grow together.",
+      eyebrow: "The Christian Entrepreneurs Community",
+      title: "Christian Entrepreneurs of Romania",
+      titleAccent: "Christian Entrepreneurs",
+      titleRest: "of Romania",
       subtitle:
-        "ANAF-verified companies, collaboration opportunities, direct messaging between members, and community news — all in one place.",
-      ctaPrimary: "Register your company",
+        "The Christian Entrepreneurs Community — where entrepreneurs who share the same values find each other, collaborate, and grow together. ANAF-verified companies, opportunities, direct messages and events, all in one place.",
+      ctaPrimary: "Create your free account",
       ctaSecondary: "Browse the catalog",
       stampLabel: "Verified via ANAF",
       eventsEyebrow: "Coming up",
@@ -478,6 +522,12 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       trust3: "Real members, opportunities, and events — not just a contact form.",
       ctaFinalTitle: "Ready to find your next collaborator?",
       ctaFinalBody: "Registration takes a few minutes. Company data is pulled automatically from ANAF.",
+      quickNavTitle: "Explore the community",
+      quickNavFirme: "Companies",
+      quickNavMembri: "Members",
+      quickNavOportunitati: "Opportunities",
+      quickNavEvenimente: "Events",
+      quickNavStiri: "News",
     },
     footer: {
       tagline: "Romania's entrepreneur registry — find verified collaborators, in any field.",
@@ -601,6 +651,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       responsePlaceholder: "Briefly describe how you can help, relevant experience...",
       respondError: "Write a message for the company that posted this opportunity.",
       loginToRespondSuffix: "to respond to this opportunity.",
+      loginToPostSuffix: "to post an opportunity.",
       postSubtitle: "Visible to every company in the Christian Entrepreneurs Network, until you close it. Different from a Request for Quote (sent privately to companies you choose) — here, anyone can respond.",
       sectionAbout: "What it's about",
       fieldTitle: "Title",

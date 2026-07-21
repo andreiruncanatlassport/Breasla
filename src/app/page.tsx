@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Search, ShieldCheck, Users, LockKeyhole, Newspaper, CalendarDays, FileCheck2, Handshake } from "lucide-react";
+import { ArrowRight, Search, ShieldCheck, Users, LockKeyhole, Newspaper, CalendarDays, FileCheck2, Handshake, Building2, Briefcase } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { LinkButton } from "@/components/ui/Button";
@@ -96,8 +96,10 @@ export default async function HomePage() {
               <span className="stamp-label">{t.home.eyebrow}</span>
             </div>
 
-            <h1 className="mt-6 max-w-xl text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-              {t.home.title}
+            <h1 className="mt-6 max-w-xl text-5xl font-bold leading-[1.02] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+              <span className="text-gradient-seal">{t.home.titleAccent}</span>
+              <br />
+              {t.home.titleRest}
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft sm:text-lg">
@@ -141,6 +143,31 @@ export default async function HomePage() {
         </div>
 
         <RecentCompaniesTicker />
+      </section>
+
+      {/* ================= NAVIGARE RAPIDA ================= */}
+      <section className="border-b border-line bg-surface/40">
+        <div className="mx-auto max-w-6xl px-5 py-6">
+          <p className="stamp-label mb-3 text-ink-soft">{t.home.quickNavTitle}</p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+            {[
+              { href: "/catalog", label: t.home.quickNavFirme, icon: Building2 },
+              { href: "/membri", label: t.home.quickNavMembri, icon: Users },
+              { href: "/oportunitati", label: t.home.quickNavOportunitati, icon: Briefcase },
+              { href: "/evenimente", label: t.home.quickNavEvenimente, icon: CalendarDays },
+              { href: "/stiri", label: t.home.quickNavStiri, icon: Newspaper },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="lift-on-hover flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3.5 text-sm font-semibold text-ink transition hover:border-seal/40"
+              >
+                <item.icon className="h-4 w-4 shrink-0 text-seal" strokeWidth={1.8} />
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ================= EVENIMENTE ================= */}

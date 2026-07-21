@@ -165,7 +165,21 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
       </div>
 
       <div>
-        <Label>Deservești și alte județe explicit? (opțional)</Label>
+        <div className="flex items-center justify-between">
+          <Label>Deservești și alte județe explicit? (opțional)</Label>
+          <button
+            type="button"
+            onClick={() =>
+              update({
+                judete_suplimentare:
+                  form.judete_suplimentare.length === judete.length ? [] : judete.map((j) => j.cod),
+              })
+            }
+            className="shrink-0 text-xs font-semibold text-seal hover:underline"
+          >
+            {form.judete_suplimentare.length === judete.length ? "Deselectează tot" : "Selectează tot"}
+          </button>
+        </div>
         <div className="mt-2 grid max-h-40 grid-cols-2 gap-x-4 gap-y-1.5 overflow-y-auto rounded-lg border border-line bg-surface p-3 sm:grid-cols-3">
           {judete.map((j) => (
             <label key={j.cod} className="flex items-center gap-2 text-sm text-ink">

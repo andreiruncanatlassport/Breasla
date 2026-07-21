@@ -113,7 +113,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Scrie un mesaj înainte de a trimite." }, { status: 400 });
   }
 
-  const { data: tinta } = await supabase
+  // Folosim service role aici — RLS pe `profiles` restrictioneaza vizibilitatea
+  // datelor la profil propriu/conexiune acceptata, dar mesageria e deschisa
+  // intre orice membri, deci verificarea tintei trebuie sa ocoleasca acea regula.
+  const admin = createServiceRoleClient();
+  const { data: tinta } = await admin
     .from("profiles")
     .select("id, nume_complet, activ")
     .eq("id", profileId)
@@ -147,7 +151,6 @@ export async function POST(request: Request) {
     // crearea conversatiei + participantilor se face cu service role, pentru
     // ca niciun user nu are policy de insert direct pe aceste doua tabele
     // (evitam conversatii "orfane" create de oricine, fara al doilea participant).
-    const admin = createServiceRoleClient();
     const { data: convNoua, error: convErr } = await admin
       .from("conversations")
       .insert({} as never)

@@ -151,7 +151,7 @@ export default async function DashboardPage({
           <p className="stamp-label text-seal">Panoul tău</p>
           <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Contul meu</h1>
         </div>
-        <LinkButton href="/inregistrare" variant="secondary" size="sm">Adaugă altă firmă</LinkButton>
+        <LinkButton href="/inregistrare/firma" variant="secondary" size="sm">Adaugă altă firmă</LinkButton>
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -165,7 +165,15 @@ export default async function DashboardPage({
         <SectionLabel icon={<Building2 className="h-3.5 w-3.5" />}>Firmele mele</SectionLabel>
         <div className="mt-3 space-y-3">
           {companies.length === 0 && (
-            <p className="text-sm text-ink-soft">Nu ai nicio firmă înregistrată încă.</p>
+            <div className="block-inset flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-ink-soft">
+                Nu ai nicio firmă înregistrată — nicio problemă, poți folosi contul și așa. Dacă
+                vrei, poți adăuga oricând o firmă.
+              </p>
+              <LinkButton href="/inregistrare/firma" variant="seal" size="sm" className="shrink-0">
+                Adaugă o firmă
+              </LinkButton>
+            </div>
           )}
           {companies.map((c) => (
             <Card key={c.id} className="lift-on-hover flex items-center justify-between">

@@ -19,6 +19,12 @@ export interface Profile {
   termeni_versiune: string | null;
   email_verificat: boolean;
   email_verificat_la: string | null;
+  avatar_url: string | null;
+  titlu: string | null;
+  bio: string | null;
+  oras: string | null;
+  cauta_suport: string | null;
+  public_vizibil: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -453,6 +459,7 @@ export interface MemberDirectoryEntry {
   titlu: string | null;
   bio: string | null;
   oras: string | null;
+  cauta_suport: string | null;
   created_at: string;
   company_id: string | null;
   company_denumire: string | null;
