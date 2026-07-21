@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, UserRound, Building2, MapPin } from "lucide-react";
+import { ArrowLeft, UserRound, Building2, MapPin, Link2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { StartConversationButton } from "@/components/StartConversationButton";
@@ -41,27 +41,53 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
         {membru.titlu && <p className="mt-1 text-sm font-medium text-seal">{membru.titlu}</p>}
 
         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-ink-soft">
-          {membru.company_denumire && (
+          {membru.company_denumire ? (
             <Link
               href={membru.company_slug ? `/firma/${membru.company_slug}` : `/firma/${membru.company_id}`}
               className="inline-flex items-center gap-1.5 hover:text-seal"
             >
               <Building2 className="h-3.5 w-3.5" /> {membru.company_denumire}
             </Link>
+          ) : (
+            membru.firma_declarata && (
+              <span className="inline-flex items-center gap-1.5">
+                <Building2 className="h-3.5 w-3.5" /> {membru.firma_declarata}
+              </span>
+            )
           )}
-          {membru.oras && (
+          {(membru.oras || membru.judet_nume) && (
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5" /> {membru.oras}
+              <MapPin className="h-3.5 w-3.5" /> {[membru.oras, membru.judet_nume].filter(Boolean).join(", ")}
             </span>
           )}
         </div>
 
         {membru.bio && <p className="mt-5 max-w-md text-sm leading-relaxed text-ink-soft">{membru.bio}</p>}
 
-        {membru.cauta_suport && (
+        {membru.linkedin_url && (
+          <a
+            href={membru.linkedin_url.startsWith("http") ? membru.linkedin_url : `https://${membru.linkedin_url}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-seal hover:underline"
+          >
+            <Link2 className="h-4 w-4" /> LinkedIn
+          </a>
+        )}
+
+        {(membru.cauta_suport_tags_text || membru.cauta_suport) && (
           <div className="mt-5 max-w-md rounded-xl border border-seal/25 bg-seal/6 p-4 text-left">
             <p className="stamp-label text-seal">Caută ajutor la</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink">{membru.cauta_suport}</p>
+            {membru.cauta_suport_tags_text && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {membru.cauta_suport_tags_text.split(", ").filter(Boolean).map((tag) => (
+                  <span key={tag} className="rounded-full bg-seal/15 px-2.5 py-1 text-xs font-semibold text-seal">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+            {membru.cauta_suport && <p className="mt-2 text-sm leading-relaxed text-ink">{membru.cauta_suport}</p>}
           </div>
         )}
 

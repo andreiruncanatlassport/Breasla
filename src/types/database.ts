@@ -24,6 +24,10 @@ export interface Profile {
   bio: string | null;
   oras: string | null;
   cauta_suport: string | null;
+  cauta_suport_category_ids: string[];
+  judet_cod: string | null;
+  firma_declarata: string | null;
+  linkedin_url: string | null;
   public_vizibil: boolean;
   created_at: string;
   updated_at: string;
@@ -460,12 +464,20 @@ export interface MemberDirectoryEntry {
   titlu: string | null;
   bio: string | null;
   oras: string | null;
+  judet_cod: string | null;
+  judet_nume: string | null;
+  firma_declarata: string | null;
+  linkedin_url: string | null;
   cauta_suport: string | null;
+  cauta_suport_category_ids: string[];
+  cauta_suport_tags_text: string;
   created_at: string;
   company_id: string | null;
   company_denumire: string | null;
   company_slug: string | null;
   company_logo_url: string | null;
+  company_descriere: string | null;
+  company_domenii_text: string;
 }
 
 // ============================================================================

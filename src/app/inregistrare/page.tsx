@@ -17,7 +17,7 @@ export default function InregistrarePage() {
   const apoiFirma = searchParams.get("apoi") === "firma";
 
   const [verificareSesiune, setVerificareSesiune] = useState(true);
-  const [etapa, setEtapa] = useState<"cont" | "profil" | "final">("cont");
+  const etapa = (searchParams.get("etapa") as "cont" | "profil" | "final" | null) ?? "cont";
 
   useEffect(() => {
     const supabase = createClient();
@@ -32,9 +32,15 @@ export default function InregistrarePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // scroll sus la fiecare schimbare de etapa (si la navigare inapoi din browser)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [etapa]);
+
   function dupaCont() {
-    // profilul public se completeaza imediat dupa cont — asa te gasesc ceilalti
-    setEtapa("profil");
+    // profilul public se completeaza imediat dupa cont — asa te gasesc ceilalti.
+    // push (nu replace) ca back-ul din browser sa te duca la pasul anterior.
+    router.push(`/inregistrare?etapa=profil${apoiFirma ? "&apoi=firma" : ""}`);
   }
 
   function dupaProfil() {
@@ -42,7 +48,7 @@ export default function InregistrarePage() {
       router.push("/inregistrare/firma");
       return;
     }
-    setEtapa("final");
+    router.push("/inregistrare?etapa=final");
   }
 
   if (verificareSesiune) {

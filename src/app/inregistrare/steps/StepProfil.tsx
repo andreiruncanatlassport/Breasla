@@ -1,28 +1,56 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Camera, Loader2, UserRound, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { incarcaAvatarProfil } from "@/lib/upload";
-import { Input, Label, Textarea, FieldError, FieldHint } from "@/components/ui/Field";
+import { Input, Label, Select, Textarea, FieldError, FieldHint } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { TagPicker, type TagOption } from "@/components/TagPicker";
+import type { Judet } from "@/types/database";
 
 /**
- * Pasul de profil public, imediat dupa crearea contului. Prioritatea
- * comunitatii e ca membrii sa se gaseasca usor unii pe altii — un profil
- * completat (poza, rol, oras, la ce ajutor are nevoie) face exact asta.
+ * Pasul de profil public, imediat dupa crearea contului — obligatoriu, nu
+ * doar recomandat. Prioritatea comunitatii e ca membrii sa se gaseasca usor
+ * unii pe altii, iar un profil incomplet nu ajuta pe nimeni. Doar poza si
+ * telefonul (deja cerut la pasul de cont) raman optionale.
  */
 export function StepProfil({ onDone }: { onDone: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [titlu, setTitlu] = useState("");
+  const [firmaDeclarata, setFirmaDeclarata] = useState("");
+  const [judetCod, setJudetCod] = useState("");
   const [oras, setOras] = useState("");
   const [bio, setBio] = useState("");
-  const [cautaSuport, setCautaSuport] = useState("");
+  const [tagIds, setTagIds] = useState<string[]>([]);
+  const [altText, setAltText] = useState("");
+
+  const [judete, setJudete] = useState<Judet[]>([]);
+  const [optiuniTag, setOptiuniTag] = useState<TagOption[]>([]);
   const [seIncarcaImagine, setSeIncarcaImagine] = useState(false);
   const [seSalveaza, setSeSalveaza] = useState(false);
   const [eroare, setEroare] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("judete")
+      .select("cod, nume")
+      .order("nume")
+      .then(({ data }) => setJudete((data as Judet[]) ?? []));
+    supabase
+      .from("categories")
+      .select("id, name_ro")
+      .is("parent_id", null)
+      .order("ordine")
+      .then(({ data }) =>
+        setOptiuniTag(
+          ((data as { id: string; name_ro: string }[]) ?? []).map((c) => ({ id: c.id, label: c.name_ro }))
+        )
+      );
+  }, []);
 
   async function incarcaImagine(fisier: File) {
     setSeIncarcaImagine(true);
@@ -43,24 +71,33 @@ export function StepProfil({ onDone }: { onDone: () => void }) {
   }
 
   async function salveaza() {
-    setSeSalveaza(true);
     setEroare(null);
+
+    if (!titlu.trim() || !firmaDeclarata.trim() || !judetCod || !oras.trim() || !bio.trim()) {
+      setEroare("Completează toate câmpurile obligatorii — poza și telefonul sunt singurele opționale.");
+      return;
+    }
+
+    setSeSalveaza(true);
     try {
       const res = await fetch("/api/profil", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           titlu,
+          firma_declarata: firmaDeclarata,
+          judet_cod: judetCod,
           oras,
           bio,
-          cauta_suport: cautaSuport,
+          cauta_suport: altText,
+          cauta_suport_category_ids: tagIds,
           avatar_url: avatarUrl,
           public_vizibil: true,
         }),
       });
       if (!res.ok) {
         const json = await res.json().catch(() => null);
-        setEroare(json?.error ?? "Nu am putut salva profilul. Poți încerca din nou sau completa mai târziu din cont.");
+        setEroare(json?.error ?? "Nu am putut salva profilul. Încearcă din nou.");
         return;
       }
       onDone();
@@ -71,12 +108,10 @@ export function StepProfil({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <p className="text-sm leading-relaxed text-ink-soft">
-          Așa te vor găsi ceilalți membri. Cu cât spui mai clar cine ești și la ce ai nevoie de
-          ajutor, cu atât mai ușor te pot sprijini. Telefonul și emailul rămân private.
-        </p>
-      </div>
+      <p className="text-sm leading-relaxed text-ink-soft">
+        Așa te vor găsi ceilalți membri. Cu cât spui mai clar cine ești și la ce ai nevoie de
+        ajutor, cu atât mai ușor te pot sprijini.
+      </p>
 
       <div className="flex items-center gap-4">
         <button
@@ -106,43 +141,62 @@ export function StepProfil({ onDone }: { onDone: () => void }) {
           }}
         />
         <div>
-          <Label className="mb-1">Poză de profil</Label>
+          <Label className="mb-1">Poză de profil (opțional)</Label>
           <FieldHint>O poză reală crește mult șansa ca cineva să-ți scrie.</FieldHint>
         </div>
       </div>
 
-      <div>
-        <Label>Titlu / rol</Label>
-        <Input value={titlu} onChange={(e) => setTitlu(e.target.value)} placeholder="Ex: Fondator, Manager vânzări..." maxLength={120} />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <Label required>Rol / titlu</Label>
+          <Input value={titlu} onChange={(e) => setTitlu(e.target.value)} placeholder="Ex: Fondator, Manager vânzări..." maxLength={120} />
+        </div>
+        <div>
+          <Label required>Firma la care lucrezi</Label>
+          <Input
+            value={firmaDeclarata}
+            onChange={(e) => setFirmaDeclarata(e.target.value)}
+            placeholder="Numele firmei tale"
+            maxLength={160}
+          />
+          <FieldHint>Chiar dacă n-o adaugi și verificată prin ANAF, spune-ne unde lucrezi.</FieldHint>
+        </div>
+        <div>
+          <Label required>Județ</Label>
+          <Select value={judetCod} onChange={(e) => setJudetCod(e.target.value)}>
+            <option value="">Alege...</option>
+            {judete.map((j) => (
+              <option key={j.cod} value={j.cod}>
+                {j.nume}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <Label required>Localitate</Label>
+          <Input value={oras} onChange={(e) => setOras(e.target.value)} placeholder="Ex: Cluj-Napoca" maxLength={120} />
+        </div>
       </div>
 
       <div>
-        <Label>Oraș</Label>
-        <Input value={oras} onChange={(e) => setOras(e.target.value)} placeholder="Ex: Cluj-Napoca" maxLength={120} />
-      </div>
-
-      <div>
-        <Label>Despre tine</Label>
+        <Label required>Despre tine</Label>
         <Textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Câteva rânduri despre experiența ta..." maxLength={600} />
       </div>
 
-      <div>
-        <Label>La ce ajutor ai nevoie din partea comunității?</Label>
-        <Textarea
-          value={cautaSuport}
-          onChange={(e) => setCautaSuport(e.target.value)}
-          placeholder="Ex: networking, consultanță pe vânzări sau marketing, recomandări de contabil..."
-          maxLength={300}
-        />
-        <FieldHint>Despre tine ca persoană — comunitatea te poate sprijini doar dacă știe la ce.</FieldHint>
-      </div>
+      <TagPicker
+        label="La ce ajutor ai nevoie din partea comunității?"
+        hint="Alege ce ți se potrivește — te ajută pe alți membri să știe cum te pot sprijini."
+        options={optiuniTag}
+        selectedIds={tagIds}
+        onChange={setTagIds}
+        altText={altText}
+        onAltTextChange={setAltText}
+        altPlaceholder="Scrie aici ce nu se regăsește mai sus..."
+      />
 
       <FieldError>{eroare}</FieldError>
 
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <Button type="button" variant="ghost" onClick={onDone}>
-          Completez mai târziu
-        </Button>
+      <div className="flex items-center justify-end gap-3 pt-1">
         <Button type="button" variant="seal" onClick={salveaza} disabled={seSalveaza}>
           {seSalveaza ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           Salvează profilul

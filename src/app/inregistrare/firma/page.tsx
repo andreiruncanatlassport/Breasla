@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/Card";
@@ -17,8 +17,16 @@ const ETAPE = ["CUI", "Detalii firmă", "Domenii", "Nevoi & trimitere"];
 
 export default function InregistrareFirmaPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [verificareSesiune, setVerificareSesiune] = useState(true);
-  const [pas, setPas] = useState(0);
+  // pasul e in URL (?pas=0..3) — asa functioneaza corect butonul Back al
+  // browserului intre pasii formularului, nu doar butonul Inapoi din pagina.
+  const pasRaw = Number(searchParams.get("pas") ?? "0");
+  const pas = Number.isFinite(pasRaw) && pasRaw >= 0 && pasRaw <= 3 ? pasRaw : 0;
+
+  function mergiLaPas(urmatorul: number) {
+    router.push(`/inregistrare/firma?pas=${urmatorul}`);
+  }
   const [form, setForm] = useState<WizardFormState>(initialWizardState);
   const [seTrimite, setSeTrimite] = useState(false);
   const [eroareTrimitere, setEroareTrimitere] = useState<string | null>(null);
@@ -149,19 +157,19 @@ export default function InregistrareFirmaPage() {
 
       <Card variant="raised" className="mt-6">
         {pas === 0 && (
-          <StepCui form={form} update={update} onNext={() => setPas(1)} onBack={() => router.push("/dashboard")} />
+          <StepCui form={form} update={update} onNext={() => mergiLaPas(1)} onBack={() => router.push("/dashboard")} />
         )}
         {pas === 1 && (
-          <StepDetalii form={form} update={update} onNext={() => setPas(2)} onBack={() => setPas(0)} />
+          <StepDetalii form={form} update={update} onNext={() => mergiLaPas(2)} onBack={() => router.back()} />
         )}
         {pas === 2 && (
-          <StepDomenii form={form} update={update} onNext={() => setPas(3)} onBack={() => setPas(1)} />
+          <StepDomenii form={form} update={update} onNext={() => mergiLaPas(3)} onBack={() => router.back()} />
         )}
         {pas === 3 && (
           <StepNevoi
             form={form}
             update={update}
-            onBack={() => setPas(2)}
+            onBack={() => router.back()}
             onSubmit={trimite}
             seTrimite={seTrimite}
             eroareTrimitere={eroareTrimitere}

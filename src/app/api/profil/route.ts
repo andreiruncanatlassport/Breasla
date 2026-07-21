@@ -23,8 +23,18 @@ export async function PATCH(request: Request) {
   if (typeof body.titlu === "string") update.titlu = body.titlu.trim().slice(0, 120) || null;
   if (typeof body.bio === "string") update.bio = body.bio.trim().slice(0, MAX_BIO) || null;
   if (typeof body.oras === "string") update.oras = body.oras.trim().slice(0, 120) || null;
+  if (typeof body.judet_cod === "string") update.judet_cod = body.judet_cod.trim().slice(0, 8) || null;
+  if (typeof body.firma_declarata === "string") {
+    update.firma_declarata = body.firma_declarata.trim().slice(0, 160) || null;
+  }
+  if (typeof body.linkedin_url === "string") {
+    update.linkedin_url = body.linkedin_url.trim().slice(0, 300) || null;
+  }
   if (typeof body.cauta_suport === "string") {
     update.cauta_suport = body.cauta_suport.trim().slice(0, MAX_CAUTA_SUPORT) || null;
+  }
+  if (Array.isArray(body.cauta_suport_category_ids)) {
+    update.cauta_suport_category_ids = body.cauta_suport_category_ids.filter((id: unknown) => typeof id === "string");
   }
   if (typeof body.avatar_url === "string" || body.avatar_url === null) update.avatar_url = body.avatar_url;
   if (typeof body.public_vizibil === "boolean") update.public_vizibil = body.public_vizibil;
@@ -40,7 +50,9 @@ export async function PATCH(request: Request) {
     .from("profiles")
     .update(update as never)
     .eq("id", user.id)
-    .select("id, nume_complet, avatar_url, titlu, bio, oras, cauta_suport, public_vizibil")
+    .select(
+      "id, nume_complet, avatar_url, titlu, bio, oras, judet_cod, firma_declarata, linkedin_url, cauta_suport, cauta_suport_category_ids, public_vizibil"
+    )
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

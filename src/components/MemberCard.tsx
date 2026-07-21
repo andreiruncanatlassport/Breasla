@@ -8,12 +8,18 @@ export interface MemberCardData {
   avatar_url: string | null;
   titlu: string | null;
   oras: string | null;
+  judet_nume?: string | null;
+  firma_declarata?: string | null;
   cauta_suport?: string | null;
+  cauta_suport_category_ids?: string[];
   company_denumire: string | null;
   company_slug: string | null;
 }
 
 export function MemberCard({ member }: { member: MemberCardData }) {
+  const firmaAfisata = member.company_denumire ?? member.firma_declarata;
+  const cautaAjutor = Boolean(member.cauta_suport?.trim()) || Boolean(member.cauta_suport_category_ids?.length);
+
   return (
     <Link href={`/membri/${member.id}`} className="group block h-full active:scale-[0.98] transition-transform duration-150">
       <article className="lift-on-hover block-base flex h-full flex-col items-center p-6 text-center">
@@ -28,14 +34,14 @@ export function MemberCard({ member }: { member: MemberCardData }) {
         </div>
         <h3 className="mt-3.5 font-display text-base font-semibold text-ink">{member.nume_complet}</h3>
         {member.titlu && <p className="mt-0.5 text-xs font-medium text-seal">{member.titlu}</p>}
-        {member.company_denumire && (
+        {firmaAfisata && (
           <p className="mt-2 flex items-center gap-1 text-xs text-ink-soft">
             <Building2 className="h-3 w-3 shrink-0" />
-            <span className="truncate">{member.company_denumire}</span>
+            <span className="truncate">{firmaAfisata}</span>
           </p>
         )}
         {member.oras && <p className="mt-1 text-xs text-ink-soft/70">{member.oras}</p>}
-        {member.cauta_suport && (
+        {cautaAjutor && (
           <p className="mt-2.5 inline-flex items-center gap-1 rounded-full bg-seal/10 px-2 py-0.5 text-[10px] font-semibold text-seal">
             <HelpingHand className="h-2.5 w-2.5" /> caută ajutor
           </p>

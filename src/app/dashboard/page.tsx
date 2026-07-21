@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ExternalLink, Bookmark, Building2, Inbox, Send, Handshake, FileText, Plus, Archive } from "lucide-react";
+import { Pencil, ExternalLink, Bookmark, Building2, Inbox, Send, Handshake, FileText, Plus, Archive, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
@@ -137,14 +137,71 @@ export default async function DashboardPage({
 
   const { data: profileData } = await supabase
     .from("profiles")
-    .select("email_verificat")
+    .select(
+      "email_verificat, avatar_url, titlu, firma_declarata, judet_cod, oras, bio, linkedin_url, cauta_suport, cauta_suport_category_ids"
+    )
     .eq("id", user.id)
     .maybeSingle();
-  const emailVerificat = (profileData as { email_verificat: boolean } | null)?.email_verificat ?? true;
+  const profil = profileData as {
+    email_verificat: boolean;
+    avatar_url: string | null;
+    titlu: string | null;
+    firma_declarata: string | null;
+    judet_cod: string | null;
+    oras: string | null;
+    bio: string | null;
+    linkedin_url: string | null;
+    cauta_suport: string | null;
+    cauta_suport_category_ids: string[] | null;
+  } | null;
+  const emailVerificat = profil?.email_verificat ?? true;
+
+  // completarea profilului — acelasi model ca la AER ("Completeaza-ti profilul 25%")
+  const campuriProfil = [
+    Boolean(profil?.titlu),
+    Boolean(profil?.firma_declarata),
+    Boolean(profil?.judet_cod),
+    Boolean(profil?.oras),
+    Boolean(profil?.bio),
+    Boolean(profil?.cauta_suport || profil?.cauta_suport_category_ids?.length),
+    Boolean(profil?.avatar_url),
+    Boolean(profil?.linkedin_url),
+  ];
+  const procentProfil = Math.round((campuriProfil.filter(Boolean).length / campuriProfil.length) * 100);
+  const primulCampLipsa = !profil?.avatar_url
+    ? "Adaugă poza de profil"
+    : !profil?.linkedin_url
+      ? "Adaugă link-ul de LinkedIn"
+      : !profil?.bio
+        ? "Completează descrierea"
+        : "Completează profilul";
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-12">
       {!emailVerificat && user.email && <EmailUnverifiedBanner email={user.email} />}
+
+      {procentProfil < 100 && (
+        <Link
+          href="/dashboard/profil"
+          className="lift-on-hover mb-6 flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-sm)] transition"
+        >
+          <div
+            className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full"
+            style={{
+              background: `conic-gradient(var(--color-seal) ${procentProfil * 3.6}deg, var(--color-line) 0deg)`,
+            }}
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-surface">
+              <span className="font-mono-num text-xs font-bold text-ink">{procentProfil}%</span>
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="stamp-label text-seal">Completează-ți profilul</p>
+            <p className="mt-0.5 truncate text-sm font-semibold text-ink">{primulCampLipsa}</p>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-ink-soft" />
+        </Link>
+      )}
 
       <div className="flex items-center justify-between">
         <div>
