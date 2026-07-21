@@ -39,8 +39,9 @@ export default async function MembriPage({
   let query = supabase
     .from("member_directory")
     .select(
-      "id, nume_complet, avatar_url, titlu, oras, judet_cod, judet_nume, firma_declarata, cauta_suport, cauta_suport_category_ids, company_denumire, company_slug"
+      "id, nume_complet, avatar_url, titlu, oras, judet_cod, judet_nume, firma_declarata, cauta_suport, cauta_suport_category_ids, verificat, nr_recomandari, company_denumire, company_slug"
     )
+    .order("nr_recomandari", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(90);
 
@@ -53,6 +54,7 @@ export default async function MembriPage({
   if (firma === "cu") query = query.not("company_id", "is", null);
   if (firma === "fara") query = query.is("company_id", null);
   if (nevoieIds.length > 0) query = query.overlaps("cauta_suport_category_ids", nevoieIds);
+  if (params.verificat === "1") query = query.eq("verificat", true);
 
   const { data } = await query;
   const membri = (data as MemberCardData[]) ?? [];

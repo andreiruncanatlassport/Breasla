@@ -471,6 +471,8 @@ export interface MemberDirectoryEntry {
   cauta_suport: string | null;
   cauta_suport_category_ids: string[];
   cauta_suport_tags_text: string;
+  nr_recomandari: number;
+  verificat: boolean;
   created_at: string;
   company_id: string | null;
   company_denumire: string | null;

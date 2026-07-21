@@ -1,13 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart, Layers, FileText } from "lucide-react";
+import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart, Layers } from "lucide-react";
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { VerifiedStamp } from "@/components/ui/VerifiedStamp";
 import { ConnectButton } from "@/components/ConnectButton";
-import { LinkButton } from "@/components/ui/Button";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { StartConversationButton } from "@/components/StartConversationButton";
 import { ReviewSection, type MotivBlocare } from "@/components/ReviewSection";
@@ -371,11 +370,6 @@ export default async function CompanyPage({
               stareInitiala={stareConexiune}
               autentificat={Boolean(user)}
             />
-            {firmaVizitatorId && firmaVizitatorId !== id && (
-              <LinkButton href={`/dashboard/cereri/noua?catre=${id}`} variant="secondary" size="sm">
-                <FileText className="h-3.5 w-3.5" /> Cere ofertă
-              </LinkButton>
-            )}
             {user?.id !== company.owner_id && (
               <StartConversationButton
                 profileId={company.owner_id}

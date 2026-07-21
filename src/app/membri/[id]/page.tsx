@@ -5,6 +5,8 @@ import { ArrowLeft, UserRound, Building2, MapPin, Link2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { StartConversationButton } from "@/components/StartConversationButton";
+import { RecommendButton } from "@/components/RecommendButton";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import type { MemberDirectoryEntry } from "@/types/database";
 
 export default async function MemberDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,6 +21,24 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
   const { data } = await supabase.from("member_directory").select("*").eq("id", id).maybeSingle();
   const membru = data as MemberDirectoryEntry | null;
   if (!membru) notFound();
+
+  // Poate userul curent sa recomande acest membru? Doar daca a schimbat mesaje
+  // cu el (verificat in DB prin functia a_schimbat_mesaje_cu) si nu e el insusi.
+  let aRecomandatDeja = false;
+  let poateRecomanda = false;
+  if (user && user.id !== membru.id) {
+    const [{ data: recExist }, { data: potRec }] = await Promise.all([
+      supabase
+        .from("member_recommendations")
+        .select("id")
+        .eq("recommender_id", user.id)
+        .eq("recommended_id", membru.id)
+        .maybeSingle(),
+      supabase.rpc("a_schimbat_mesaje_cu", { alt_membru: membru.id }),
+    ]);
+    aRecomandatDeja = Boolean(recExist);
+    poateRecomanda = potRec === true || aRecomandatDeja;
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
@@ -37,8 +57,17 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
           )}
         </div>
 
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight text-ink">{membru.nume_complet}</h1>
+        <div className="mt-4 flex items-center gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight text-ink">{membru.nume_complet}</h1>
+          {membru.verificat && <VerifiedBadge nrRecomandari={membru.nr_recomandari} />}
+        </div>
         {membru.titlu && <p className="mt-1 text-sm font-medium text-seal">{membru.titlu}</p>}
+        {membru.nr_recomandari > 0 && (
+          <p className="mt-1.5 text-xs font-medium text-ink-soft">
+            <span className="font-mono-num font-semibold text-ink">{membru.nr_recomandari}</span>{" "}
+            {membru.nr_recomandari === 1 ? "recomandare" : "recomandări"} de la alți membri
+          </p>
+        )}
 
         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-ink-soft">
           {membru.company_denumire ? (
@@ -92,8 +121,22 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
         )}
 
         {user?.id !== membru.id && (
-          <div className="mt-7">
-            <StartConversationButton profileId={membru.id} numeDestinatar={membru.nume_complet} autentificat={Boolean(user)} />
+          <div className="mt-7 flex flex-col items-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <StartConversationButton profileId={membru.id} numeDestinatar={membru.nume_complet} autentificat={Boolean(user)} />
+              {poateRecomanda && (
+                <RecommendButton
+                  membruId={membru.id}
+                  aRecomandatDeja={aRecomandatDeja}
+                  autentificat={Boolean(user)}
+                />
+              )}
+            </div>
+            {user && !poateRecomanda && (
+              <p className="max-w-xs text-center text-xs text-ink-soft/70">
+                Poți recomanda acest membru după ce schimbați câteva mesaje.
+              </p>
+            )}
           </div>
         )}
       </div>

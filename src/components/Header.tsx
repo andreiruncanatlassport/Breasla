@@ -57,12 +57,6 @@ export function Header({ userEmail, rol }: HeaderProps) {
               <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
             )}
           </Link>
-          <Link href="/oportunitati" className={linkClass("/oportunitati")}>
-            {t.nav.opportunities}
-            {pathname === "/oportunitati" && (
-              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
-            )}
-          </Link>
           <Link href="/membri" className={linkClass("/membri")}>
             {t.nav.members}
             {pathname === "/membri" && (
@@ -136,9 +130,6 @@ export function Header({ userEmail, rol }: HeaderProps) {
           <div className="flex flex-col gap-4">
             <Link href="/catalog" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
               {t.nav.catalog}
-            </Link>
-            <Link href="/oportunitati" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
-              {t.nav.opportunities}
             </Link>
             <Link href="/membri" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
               {t.nav.members}

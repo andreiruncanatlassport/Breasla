@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { UserRound, Building2, HelpingHand } from "lucide-react";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export interface MemberCardData {
   id: string;
@@ -12,6 +13,8 @@ export interface MemberCardData {
   firma_declarata?: string | null;
   cauta_suport?: string | null;
   cauta_suport_category_ids?: string[];
+  verificat?: boolean;
+  nr_recomandari?: number;
   company_denumire: string | null;
   company_slug: string | null;
 }
@@ -32,8 +35,15 @@ export function MemberCard({ member }: { member: MemberCardData }) {
             </div>
           )}
         </div>
-        <h3 className="mt-3.5 font-display text-base font-semibold text-ink">{member.nume_complet}</h3>
-        {member.titlu && <p className="mt-0.5 text-xs font-medium text-seal">{member.titlu}</p>}
+        <div className="mt-3.5 flex items-center gap-1.5">
+          <h3 className="font-display text-base font-semibold text-ink">{member.nume_complet}</h3>
+        </div>
+        {member.verificat && (
+          <div className="mt-1">
+            <VerifiedBadge nrRecomandari={member.nr_recomandari} size="sm" />
+          </div>
+        )}
+        {member.titlu && <p className="mt-1 text-xs font-medium text-seal">{member.titlu}</p>}
         {firmaAfisata && (
           <p className="mt-2 flex items-center gap-1 text-xs text-ink-soft">
             <Building2 className="h-3 w-3 shrink-0" />

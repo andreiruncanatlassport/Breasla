@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Building2 } from "lucide-react";
+import { ArrowLeft, Building2, Download } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { AdminCompanyActions } from "@/components/AdminCompanyActions";
@@ -62,6 +62,12 @@ export default async function AdminFirmePage({
           <p className="stamp-label text-seal">Gestionare firme</p>
           <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Firme</h1>
         </div>
+        <a
+          href="/api/admin/export?tip=firme"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-line-strong px-3.5 py-2 text-sm font-semibold text-ink transition hover:border-seal/40"
+        >
+          <Download className="h-4 w-4" /> Export CSV
+        </a>
       </div>
 
       {/* Adaugare manuala */}

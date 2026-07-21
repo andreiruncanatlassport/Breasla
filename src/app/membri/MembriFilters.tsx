@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
-import { Input, Select, Label } from "@/components/ui/Field";
+import { useState } from "react";
+import { SlidersHorizontal, X, BadgeCheck } from "lucide-react";
+import { Select, Label } from "@/components/ui/Field";
+import { SearchWithSuggestions } from "@/components/SearchWithSuggestions";
 import type { Judet } from "@/types/database";
 
 interface Props {
@@ -19,9 +20,10 @@ export function MembriFilters({ judete, tagOptions }: Props) {
   const q = searchParams.get("q") ?? "";
   const judet = searchParams.get("judet") ?? "";
   const firma = searchParams.get("firma") ?? "";
+  const verificat = searchParams.get("verificat") === "1";
   const nevoiActive = (searchParams.get("nevoie") ?? "").split(",").filter(Boolean);
 
-  const filtreActive = [judet, firma, ...nevoiActive].filter(Boolean).length;
+  const filtreActive = [judet, firma, verificat ? "1" : "", ...nevoiActive].filter(Boolean).length;
 
   function seteaza(patch: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -39,19 +41,15 @@ export function MembriFilters({ judete, tagOptions }: Props) {
     seteaza({ nevoie: [...set].join(",") || null });
   }
 
-  function onSubmitCautare(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    seteaza({ q: (fd.get("q") as string) || null });
-  }
-
   return (
     <div className="mt-8">
       <div className="flex flex-wrap items-center gap-2.5">
-        <form onSubmit={onSubmitCautare} className="relative max-w-sm flex-1 min-w-[220px]">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft/50" />
-          <Input name="q" defaultValue={q} placeholder="Caută după nume, firmă, domeniu..." className="pl-9" />
-        </form>
+        <SearchWithSuggestions
+          tip="membri"
+          defaultValue={q}
+          placeholder="Caută după nume, firmă, domeniu..."
+          onSubmitSearch={(text) => seteaza({ q: text || null })}
+        />
 
         <button
           type="button"
@@ -115,6 +113,22 @@ export function MembriFilters({ judete, tagOptions }: Props) {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div>
+            <Label>Încredere</Label>
+            <button
+              type="button"
+              onClick={() => seteaza({ verificat: verificat ? null : "1" })}
+              className={
+                "flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition " +
+                (verificat
+                  ? "border-teal bg-teal/10 text-teal"
+                  : "border-line text-ink-soft hover:border-teal/40 hover:text-ink")
+              }
+            >
+              <BadgeCheck className="h-3.5 w-3.5" /> Doar membri verificați
+            </button>
           </div>
 
           <div className="sm:col-span-2">

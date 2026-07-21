@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Search, ShieldCheck, Users, LockKeyhole, Newspaper, CalendarDays, FileCheck2, Handshake, Building2, Briefcase } from "lucide-react";
+import { ArrowRight, Search, ShieldCheck, Users, LockKeyhole, Newspaper, CalendarDays, FileCheck2, Handshake, Building2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { LinkButton } from "@/components/ui/Button";
@@ -190,7 +190,6 @@ export default async function HomePage() {
             {[
               { href: "/catalog", label: t.home.quickNavFirme, icon: Building2 },
               { href: "/membri", label: t.home.quickNavMembri, icon: Users },
-              { href: "/oportunitati", label: t.home.quickNavOportunitati, icon: Briefcase },
               { href: "/evenimente", label: t.home.quickNavEvenimente, icon: CalendarDays },
               { href: "/stiri", label: t.home.quickNavStiri, icon: Newspaper },
             ].map((item) => (

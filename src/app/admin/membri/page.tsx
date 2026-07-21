@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Users, UserRound } from "lucide-react";
+import { ArrowLeft, Users, UserRound, Download } from "lucide-react";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { AdminMemberActions } from "@/components/AdminMemberActions";
@@ -58,13 +58,21 @@ export default async function AdminMembriPage({
         <ArrowLeft className="h-4 w-4" /> Administrare
       </Link>
 
-      <div className="mt-6">
-        <p className="stamp-label text-seal">Gestionare membri</p>
-        <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Membri</h1>
-        <p className="mt-2 text-sm text-ink-soft">
-          Dezactivarea ascunde membrul din director și oprește contactarea, dar păstrează contul (reversibil).
-          {potSterge ? " Ștergerea e definitivă." : " Doar un administrator poate șterge definitiv un cont."}
-        </p>
+      <div className="mt-6 flex items-start justify-between gap-4">
+        <div>
+          <p className="stamp-label text-seal">Gestionare membri</p>
+          <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Membri</h1>
+          <p className="mt-2 text-sm text-ink-soft">
+            Dezactivarea ascunde membrul din director și oprește contactarea, dar păstrează contul (reversibil).
+            {potSterge ? " Ștergerea e definitivă." : " Doar un administrator poate șterge definitiv un cont."}
+          </p>
+        </div>
+        <a
+          href="/api/admin/export?tip=membri"
+          className="mt-1 inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-line-strong px-3.5 py-2 text-sm font-semibold text-ink transition hover:border-seal/40"
+        >
+          <Download className="h-4 w-4" /> Export CSV
+        </a>
       </div>
 
       <section className="mt-8">
