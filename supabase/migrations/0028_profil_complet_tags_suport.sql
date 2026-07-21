@@ -8,10 +8,14 @@
 -- ============================================================================
 
 alter table public.profiles
+  add column if not exists cauta_suport text,
   add column if not exists judet_cod text references public.judete (cod),
   add column if not exists firma_declarata text,
   add column if not exists linkedin_url text,
   add column if not exists cauta_suport_category_ids uuid[] not null default '{}';
+
+comment on column public.profiles.cauta_suport is
+  'Text liber: la ce ajutor/suport are nevoie persoana din partea comunitatii, folosit si ca "Altele" langa tag-urile predefinite din cauta_suport_category_ids.';
 
 comment on column public.profiles.linkedin_url is
   'Link catre profilul LinkedIn (optional) — camp din profilul public, ca in aplicatia AER.';
