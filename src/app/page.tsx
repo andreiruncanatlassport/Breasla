@@ -8,6 +8,8 @@ import { RecentCompaniesTicker } from "@/components/RecentCompaniesTicker";
 import { HomeStats } from "@/components/HomeStats";
 import { NewsCard, type NewsCardData } from "@/components/NewsCard";
 import { EventCard, type EventCardData } from "@/components/EventCard";
+import { CompanyCard } from "@/components/CompanyCard";
+import { alegeFirmeRotativ } from "@/lib/rotate";
 
 const STEP_TINTS = ["bg-seal", "bg-teal", "bg-navy"];
 
@@ -32,6 +34,7 @@ export default async function HomePage() {
     { count: judeteCount },
     { data: stiriData },
     { data: evenimenteData },
+    { data: firmeData },
   ] = await Promise.all([
     supabase.from("companies").select("id", { count: "exact", head: true }).eq("status", "approved"),
     supabase.from("categories").select("id", { count: "exact", head: true }),
@@ -49,10 +52,44 @@ export default async function HomePage() {
       .gte("data_inceput", new Date().toISOString())
       .order("data_inceput", { ascending: true })
       .limit(3),
+    // Pentru preview-ul rotativ de pe homepage: luam un lot recent de firme
+    // aprobate si alegem aleatoriu 6 dintre ele in cod (varietate la fiecare
+    // incarcare, fara sa scanam tot tabelul).
+    supabase
+      .from("companies")
+      .select("id, slug, denumire, logo_url, localitate, descriere, judet_cod, dimensiune_echipa, judete(nume)")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(40),
   ]);
 
   const stiri = (stiriData as NewsCardData[]) ?? [];
   const evenimente = (evenimenteData as EventCardData[]) ?? [];
+
+  // amestecam si taiem la 6 — rotatie la fiecare randare
+  type FirmaRand = {
+    id: string;
+    slug: string | null;
+    denumire: string;
+    logo_url: string | null;
+    localitate: string | null;
+    descriere: string | null;
+    judet_cod: string | null;
+    dimensiune_echipa: string | null;
+    judete: { nume: string } | null;
+  };
+  const firmeToate = (firmeData as unknown as FirmaRand[]) ?? [];
+  const firmePreview = alegeFirmeRotativ(firmeToate, 6).map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    denumire: c.denumire,
+    logo_url: c.logo_url,
+    localitate: c.localitate,
+    descriere: c.descriere,
+    dimensiune_echipa: c.dimensiune_echipa,
+    judet_nume: c.judete?.nume ?? null,
+    domeniu_principal: null,
+  }));
 
   const pasi = [
     { n: "01", icon: FileCheck2, title: t.home.step1Title, body: t.home.step1Body },
@@ -169,6 +206,30 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ================= PREVIEW FIRME ================= */}
+      {firmePreview.length > 0 && (
+        <section className="relative mx-auto max-w-6xl px-5 py-16">
+          <div className="flex items-end justify-between gap-4">
+            <div className="max-w-xl">
+              <p className="stamp-label text-seal">{t.home.companiesEyebrow}</p>
+              <h2 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+                <Building2 className="h-6 w-6 text-seal" strokeWidth={1.8} />
+                {t.home.companiesTitle}
+              </h2>
+            </div>
+            <Link href="/catalog" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+              {t.home.companiesSeeAll}
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {firmePreview.map((c) => (
+              <CompanyCard key={c.id} company={c} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ================= EVENIMENTE ================= */}
       <section className="relative mx-auto max-w-6xl px-5 py-16">

@@ -58,6 +58,9 @@ interface Dictionary {
     quickNavOportunitati: string;
     quickNavEvenimente: string;
     quickNavStiri: string;
+    companiesEyebrow: string;
+    companiesTitle: string;
+    companiesSeeAll: string;
   };
   footer: {
     tagline: string;
@@ -294,6 +297,9 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       quickNavOportunitati: "Oportunități",
       quickNavEvenimente: "Evenimente",
       quickNavStiri: "Știri",
+      companiesEyebrow: "Din catalog",
+      companiesTitle: "Firme din comunitate",
+      companiesSeeAll: "Vezi toate firmele →",
     },
     footer: {
       tagline: "Registrul antreprenorilor din România — găsește colaboratori verificați, în orice domeniu.",
@@ -528,6 +534,9 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       quickNavOportunitati: "Opportunities",
       quickNavEvenimente: "Events",
       quickNavStiri: "News",
+      companiesEyebrow: "From the catalog",
+      companiesTitle: "Companies in the community",
+      companiesSeeAll: "See all companies →",
     },
     footer: {
       tagline: "Romania's entrepreneur registry — find verified collaborators, in any field.",

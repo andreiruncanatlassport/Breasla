@@ -2,14 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export function AdminCompanyActions({
   companyId,
   actiuniDisponibile,
+  potSterge,
 }: {
   companyId: string;
   actiuniDisponibile: Array<"approve" | "reject" | "suspend">;
+  potSterge?: boolean;
 }) {
   const router = useRouter();
   const [seIncarca, setSeIncarca] = useState(false);
@@ -32,8 +35,24 @@ export function AdminCompanyActions({
     }
   }
 
+  async function sterge() {
+    if (!confirm("Ștergi definitiv această firmă? Acțiunea e ireversibilă.")) return;
+    setSeIncarca(true);
+    try {
+      const res = await fetch(`/api/admin/companies?id=${companyId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        alert(json?.error ?? "Nu am putut șterge firma.");
+        return;
+      }
+      router.refresh();
+    } finally {
+      setSeIncarca(false);
+    }
+  }
+
   return (
-    <div className="flex gap-2">
+    <div className="flex shrink-0 gap-2">
       {actiuniDisponibile.includes("approve") && (
         <Button size="sm" onClick={() => ruleaza("approve")} disabled={seIncarca}>Aprobă</Button>
       )}
@@ -42,6 +61,11 @@ export function AdminCompanyActions({
       )}
       {actiuniDisponibile.includes("suspend") && (
         <Button size="sm" variant="secondary" onClick={() => ruleaza("suspend")} disabled={seIncarca}>Suspendă</Button>
+      )}
+      {potSterge && (
+        <Button size="sm" variant="danger" onClick={sterge} disabled={seIncarca} aria-label="Șterge firma">
+          {seIncarca ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+        </Button>
       )}
     </div>
   );
