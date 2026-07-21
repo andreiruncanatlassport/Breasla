@@ -82,6 +82,7 @@ export interface Company {
   website: string | null;
   logo_url: string | null;
   descriere: string | null;
+  domenii_altele: string | null;
   descriere_imagini: string[];
   numar_angajati: number | null;
   dimensiune_echipa: DimensiuneEchipa | null;

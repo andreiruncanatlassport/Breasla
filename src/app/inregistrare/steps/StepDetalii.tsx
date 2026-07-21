@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { normalizeazaText } from "@/lib/text";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, Select, Textarea, FieldHint } from "@/components/ui/Field";
+import { REGIUNI } from "@/lib/regiuni";
 import type { Judet } from "@/types/database";
 import type { WizardFormState } from "../types";
 
@@ -180,6 +181,37 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
             {form.judete_suplimentare.length === judete.length ? "Deselectează tot" : "Selectează tot"}
           </button>
         </div>
+
+        {/* Selectare rapida pe regiuni istorice — adauga toate judetele din regiune deodata */}
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {REGIUNI.map((r) => {
+            const toateBifate = r.judete.every((c) => form.judete_suplimentare.includes(c));
+            return (
+              <button
+                key={r.nume}
+                type="button"
+                onClick={() => {
+                  const set = new Set(form.judete_suplimentare);
+                  if (toateBifate) {
+                    r.judete.forEach((c) => set.delete(c));
+                  } else {
+                    r.judete.forEach((c) => set.add(c));
+                  }
+                  update({ judete_suplimentare: [...set] });
+                }}
+                className={
+                  "rounded-full border px-2.5 py-1 text-xs font-medium transition " +
+                  (toateBifate
+                    ? "border-seal bg-seal/10 text-seal"
+                    : "border-line text-ink-soft hover:border-seal/40 hover:text-ink")
+                }
+              >
+                {r.nume}
+              </button>
+            );
+          })}
+        </div>
+
         <div className="mt-2 grid max-h-40 grid-cols-2 gap-x-4 gap-y-1.5 overflow-y-auto rounded-lg border border-line bg-surface p-3 sm:grid-cols-3">
           {judete.map((j) => (
             <label key={j.cod} className="flex items-center gap-2 text-sm text-ink">

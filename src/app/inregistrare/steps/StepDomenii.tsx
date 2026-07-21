@@ -167,6 +167,21 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
             </div>
           ))}
         </div>
+
+        <div className="mt-4">
+          <Label htmlFor="domenii-altele">Altul — nu îți găsești domeniul în listă?</Label>
+          <Input
+            id="domenii-altele"
+            value={form.domenii_altele}
+            onChange={(e) => update({ domenii_altele: e.target.value })}
+            placeholder="Scrie domeniul tău aici, cu cuvintele tale..."
+            maxLength={300}
+          />
+          <FieldHint>
+            Apare pe profilul firmei lângă domeniile bifate. Tot trebuie să bifezi cel puțin un
+            domeniu din listă (cel mai apropiat) ca domeniu principal.
+          </FieldHint>
+        </div>
       </div>
 
       <Card>

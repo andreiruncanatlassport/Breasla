@@ -69,6 +69,7 @@ export async function POST(request: Request) {
       email_firma: body.email_firma ?? null,
       website: body.website ?? null,
       descriere: body.descriere ?? null,
+      domenii_altele: typeof body.domenii_altele === "string" && body.domenii_altele.trim() ? body.domenii_altele.trim().slice(0, 300) : null,
       numar_angajati: body.numar_angajati ?? null,
       dimensiune_echipa: body.dimensiune_echipa ?? null,
       cifra_afaceri_an: body.cifra_afaceri_an ?? null,

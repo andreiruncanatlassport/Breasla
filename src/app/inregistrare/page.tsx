@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { SkeletonPage } from "@/components/ui/Skeleton";
 import { LinkButton } from "@/components/ui/Button";
 import { StepCont } from "./steps/StepCont";
+import { StepProfil } from "./steps/StepProfil";
 
 export default function InregistrarePage() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function InregistrarePage() {
   const apoiFirma = searchParams.get("apoi") === "firma";
 
   const [verificareSesiune, setVerificareSesiune] = useState(true);
-  const [contCreat, setContCreat] = useState(false);
+  const [etapa, setEtapa] = useState<"cont" | "profil" | "final">("cont");
 
   useEffect(() => {
     const supabase = createClient();
@@ -31,19 +32,24 @@ export default function InregistrarePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function onDone() {
+  function dupaCont() {
+    // profilul public se completeaza imediat dupa cont — asa te gasesc ceilalti
+    setEtapa("profil");
+  }
+
+  function dupaProfil() {
     if (apoiFirma) {
       router.push("/inregistrare/firma");
       return;
     }
-    setContCreat(true);
+    setEtapa("final");
   }
 
   if (verificareSesiune) {
     return <SkeletonPage />;
   }
 
-  if (contCreat) {
+  if (etapa === "final") {
     return (
       <div className="mx-auto max-w-xl px-5 py-24 text-center">
         <Card>
@@ -71,26 +77,32 @@ export default function InregistrarePage() {
     <div className="mx-auto max-w-lg px-5 py-14">
       <div className="text-center">
         <p className="stamp-label text-seal">
-          {apoiFirma ? "Un ultim pas" : "Membru nou"}
+          {etapa === "profil" ? "Pasul 2 din 2" : apoiFirma ? "Un ultim pas" : "Membru nou"}
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Creează-ți contul</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">
+          {etapa === "profil" ? "Profilul tău public" : "Creează-ți contul"}
+        </h1>
         <p className="mt-2 text-sm text-ink-soft">
-          {apoiFirma
-            ? "Ca să adaugi o firmă, ai nevoie mai întâi de un cont personal — durează un minut."
-            : "Fără firmă, fără obligații — vezi Știri, Evenimente, Membri și trimite mesaje. Poți adăuga o firmă oricând, dacă vrei."}
+          {etapa === "profil"
+            ? "Cel mai important lucru în comunitate: să te găsească ceilalți."
+            : apoiFirma
+              ? "Ca să adaugi o firmă, ai nevoie mai întâi de un cont personal — durează un minut."
+              : "Fără firmă, fără obligații — vezi Știri, Evenimente, Membri și trimite mesaje. Poți adăuga o firmă oricând, dacă vrei."}
         </p>
       </div>
 
       <Card variant="raised" className="mt-6">
-        <StepCont onDone={onDone} />
+        {etapa === "profil" ? <StepProfil onDone={dupaProfil} /> : <StepCont onDone={dupaCont} />}
       </Card>
 
-      <p className="mt-6 text-center text-sm text-ink-soft">
-        Ai deja cont?{" "}
-        <Link href="/login" className="font-semibold text-seal hover:underline">
-          Autentifică-te
-        </Link>
-      </p>
+      {etapa === "cont" && (
+        <p className="mt-6 text-center text-sm text-ink-soft">
+          Ai deja cont?{" "}
+          <Link href="/login" className="font-semibold text-seal hover:underline">
+            Autentifică-te
+          </Link>
+        </p>
+      )}
     </div>
   );
 }

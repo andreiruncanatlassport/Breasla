@@ -85,3 +85,29 @@ Am ascultat testul cuvânt cu cuvânt. Ce am reparat:
   fără bara de browser, cu iconița comunității — practic ca o aplicație.
   Nu necesită nimic în App Store / Play Store și niciun pas de instalare pe
   server (Railway îl servește automat).
+
+## 6. Runda curentă — profil obligatoriu, "Altul" la domenii, regiuni, temă light
+
+- **Profil public la înregistrare:** după crearea contului, urmează direct un
+  pas de profil public (poză, titlu/rol, oraș, despre tine, "la ce ai nevoie").
+  Poți sări cu "Completez mai târziu", dar e pus în față fiindcă prioritatea
+  comunității e ca membrii să se găsească — exact ce a cerut clientul
+  ("baza de date să fie strălucită cu membrii").
+- **Toți membrii apar în /membri:** confirmat structural — vederea folosește
+  `public_vizibil = true` (default la orice cont nou) și LEFT JOIN pe firmă,
+  deci apar și cei fără firmă. Migrația 0027 aduce la zi conturile vechi.
+- **"Altul" la domenii:** câmp text liber sub lista de domenii, pentru firmele
+  al căror domeniu nu e (încă) în listă. Apare pe profilul firmei și e inclus
+  în căutarea din catalog. (Search-ul pe domenii exista deja din runda
+  anterioară — l-am reconfirmat.)
+- **Regiuni la zona deservită:** pe lângă "Selectează tot", butoane rapide pe
+  regiuni istorice (Transilvania, Banat, Moldova, Muntenia etc.) care bifează
+  toate județele din regiune deodată.
+- **Tema light e acum implicită** peste tot, inclusiv pe telefon (nu mai
+  urmează setarea de dark a sistemului). Cine vrea dark o poate alege din
+  setări.
+
+## 7. Migrație de rulat (după 0026)
+
+`supabase/migrations/0027_domenii_altele_membri_vizibili.sql` — câmpul "Altul"
+la firme + backfill vizibilitate membri.

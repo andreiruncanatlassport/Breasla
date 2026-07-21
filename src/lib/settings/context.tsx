@@ -49,7 +49,7 @@ export const settingsInitScript = `
   try {
     var raw = localStorage.getItem(${JSON.stringify(SETTINGS_STORAGE_KEY)});
     var s = raw ? JSON.parse(raw) : {};
-    var theme = s.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var theme = s.theme || "light";
     var font = s.font || "sistem";
     var fontSize = s.fontSize || "normal";
     var root = document.documentElement;
@@ -69,11 +69,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     try {
       const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
       const parsed = raw ? (JSON.parse(raw) as Partial<StoredSettings>) : {};
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSettings((prev) => ({
         ...prev,
-        theme: parsed.theme ?? (prefersDark ? "dark" : "light"),
+        theme: parsed.theme ?? "light",
         locale: parsed.locale ?? prev.locale,
         font: parsed.font ?? prev.font,
         fontSize: parsed.fontSize ?? prev.fontSize,

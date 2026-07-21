@@ -148,7 +148,7 @@ export default async function CatalogPage({
 
   if (params.q) {
     const qSigur = escapeazaIlike(sanitizeazaTermenCautare(params.q));
-    const conditii = [`denumire.ilike.%${qSigur}%`, `descriere.ilike.%${qSigur}%`];
+    const conditii = [`denumire.ilike.%${qSigur}%`, `descriere.ilike.%${qSigur}%`, `domenii_altele.ilike.%${qSigur}%`];
     if (idFirmeDinDomeniuCautat && idFirmeDinDomeniuCautat.length > 0) {
       conditii.push(`id.in.(${idFirmeDinDomeniuCautat.join(",")})`);
     }

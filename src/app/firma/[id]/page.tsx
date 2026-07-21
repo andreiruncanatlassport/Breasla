@@ -272,6 +272,7 @@ export default async function CompanyPage({
         {domeniiSecundare.map((c) => (
           <Badge key={c.categories!.id}>{c.categories!.name_ro}</Badge>
         ))}
+        {company.domenii_altele && <Badge tone="neutral">{company.domenii_altele}</Badge>}
         {company.dimensiune_echipa && (
           <Badge tone="neutral">
             <Users className="mr-1 h-3 w-3 inline" /> {company.dimensiune_echipa} angajați
