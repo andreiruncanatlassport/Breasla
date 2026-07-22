@@ -80,6 +80,7 @@ export interface Company {
   lat: number | null;
   lng: number | null;
   raza_deservire_km: number | null;
+  zona_deservita: string | null;
 
   telefon_firma: string | null;
   email_firma: string | null;

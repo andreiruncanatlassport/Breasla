@@ -32,6 +32,7 @@ export interface WizardFormState {
   lat: number | null;
   lng: number | null;
   raza_deservire_km: number | null;
+  zona_deservita: string;
   judete_suplimentare: string[];
 
   // contact & profil ------------------------------------------------------
@@ -76,6 +77,7 @@ export const initialWizardState: WizardFormState = {
   lat: null,
   lng: null,
   raza_deservire_km: null,
+  zona_deservita: "",
   judete_suplimentare: [],
 
   telefon_firma: "",

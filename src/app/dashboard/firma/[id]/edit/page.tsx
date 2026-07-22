@@ -120,6 +120,7 @@ export default function EditCompanyPage({
           discount_conditii: company!.discount_conditii,
           proiect_marime: company!.proiect_marime,
           raza_deservire_km: company!.raza_deservire_km,
+          zona_deservita: company!.zona_deservita,
           cum_poate_ajuta_grupul: company!.cum_poate_ajuta_grupul,
           logo_url: company!.logo_url,
           banner_url: company!.banner_url,
@@ -249,8 +250,14 @@ export default function EditCompanyPage({
             <div>
               <Label>Telefon firmă</Label>
               <Input
+                inputMode="numeric"
+                placeholder="ex: 0712345678"
                 value={company.telefon_firma ?? ""}
-                onChange={(e) => update({ telefon_firma: e.target.value })}
+                onChange={(e) => {
+                  let cifre = e.target.value.replace(/\D/g, "");
+                  if (cifre.length > 0 && cifre[0] !== "0") cifre = "0" + cifre;
+                  update({ telefon_firma: cifre.slice(0, 10) });
+                }}
               />
             </div>
             <div>
@@ -354,6 +361,16 @@ export default function EditCompanyPage({
                 <option value="peste_3_zile">Peste 3 zile</option>
               </Select>
             </div>
+          </div>
+
+          <div>
+            <Label>Zonă deservită</Label>
+            <Input
+              placeholder="ex: Cluj-Napoca și împrejurimi, sau «online, la nivel național»"
+              value={company.zona_deservita ?? ""}
+              onChange={(e) => update({ zona_deservita: e.target.value })}
+              maxLength={200}
+            />
           </div>
 
           <div>

@@ -15,6 +15,42 @@ import { initialWizardState, type WizardFormState } from "../types";
 
 const ETAPE = ["CUI", "Detalii firmă", "Domenii", "Nevoi & trimitere"];
 
+// Cheia sub care pastram draftul in sessionStorage. Motivul pentru care exista:
+// pagina asta e un formular cu mai multi pasi, dar starea (form) traieste doar
+// in memorie React. Daca userul da refresh din greseala (sau browserul
+// reincarca fila) in timp ce e la un pas mai avansat, pasul din URL (?pas=3)
+// ramane neschimbat, dar datele completate la pasii anteriori (CUI, denumire
+// gasita la ANAF etc.) se pierd — userul vede in continuare pasul 3-4, pare ca
+// a completat tot ce vede, dar trimiterea esueaza cu "date incomplete" pentru
+// campuri INVIZIBILE pe pasul curent. Persistand in sessionStorage evitam asta.
+const CHEIE_DRAFT = "breasla_inregistrare_firma_draft_v1";
+
+function citesteDraft(): Partial<WizardFormState> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const brut = window.sessionStorage.getItem(CHEIE_DRAFT);
+    return brut ? JSON.parse(brut) : null;
+  } catch {
+    return null;
+  }
+}
+
+function salveazaDraft(form: WizardFormState) {
+  try {
+    window.sessionStorage.setItem(CHEIE_DRAFT, JSON.stringify(form));
+  } catch {
+    // spatiu de stocare indisponibil (mod privat etc.) — nu e critic, doar pierdem persistenta
+  }
+}
+
+function stergeDraft() {
+  try {
+    window.sessionStorage.removeItem(CHEIE_DRAFT);
+  } catch {
+    // ignoram
+  }
+}
+
 export default function InregistrareFirmaPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,10 +63,18 @@ export default function InregistrareFirmaPage() {
   function mergiLaPas(urmatorul: number) {
     router.push(`/inregistrare/firma?pas=${urmatorul}`);
   }
-  const [form, setForm] = useState<WizardFormState>(initialWizardState);
+  const [form, setForm] = useState<WizardFormState>(() => ({
+    ...initialWizardState,
+    ...citesteDraft(),
+  }));
   const [seTrimite, setSeTrimite] = useState(false);
   const [eroareTrimitere, setEroareTrimitere] = useState<string | null>(null);
   const [rezultat, setRezultat] = useState<{ status: "approved" | "pending" } | null>(null);
+
+  // Salvam draftul la fiecare schimbare, ca sa supravietuiasca unui refresh.
+  useEffect(() => {
+    salveazaDraft(form);
+  }, [form]);
 
   // Firma se adauga DOAR de pe un cont existent — daca nu esti logat, te
   // trimitem intai sa-ti creezi contul personal (fara sa-l facem obligatoriu
@@ -74,6 +118,7 @@ export default function InregistrareFirmaPage() {
       }
 
       setRezultat({ status: json.data.status });
+      stergeDraft();
     } catch {
       setEroareTrimitere("Nu am putut trimite datele. Verifică conexiunea și încearcă din nou.");
     } finally {

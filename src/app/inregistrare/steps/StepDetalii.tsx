@@ -37,7 +37,23 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [judete, form.judet_nume_anaf]);
 
-  const gataDeContinuare = Boolean(form.judet_cod && form.telefon_firma);
+  // Telefon: doar cifre, mereu incepe cu 0, maxim 10 cifre — un numar de
+  // telefon romanesc valid arata mereu asa (ex: 07XX XXX XXX sau 02XX/03XX...).
+  function formateazaTelefon(valoareBruta: string): string {
+    let cifre = valoareBruta.replace(/\D/g, "");
+    if (cifre.length > 0 && cifre[0] !== "0") cifre = "0" + cifre;
+    return cifre.slice(0, 10);
+  }
+
+  const telefonValid = form.telefon_firma.length === 10;
+
+  const gataDeContinuare = Boolean(
+    form.judet_cod &&
+      form.localitate.trim() &&
+      telefonValid &&
+      form.dimensiune_echipa &&
+      form.zona_deservita.trim()
+  );
 
   function toggleJudetSuplimentar(cod: string) {
     const are = form.judete_suplimentare.includes(cod);
@@ -66,9 +82,10 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
           </Select>
         </div>
         <div>
-          <Label htmlFor="localitate">Localitate</Label>
+          <Label htmlFor="localitate" required>Localitate</Label>
           <Input
             id="localitate"
+            required
             value={form.localitate}
             onChange={(e) => update({ localitate: e.target.value })}
           />
@@ -82,9 +99,14 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
             id="telefonFirma"
             type="tel"
             required
+            inputMode="numeric"
+            placeholder="ex: 0712345678"
             value={form.telefon_firma}
-            onChange={(e) => update({ telefon_firma: e.target.value })}
+            onChange={(e) => update({ telefon_firma: formateazaTelefon(e.target.value) })}
           />
+          {form.telefon_firma && !telefonValid && (
+            <p className="mt-1 text-xs text-ember">Numărul trebuie să aibă exact 10 cifre.</p>
+          )}
         </div>
         <div>
           <Label htmlFor="emailFirma">Email firmă (public)</Label>
@@ -120,7 +142,7 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="dimensiune">Dimensiune echipă</Label>
+          <Label htmlFor="dimensiune" required>Dimensiune echipă</Label>
           <Select
             id="dimensiune"
             value={form.dimensiune_echipa}
@@ -149,7 +171,23 @@ export function StepDetalii({ form, update, onNext, onBack }: Props) {
       </div>
 
       <div>
-        <Label htmlFor="raza">Zonă deservită — rază în jurul sediului (km)</Label>
+        <Label htmlFor="zonaDeservita" required>Zonă deservită</Label>
+        <Input
+          id="zonaDeservita"
+          required
+          placeholder="ex: Cluj-Napoca și împrejurimi, sau «online, la nivel național»"
+          value={form.zona_deservita}
+          onChange={(e) => update({ zona_deservita: e.target.value })}
+          maxLength={200}
+        />
+        <FieldHint>
+          Scrie liber, cu cuvintele tale, unde lucrezi. Poți detalia mai jos și cu rază exactă
+          sau județe punctuale — sunt opționale.
+        </FieldHint>
+      </div>
+
+      <div>
+        <Label htmlFor="raza">Rază în jurul sediului, în km (opțional)</Label>
         <Input
           id="raza"
           type="number"

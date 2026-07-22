@@ -25,6 +25,7 @@ const CAMPURI_EDITABILE = [
   "numar_angajati",
   "dimensiune_echipa",
   "raza_deservire_km",
+  "zona_deservita",
   "cum_poate_ajuta_grupul",
 ] as const;
 

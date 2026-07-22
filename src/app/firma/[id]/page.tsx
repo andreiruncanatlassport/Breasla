@@ -382,10 +382,11 @@ export default async function CompanyPage({
         </Card>
       </div>
 
-      {(company.raza_deservire_km || judeteSuplimentare.length > 0) && (
+      {(company.zona_deservita || company.raza_deservire_km || judeteSuplimentare.length > 0) && (
         <Card className="mt-6">
           <SectionLabel icon={<Navigation className="h-3.5 w-3.5" />}>Zonă deservită</SectionLabel>
           <div className="mt-2 space-y-1 text-sm text-ink-soft">
+            {company.zona_deservita && <p>{company.zona_deservita}</p>}
             {company.raza_deservire_km && (
               <p>Rază de {company.raza_deservire_km} km în jurul sediului{judetNume ? ` (${judetNume})` : ""}.</p>
             )}

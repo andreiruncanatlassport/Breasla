@@ -38,8 +38,32 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => null);
-  if (!body?.cui || !body?.denumire) {
-    return NextResponse.json({ error: "Date incomplete." }, { status: 400 });
+  if (!body) {
+    return NextResponse.json({ error: "Cerere invalidă." }, { status: 400 });
+  }
+
+  // Validam EXACT campurile marcate cu steluta in formular — restul sunt
+  // optionale si nu trebuie sa blocheze trimiterea. Aratam clar ce lipseste,
+  // in loc de un mesaj generic "Date incomplete" care nu ajuta pe nimeni.
+  const categorii: CategorieInput[] = Array.isArray(body.categorii) ? body.categorii : [];
+  const lipsesc: string[] = [];
+  if (!body.cui) lipsesc.push("CUI");
+  if (!body.denumire) lipsesc.push("Denumirea firmei (caută din nou la ANAF)");
+  if (!body.judet_cod) lipsesc.push("Județul sediului");
+  if (!body.localitate || !String(body.localitate).trim()) lipsesc.push("Localitatea");
+  if (!body.telefon_firma || String(body.telefon_firma).length !== 10) {
+    lipsesc.push("Telefonul firmei (10 cifre)");
+  }
+  if (!body.dimensiune_echipa) lipsesc.push("Dimensiunea echipei");
+  if (!body.zona_deservita || !String(body.zona_deservita).trim()) lipsesc.push("Zona deservită");
+  if (categorii.length === 0) lipsesc.push("Cel puțin un domeniu de activitate");
+  else if (!categorii.some((c) => c.is_primary)) lipsesc.push("Domeniul principal (alege unul dintre cele bifate)");
+
+  if (lipsesc.length > 0) {
+    return NextResponse.json(
+      { error: `Completează înainte de a trimite: ${lipsesc.join(", ")}.` },
+      { status: 400 }
+    );
   }
 
   // 1) Inregistram firma (status implicit 'pending', impus si de RLS)
@@ -65,6 +89,7 @@ export async function POST(request: Request) {
       lat: body.lat ?? null,
       lng: body.lng ?? null,
       raza_deservire_km: body.raza_deservire_km ?? null,
+      zona_deservita: typeof body.zona_deservita === "string" && body.zona_deservita.trim() ? body.zona_deservita.trim().slice(0, 200) : null,
       telefon_firma: body.telefon_firma ?? null,
       email_firma: body.email_firma ?? null,
       website: body.website ?? null,
@@ -102,7 +127,6 @@ export async function POST(request: Request) {
   const companyId = (company as { id: string }).id;
 
   // 2) Inseram datele asociate (categorii, judete suplimentare, nevoi, oferte)
-  const categorii: CategorieInput[] = Array.isArray(body.categorii) ? body.categorii : [];
   if (categorii.length > 0) {
     await supabase.from("company_categories").insert(
       categorii.map((c) => ({
