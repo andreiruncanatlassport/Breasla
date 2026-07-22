@@ -406,7 +406,7 @@ export default function EditCompanyPage({
               <Input
                 value={company.discount_conditii ?? ""}
                 onChange={(e) => update({ discount_conditii: e.target.value })}
-                placeholder="ex: pentru comenzi de peste 5.000 lei, menționează Rețeaua Antreprenorilor Creștini"
+                placeholder="ex: pentru comenzi de peste 5.000 lei, menționează ACDR"
                 disabled={!company.discount_procent}
               />
             </div>

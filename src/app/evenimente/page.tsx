@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { EventCard, type EventCardData } from "@/components/EventCard";
 
-export const metadata = { title: "Evenimente — Rețeaua Antreprenorilor Creștini" };
+export const metadata = { title: "Evenimente — ACDR" };
 
 interface EventRow extends EventCardData {
   id: string;

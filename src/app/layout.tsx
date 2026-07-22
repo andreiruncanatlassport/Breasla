@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
 export const metadata: Metadata = {
-  title: "Rețeaua Antreprenorilor Creștini — Antreprenori Creștini din România",
+  title: "ACDR — Antreprenori Creștini din România",
   description:
     "Comunitatea Antreprenorilor Creștini — firme verificate prin ANAF, membri, oportunități, mesaje directe și evenimente, toate într-un singur loc.",
   icons: {

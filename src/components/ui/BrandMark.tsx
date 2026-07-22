@@ -11,7 +11,7 @@ interface BrandMarkProps {
 }
 
 /**
- * Semnul de brand al Rețelei Antreprenorilor Creștini — sigla oficială.
+ * Semnul de brand al ACDR — sigla oficială.
  *
  * Pe varianta "auto" randăm ambele imagini și comutăm prin CSS (dark:), nu
  * prin JavaScript: astfel sigla e corectă din primul cadru, fără pâlpâire la
@@ -24,7 +24,7 @@ export function BrandMark({ className, variant = "auto" }: BrandMarkProps) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo-mark.png"
-          alt="Rețeaua Antreprenorilor Creștini"
+          alt="ACDR"
           className="h-full w-full object-contain dark:hidden"
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -42,7 +42,7 @@ export function BrandMark({ className, variant = "auto" }: BrandMarkProps) {
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={variant === "white" ? "/logo-mark-white.png" : "/logo-mark.png"}
-      alt="Rețeaua Antreprenorilor Creștini"
+      alt="ACDR"
       className={clsx("object-contain", className)}
     />
   );

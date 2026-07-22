@@ -125,6 +125,7 @@ export default async function DashboardPage() {
         <LinkButton href="/dashboard/profil" variant="secondary" size="sm">Profilul meu public</LinkButton>
         <LinkButton href="/mesaje" variant="secondary" size="sm">Mesajele mele</LinkButton>
         <LinkButton href="/membri" variant="secondary" size="sm">Caută membri</LinkButton>
+        <LinkButton href="/oportunitati" variant="secondary" size="sm">Oportunități</LinkButton>
       </div>
 
       {/* Firmele mele */}

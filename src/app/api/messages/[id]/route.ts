@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { creeazaNotificare } from "@/lib/notifications";
 
 interface ParticipantRow {
   profile_id: string;
-  profiles: { nume_complet: string; avatar_url: string | null } | null;
+  profiles: { nume_complet: string; avatar_url: string | null; activ: boolean } | null;
 }
 
 /** Mesajele unei conversatii + celalalt participant. Marcheaza si ca citit. */
@@ -30,10 +30,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "Nu ai acces la această conversație." }, { status: 403 });
   }
 
+  // Service role pentru profilul celuilalt participant — RLS pe `profiles`
+  // limiteaza vizibilitatea la profil propriu/conexiune acceptata, dar
+  // mesageria e deschisa intre orice membri (vezi acelasi motiv in ../route.ts).
+  const admin = createServiceRoleClient();
+
   const [{ data: participantiData }, { data: mesajeData }] = await Promise.all([
-    supabase
+    admin
       .from("conversation_participants")
-      .select("profile_id, profiles(nume_complet, avatar_url)")
+      .select("profile_id, profiles(nume_complet, avatar_url, activ)")
       .eq("conversation_id", conversationId)
       .neq("profile_id", user.id),
     supabase
@@ -57,6 +62,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       celalalt_profile_id: celalalt?.profile_id ?? null,
       celalalt_nume: celalalt?.profiles?.nume_complet ?? "Membru șters",
       celalalt_avatar: celalalt?.profiles?.avatar_url ?? null,
+      celalalt_activ: celalalt?.profiles?.activ ?? false,
     },
   });
 }

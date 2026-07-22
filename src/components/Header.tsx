@@ -12,6 +12,7 @@ import { BrandMark } from "@/components/ui/BrandMark";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
+import { useUnreadMessagesCount } from "@/lib/useUnreadMessagesCount";
 
 interface HeaderProps {
   userEmail: string | null;
@@ -23,6 +24,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const unreadMesaje = useUnreadMessagesCount(Boolean(userEmail));
 
   async function handleLogout() {
     const supabase = createClient();
@@ -43,10 +45,10 @@ export function Header({ userEmail, rol }: HeaderProps) {
       <div className="h-0.5 w-full gradient-seal opacity-80" />
 
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="group flex items-center gap-2.5" title="Rețeaua Antreprenorilor Creștini">
+        <Link href="/" className="group flex items-center gap-2.5" title="ACDR">
           <BrandMark variant="white" className="h-8 w-8 shrink-0 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
           <span className="hidden font-display text-lg font-semibold tracking-tight text-white sm:inline">
-            R.A.C.
+            ACDR
           </span>
         </Link>
 
@@ -54,6 +56,12 @@ export function Header({ userEmail, rol }: HeaderProps) {
           <Link href="/catalog" className={linkClass("/catalog")}>
             {t.nav.catalog}
             {pathname === "/catalog" && (
+              <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
+            )}
+          </Link>
+          <Link href="/oportunitati" className={linkClass("/oportunitati")}>
+            {t.nav.opportunities}
+            {pathname === "/oportunitati" && (
               <span className="absolute -bottom-3.5 left-0 right-0 h-0.5 gradient-seal" />
             )}
           </Link>
@@ -85,6 +93,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
               )}
               <Link href="/mesaje" className={linkClass("/mesaje")}>
                 {t.nav.messages}
+                {unreadMesaje > 0 && <span className="ml-1 font-semibold text-seal">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
               </Link>
               <Link href="/dashboard" className={linkClass("/dashboard")}>
                 {t.nav.dashboard}
@@ -131,6 +140,9 @@ export function Header({ userEmail, rol }: HeaderProps) {
             <Link href="/catalog" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
               {t.nav.catalog}
             </Link>
+            <Link href="/oportunitati" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
+              {t.nav.opportunities}
+            </Link>
             <Link href="/membri" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
               {t.nav.members}
             </Link>
@@ -149,6 +161,7 @@ export function Header({ userEmail, rol }: HeaderProps) {
                 )}
                 <Link href="/mesaje" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.messages}
+                  {unreadMesaje > 0 && <span className="ml-1 font-semibold text-seal">({unreadMesaje > 9 ? "9+" : unreadMesaje})</span>}
                 </Link>
                 <Link href="/dashboard" onClick={() => setOpen(false)} className="text-sm font-medium text-white/80">
                   {t.nav.dashboard}

@@ -5,7 +5,7 @@ import { creeazaNotificare } from "@/lib/notifications";
 interface ParticipantRow {
   conversation_id: string;
   profile_id: string;
-  profiles: { nume_complet: string; avatar_url: string | null } | null;
+  profiles: { nume_complet: string; avatar_url: string | null; activ: boolean } | null;
 }
 
 interface MessageRow {
@@ -41,15 +41,22 @@ export async function GET() {
 
   const lastReadMap = new Map(aleMele.map((r) => [r.conversation_id, r.last_read_at]));
 
+  // Folosim service role pentru join-ul cu profiles — RLS pe `profiles`
+  // restrictioneaza vizibilitatea la profil propriu/conexiune acceptata, dar
+  // mesageria e deschisa intre orice membri. Fara asta, orice membru fara o
+  // conexiune acceptata cu celalalt participant aparea gresit ca "Membru
+  // șters", desi contul lui exista si e activ.
+  const admin = createServiceRoleClient();
+
   const [{ data: conversatiiData }, { data: participantiData }, { data: mesajeData }] = await Promise.all([
     supabase
       .from("conversations")
       .select("id, created_at, last_message_at")
       .in("id", idUri)
       .order("last_message_at", { ascending: false }),
-    supabase
+    admin
       .from("conversation_participants")
-      .select("conversation_id, profile_id, profiles(nume_complet, avatar_url)")
+      .select("conversation_id, profile_id, profiles(nume_complet, avatar_url, activ)")
       .in("conversation_id", idUri)
       .neq("profile_id", user.id),
     supabase
@@ -76,12 +83,16 @@ export async function GET() {
     const necitit = Boolean(
       ultimulMesaj && ultimulMesaj.sender_id !== user.id && (!lastRead || new Date(ultimulMesaj.created_at) > new Date(lastRead))
     );
+    // "Membru șters" apare doar cand contul chiar a fost sters definitiv —
+    // in acel caz randul din conversation_participants a disparut si el (cascada),
+    // deci `celalalt` e undefined. Un cont doar dezactivat tot are rand aici.
     return {
       id: c.id,
       last_message_at: c.last_message_at,
       celalalt_profile_id: celalalt?.profile_id ?? null,
       celalalt_nume: celalalt?.profiles?.nume_complet ?? "Membru șters",
       celalalt_avatar: celalalt?.profiles?.avatar_url ?? null,
+      celalalt_activ: celalalt?.profiles?.activ ?? false,
       ultimul_mesaj: ultimulMesaj?.continut ?? null,
       ultimul_mesaj_eu: ultimulMesaj?.sender_id === user.id,
       necitit,

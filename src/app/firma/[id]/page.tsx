@@ -252,7 +252,7 @@ export default async function CompanyPage({
               <div className="min-w-0 flex-1">
                 <p className="stamp-label text-seal">Reducere pentru membrii Breslei</p>
                 <p className="mt-1.5 font-semibold text-ink">
-                  {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din Rețeaua Antreprenorilor Creștini`}
+                  {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din ACDR`}
                 </p>
                 {company.discount_conditii && (
                   <p className="mt-1 text-sm text-ink-soft">{company.discount_conditii}</p>

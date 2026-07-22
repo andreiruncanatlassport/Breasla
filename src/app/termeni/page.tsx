@@ -5,12 +5,12 @@ const SECTIUNI = [
   {
     titlu: "1. Acceptarea termenilor",
     continut:
-      "Prin crearea unui cont și înregistrarea unei firme pe Rețeaua Antreprenorilor Creștini, confirmi că ai citit, ai înțeles și ești de acord cu acești Termeni și Condiții, cu Regulamentul comunității și cu Politica de confidențialitate. Dacă nu ești de acord, te rugăm să nu folosești platforma.",
+      "Prin crearea unui cont și înregistrarea unei firme pe ACDR, confirmi că ai citit, ai înțeles și ești de acord cu acești Termeni și Condiții, cu Regulamentul comunității și cu Politica de confidențialitate. Dacă nu ești de acord, te rugăm să nu folosești platforma.",
   },
   {
-    titlu: "2. Ce este Rețeaua Antreprenorilor Creștini",
+    titlu: "2. Ce este ACDR",
     continut:
-      "Rețeaua Antreprenorilor Creștini este un catalog online de firme din România, verificate prin date publice de la ANAF, conceput pentru a facilita găsirea de colaboratori și subcontractanți. Rețeaua Antreprenorilor Creștini nu este parte în nicio înțelegere comercială încheiată între firmele de pe platformă și nu garantează calitatea, disponibilitatea sau rezultatul niciunei colaborări.",
+      "ACDR este un catalog online de firme din România, verificate prin date publice de la ANAF, conceput pentru a facilita găsirea de colaboratori și subcontractanți. ACDR nu este parte în nicio înțelegere comercială încheiată între firmele de pe platformă și nu garantează calitatea, disponibilitatea sau rezultatul niciunei colaborări.",
   },
   {
     titlu: "3. Cine se poate înregistra",
@@ -25,17 +25,17 @@ const SECTIUNI = [
   {
     titlu: "5. Conduită și conținut",
     continut:
-      "Ești de acord să respecți Regulamentul comunității. Rețeaua Antreprenorilor Creștini își rezervă dreptul de a modera, suspenda sau elimina profiluri, recenzii sau conținut care încalcă regulile platformei sau legislația aplicabilă.",
+      "Ești de acord să respecți Regulamentul comunității. ACDR își rezervă dreptul de a modera, suspenda sau elimina profiluri, recenzii sau conținut care încalcă regulile platformei sau legislația aplicabilă.",
   },
   {
     titlu: "6. Acuratețea datelor de la ANAF",
     continut:
-      "Datele oficiale afișate provin din serviciile publice ale ANAF și reflectă informația disponibilă la momentul preluării. Rețeaua Antreprenorilor Creștini nu garantează actualizarea în timp real a acestor date și recomandă verificarea independentă înainte de orice decizie comercială importantă.",
+      "Datele oficiale afișate provin din serviciile publice ale ANAF și reflectă informația disponibilă la momentul preluării. ACDR nu garantează actualizarea în timp real a acestor date și recomandă verificarea independentă înainte de orice decizie comercială importantă.",
   },
   {
     titlu: "7. Recenzii și conexiuni",
     continut:
-      "Recenziile sunt publicate doar după verificarea unei dovezi de colaborare și pot fi respinse la discreția administratorilor. Conexiunile dintre firme oferă acces la date de contact suplimentare, dar nu constituie nicio formă de girare sau garanție din partea Rețelei Antreprenorilor Creștini.",
+      "Recenziile sunt publicate doar după verificarea unei dovezi de colaborare și pot fi respinse la discreția administratorilor. Conexiunile dintre firme oferă acces la date de contact suplimentare, dar nu constituie nicio formă de girare sau garanție din partea ACDR.",
   },
   {
     titlu: "8. Proprietate intelectuală",
@@ -45,12 +45,12 @@ const SECTIUNI = [
   {
     titlu: "9. Limitarea răspunderii",
     continut:
-      'Platforma e oferită "ca atare", fără garanții privind disponibilitatea neîntreruptă sau absența erorilor. Rețeaua Antreprenorilor Creștini nu răspunde pentru pagube rezultate din colaborări între firme sau din decizii luate pe baza informațiilor afișate pe platformă.',
+      'Platforma e oferită "ca atare", fără garanții privind disponibilitatea neîntreruptă sau absența erorilor. ACDR nu răspunde pentru pagube rezultate din colaborări între firme sau din decizii luate pe baza informațiilor afișate pe platformă.',
   },
   {
     titlu: "10. Suspendarea sau încetarea contului",
     continut:
-      "Poți solicita oricând ștergerea contului și a datelor firmei tale. Rețeaua Antreprenorilor Creștini poate suspenda sau elimina un cont care încalcă acești termeni sau regulamentul, conform procesului descris acolo.",
+      "Poți solicita oricând ștergerea contului și a datelor firmei tale. ACDR poate suspenda sau elimina un cont care încalcă acești termeni sau regulamentul, conform procesului descris acolo.",
   },
   {
     titlu: "11. Modificări",

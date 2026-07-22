@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { NewsCard, type NewsCardData } from "@/components/NewsCard";
 
-export const metadata = { title: "Știri — Rețeaua Antreprenorilor Creștini" };
+export const metadata = { title: "Știri — ACDR" };
 
 export default async function StiriPage() {
   const supabase = await createClient();

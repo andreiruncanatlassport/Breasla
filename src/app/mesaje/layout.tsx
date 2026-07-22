@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessagesShell } from "@/components/MessagesShell";
 
-export const metadata = { title: "Mesaje — Rețeaua Antreprenorilor Creștini" };
+export const metadata = { title: "Mesaje — ACDR" };
 
 export default async function MesajeLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

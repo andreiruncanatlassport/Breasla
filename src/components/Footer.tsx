@@ -27,7 +27,7 @@ export function Footer() {
             <div className="flex items-center gap-2.5">
               <BrandMark variant="white" className="h-9 w-9 shrink-0" />
               <span className="font-display text-base font-semibold leading-tight tracking-tight text-white">
-                Rețeaua Antreprenorilor Creștini
+                ACDR
               </span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-white/60">{t.footer.tagline}</p>
@@ -49,7 +49,7 @@ export function Footer() {
         <div className="mt-12 flex flex-col justify-between gap-2 border-t border-white/10 pt-6 sm:flex-row">
           <p className="text-xs text-white/40">{t.footer.dataSource}</p>
           <p className="font-mono-num text-xs text-white/40">
-            © {new Date().getFullYear()} Rețeaua Antreprenorilor Creștini
+            © {new Date().getFullYear()} ACDR
           </p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Home, Building2, Users, MessageCircle, UserRound } from "lucide-react";
 import { clsx } from "clsx";
 import { useSettings } from "@/lib/settings/context";
+import { useUnreadMessagesCount } from "@/lib/useUnreadMessagesCount";
 
 /**
  * Bara de navigare de jos, doar pe mobil — face site-ul sa se simta ca o
@@ -15,12 +16,17 @@ import { useSettings } from "@/lib/settings/context";
 export function MobileTabBar({ autentificat }: { autentificat: boolean }) {
   const pathname = usePathname();
   const { t } = useSettings();
+  const unreadMesaje = useUnreadMessagesCount(autentificat);
 
   const taburi = [
     { href: "/", label: t.mobileNav.home, icon: Home, exact: true },
     { href: "/catalog", label: t.mobileNav.companies, icon: Building2 },
     { href: "/membri", label: t.mobileNav.members, icon: Users },
-    { href: "/mesaje", label: t.mobileNav.messages, icon: MessageCircle },
+    {
+      href: "/mesaje",
+      label: unreadMesaje > 0 ? `${t.mobileNav.messages} (${unreadMesaje > 9 ? "9+" : unreadMesaje})` : t.mobileNav.messages,
+      icon: MessageCircle,
+    },
     {
       href: autentificat ? "/dashboard" : "/login",
       label: autentificat ? t.mobileNav.account : t.mobileNav.login,

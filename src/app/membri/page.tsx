@@ -5,7 +5,7 @@ import { MemberCard, type MemberCardData } from "@/components/MemberCard";
 import { MembriFilters } from "./MembriFilters";
 import type { Judet } from "@/types/database";
 
-export const metadata = { title: "Membri — Rețeaua Antreprenorilor Creștini" };
+export const metadata = { title: "Membri — ACDR" };
 
 /** Scoate caracterele care ar strica sintaxa .or() din PostgREST. */
 function sanitizeazaTermenCautare(q: string): string {

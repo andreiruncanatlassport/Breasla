@@ -340,7 +340,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
     news: {
       eyebrow: "Comunitatea",
       title: "Știri",
-      subtitle: "Articole, interviuri și noutăți din comunitatea Rețelei Antreprenorilor Creștini.",
+      subtitle: "Articole, interviuri și noutăți din comunitatea ACDR.",
       empty: "Nicio știre publicată momentan.",
       readMore: "Citește știrea",
       allNews: "Toate știrile",
@@ -367,7 +367,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
     members: {
       eyebrow: "Directorul comunității",
       title: "Membri",
-      subtitle: "Antreprenori și profesioniști din comunitatea Rețelei Antreprenorilor Creștini. Trimite un mesaj direct oricui.",
+      subtitle: "Antreprenori și profesioniști din comunitatea ACDR. Trimite un mesaj direct oricui.",
       searchPlaceholder: "Caută după nume, firmă sau titlu...",
       empty: "Niciun membru public momentan.",
       emptySearch: "Niciun membru găsit pentru această căutare.",
@@ -424,7 +424,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       respondError: "Scrie un mesaj pentru firma care a postat oportunitatea.",
       loginToRespondSuffix: "ca să răspunzi la această oportunitate.",
       loginToPostSuffix: "ca să postezi o oportunitate.",
-      postSubtitle: "Vizibilă tuturor firmelor din Rețeaua Antreprenorilor Creștini, până când o închizi. Diferă de o Cerere de ofertă (trimisă privat către firme alese de tine) — aici oricine poate răspunde.",
+      postSubtitle: "Vizibilă tuturor firmelor din ACDR, până când o închizi. Diferă de o Cerere de ofertă (trimisă privat către firme alese de tine) — aici oricine poate răspunde.",
       sectionAbout: "Despre ce e vorba",
       fieldTitle: "Titlu",
       titlePlaceholder: "Ex: Caut subcontractor instalații electrice",
@@ -577,7 +577,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
     news: {
       eyebrow: "Community",
       title: "News",
-      subtitle: "Articles, interviews and news from the Christian Entrepreneurs Network community.",
+      subtitle: "Articles, interviews and news from the ACDR community.",
       empty: "No news published yet.",
       readMore: "Read the article",
       allNews: "All news",
@@ -604,7 +604,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
     members: {
       eyebrow: "Community directory",
       title: "Members",
-      subtitle: "Entrepreneurs and professionals from the Christian Entrepreneurs Network community. Message anyone directly.",
+      subtitle: "Entrepreneurs and professionals from the ACDR community. Message anyone directly.",
       searchPlaceholder: "Search by name, company or title...",
       empty: "No public members right now.",
       emptySearch: "No members found for this search.",
@@ -661,7 +661,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       respondError: "Write a message for the company that posted this opportunity.",
       loginToRespondSuffix: "to respond to this opportunity.",
       loginToPostSuffix: "to post an opportunity.",
-      postSubtitle: "Visible to every company in the Christian Entrepreneurs Network, until you close it. Different from a Request for Quote (sent privately to companies you choose) — here, anyone can respond.",
+      postSubtitle: "Visible to every company in ACDR, until you close it. Different from a Request for Quote (sent privately to companies you choose) — here, anyone can respond.",
       sectionAbout: "What it's about",
       fieldTitle: "Title",
       titlePlaceholder: "E.g. Looking for an electrical subcontractor",
