@@ -49,15 +49,15 @@ export default async function HomePage() {
   const [
     { count: firmeCount },
     { count: domeniiCount },
-    { count: judeteCount },
+    { data: judeteData },
     { data: stiriData },
     { data: evenimenteData },
-    { data: firmeData },
-    { data: oportunitatiData },
+    { data: firmeData, error: firmeError },
+    { data: oportunitatiData, error: oportunitatiError },
   ] = await Promise.all([
     supabase.from("companies").select("id", { count: "exact", head: true }).eq("status", "approved"),
     supabase.from("categories").select("id", { count: "exact", head: true }),
-    supabase.from("judete").select("cod", { count: "exact", head: true }),
+    supabase.from("judete").select("cod, nume"),
     supabase
       .from("news_articles")
       .select("slug, titlu, rezumat, imagine_url, published_at")
@@ -74,9 +74,16 @@ export default async function HomePage() {
     // Pentru preview-ul rotativ de pe homepage: luam un lot recent de firme
     // aprobate si alegem aleatoriu cateva dintre ele in cod (varietate la
     // fiecare incarcare, fara sa scanam tot tabelul).
+    //
+    // IMPORTANT: NU folosim aici embed-ul PostgREST "judete(nume)" direct pe
+    // companies. Tabelul companies are DOUA cai catre judete — cheia directa
+    // judet_cod SI tabelul de legatura company_judete (judete suplimentare) —
+    // iar Supabase/PostgREST nu poate alege automat intre ele, arunca eroare
+    // de relatie ambigua. Rezolvam numele judetului manual, in JS, mai jos,
+    // exact cum face deja pagina de catalog (vezi src/app/catalog/page.tsx).
     supabase
       .from("companies")
-      .select("id, slug, denumire, logo_url, localitate, descriere, judet_cod, dimensiune_echipa, judete(nume)")
+      .select("id, slug, denumire, logo_url, localitate, descriere, judet_cod, dimensiune_echipa")
       .eq("status", "approved")
       .order("created_at", { ascending: false })
       .limit(40),
@@ -89,6 +96,14 @@ export default async function HomePage() {
       .order("created_at", { ascending: false })
       .limit(NR_OPORTUNITATI_PREVIEW),
   ]);
+
+  // Logam orice eroare server-side (vizibila in log-urile din Railway) — ca sa
+  // nu mai avem niciodata o sectiune care "dispare" fara nicio urma in log-uri.
+  if (firmeError) console.error("Homepage: eroare la incarcarea firmelor:", firmeError);
+  if (oportunitatiError) console.error("Homepage: eroare la incarcarea oportunitatilor:", oportunitatiError);
+
+  const judeteMap = new Map(((judeteData as { cod: string; nume: string }[]) ?? []).map((j) => [j.cod, j.nume]));
+  const judeteCount = judeteMap.size;
 
   const stiri = (stiriData as NewsCardData[]) ?? [];
   const evenimente = (evenimenteData as EventCardData[]) ?? [];
@@ -103,7 +118,6 @@ export default async function HomePage() {
     descriere: string | null;
     judet_cod: string | null;
     dimensiune_echipa: string | null;
-    judete: { nume: string } | null;
   };
   const firmeToate = (firmeData as unknown as FirmaRand[]) ?? [];
   const firmePreview = alegeFirmeRotativ(firmeToate, NR_FIRME_PREVIEW).map((c) => ({
@@ -114,9 +128,10 @@ export default async function HomePage() {
     localitate: c.localitate,
     descriere: c.descriere,
     dimensiune_echipa: c.dimensiune_echipa,
-    judet_nume: c.judete?.nume ?? null,
+    judet_nume: c.judet_cod ? judeteMap.get(c.judet_cod) ?? null : null,
     domeniu_principal: null,
   }));
+
 
   type OportunitateRand = Omit<
     OpportunityCardData,
