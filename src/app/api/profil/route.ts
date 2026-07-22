@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 const MAX_BIO = 600;
 const MAX_CAUTA_SUPORT = 300;
@@ -55,7 +56,7 @@ export async function PATCH(request: Request) {
     )
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "PATCH src/app/api/profil/route.ts") }, { status: 500 });
 
   return NextResponse.json({ data });
 }

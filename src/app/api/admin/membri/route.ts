@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 async function verificaAdmin() {
   const supabase = await createClient();
@@ -39,7 +40,7 @@ export async function PATCH(request: Request) {
 
   const admin = createServiceRoleClient();
   const { error } = await admin.from("profiles").update({ activ } as never).eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "PATCH src/app/api/admin/membri/route.ts") }, { status: 500 });
 
   return NextResponse.json({ data: { id, activ } });
 }
@@ -67,7 +68,7 @@ export async function DELETE(request: Request) {
   // Stergem contul de auth; profilul si datele asociate se sterg in cascada
   // (profiles.id -> auth.users cu on delete cascade).
   const { error } = await admin.auth.admin.deleteUser(id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "DELETE src/app/api/admin/membri/route.ts") }, { status: 500 });
 
   return NextResponse.json({ data: { deleted: true } });
 }

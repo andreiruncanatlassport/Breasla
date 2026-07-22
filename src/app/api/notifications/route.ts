@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 /** Ultimele notificari + numarul celor necitite (pentru clopotelul din header). */
 export async function GET() {
@@ -39,7 +40,7 @@ export async function PATCH(request: Request) {
   if (body?.id) q = q.eq("id", body.id);
 
   const { error } = await q;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "PATCH src/app/api/notifications/route.ts") }, { status: 500 });
 
   return NextResponse.json({ data: { ok: true } });
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -43,7 +44,10 @@ export async function POST(request: Request) {
     .eq("id", user.id);
 
   if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 500 });
+    return NextResponse.json(
+      { error: mesajEroareSigur(updateError, "POST /api/verificare-email/confirma") },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ data: { verificat: true } });

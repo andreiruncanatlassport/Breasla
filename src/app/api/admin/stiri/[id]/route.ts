@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -34,7 +35,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     .select("id, slug, status")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "PATCH src/app/api/admin/stiri/[id]/route.ts") }, { status: 500 });
   return NextResponse.json({ data });
 }
 
@@ -47,6 +48,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   if (!user) return NextResponse.json({ error: "Neautentificat." }, { status: 401 });
 
   const { error } = await supabase.from("news_articles").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "DELETE src/app/api/admin/stiri/[id]/route.ts") }, { status: 500 });
   return NextResponse.json({ data: { ok: true } });
 }

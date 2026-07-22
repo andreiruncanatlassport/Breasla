@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id: eventId } = await params;
@@ -45,7 +46,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (error) {
     const isDuplicate = error.code === "23505";
     return NextResponse.json(
-      { error: isDuplicate ? "Ești deja înscris la acest eveniment." : error.message },
+      { error: mesajEroareSigur(error, "POST src/app/api/evenimente/[id]/inscriere/route.ts", { "23505": "Ești deja înscris la acest eveniment." }) },
       { status: isDuplicate ? 409 : 500 }
     );
   }
@@ -67,6 +68,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     .eq("event_id", eventId)
     .eq("profile_id", user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "DELETE /api/evenimente/[id]/inscriere") }, { status: 500 });
   return NextResponse.json({ data: { ok: true } });
 }

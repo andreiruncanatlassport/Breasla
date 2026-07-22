@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 /** Editeaza sau inchide/redeschide o oportunitate — doar proprietarul firmei sau admin (RLS). */
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -29,7 +30,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   const { error } = await supabase.from("opportunities").update(patch as never).eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "PATCH src/app/api/opportunities/[id]/route.ts") }, { status: 500 });
 
   return NextResponse.json({ data: { ok: true } });
 }
@@ -44,7 +45,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   if (!user) return NextResponse.json({ error: "Trebuie să fii autentificat." }, { status: 401 });
 
   const { error } = await supabase.from("opportunities").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "DELETE src/app/api/opportunities/[id]/route.ts") }, { status: 500 });
 
   return NextResponse.json({ data: { ok: true } });
 }

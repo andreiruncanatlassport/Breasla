@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
   if (error) {
     const isDuplicate = error.code === "23505";
     return NextResponse.json(
-      { error: isDuplicate ? "Acest cod CAEN e deja atribuit acestei categorii." : error.message },
+      { error: mesajEroareSigur(error, "POST src/app/api/admin/caen/route.ts", { "23505": "Acest cod CAEN e deja atribuit acestei categorii." }) },
       { status: isDuplicate ? 409 : 500 }
     );
   }

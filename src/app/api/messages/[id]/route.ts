@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { creeazaNotificare } from "@/lib/notifications";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 interface ParticipantRow {
   profile_id: string;
@@ -100,7 +101,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     .select("id, conversation_id, sender_id, continut, created_at")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "POST src/app/api/messages/[id]/route.ts") }, { status: 500 });
 
   const { data: altiiData } = await supabase
     .from("conversation_participants")
@@ -141,6 +142,6 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     .eq("conversation_id", conversationId)
     .eq("profile_id", user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "DELETE src/app/api/messages/[id]/route.ts") }, { status: 500 });
   return NextResponse.json({ data: { ok: true } });
 }

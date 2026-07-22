@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -39,6 +40,6 @@ export async function POST(request: Request) {
     .select("id, slug")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "POST src/app/api/admin/evenimente/route.ts") }, { status: 500 });
   return NextResponse.json({ data });
 }

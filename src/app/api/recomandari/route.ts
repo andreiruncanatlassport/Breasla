@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 /**
  * POST /api/recomandari — recomanzi un membru. RLS impune ca ai schimbat
@@ -60,6 +61,6 @@ export async function DELETE(request: Request) {
     .eq("recommender_id", user.id)
     .eq("recommended_id", recommendedId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: mesajEroareSigur(error, "DELETE src/app/api/recomandari/route.ts") }, { status: 500 });
   return NextResponse.json({ data: { ok: true } });
 }

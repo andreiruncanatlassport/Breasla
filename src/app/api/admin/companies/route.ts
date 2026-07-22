@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 /** Verifica ca cel care cere e admin/moderator. Returneaza user-ul sau null. */
 async function verificaAdmin() {
@@ -70,7 +71,12 @@ export async function POST(request: Request) {
     .select("id, slug, denumire")
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    return NextResponse.json(
+      { error: mesajEroareSigur(error, "POST /api/admin/companies") },
+      { status: 500 }
+    );
+  }
 
   await admin.from("admin_audit_log").insert({
     admin_id: user.id,
@@ -99,7 +105,12 @@ export async function DELETE(request: Request) {
 
   const admin = createServiceRoleClient();
   const { error } = await admin.from("companies").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    return NextResponse.json(
+      { error: mesajEroareSigur(error, "DELETE /api/admin/companies") },
+      { status: 500 }
+    );
+  }
 
   await admin.from("admin_audit_log").insert({
     admin_id: user.id,

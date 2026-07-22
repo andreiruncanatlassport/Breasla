@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { areReauthValid } from "@/lib/reauth";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 // Campuri pe care proprietarul are voie sa le editeze dupa inregistrare.
 // (status, aprobat_de, aprobat_la, cui sunt oricum protejate si la nivel de
@@ -26,6 +27,11 @@ const CAMPURI_EDITABILE = [
   "raza_deservire_km",
   "cum_poate_ajuta_grupul",
 ] as const;
+
+// Campuri text cu check constraint (enum) in baza de date, ale caror select-uri
+// din formular au o optiune implicita cu valoare "" ("Alege..."). Fara aceasta
+// conversie, "" ajunge la Postgres si incalca constrangerea (ex: companies_dimensiune_echipa_check).
+const CAMPURI_ENUM_NULLABILE = new Set<string>(["dimensiune_echipa", "timp_raspuns", "proiect_marime"]);
 
 export async function PATCH(
   request: Request,
@@ -58,7 +64,10 @@ export async function PATCH(
 
   const patch: Record<string, unknown> = {};
   for (const camp of CAMPURI_EDITABILE) {
-    if (camp in body) patch[camp] = body[camp];
+    if (camp in body) {
+      const valoare = body[camp];
+      patch[camp] = CAMPURI_ENUM_NULLABILE.has(camp) && valoare === "" ? null : valoare;
+    }
   }
 
   if (Object.keys(patch).length === 0) {
@@ -73,7 +82,10 @@ export async function PATCH(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: mesajEroareSigur(error, "PATCH /api/companies/[id]") },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ data });
@@ -106,7 +118,10 @@ export async function DELETE(
   const { error } = await supabase.from("companies").delete().eq("id", id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: mesajEroareSigur(error, "DELETE /api/companies/[id]") },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ data: { deleted: true } });

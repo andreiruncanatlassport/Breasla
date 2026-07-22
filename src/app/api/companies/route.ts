@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       descriere: body.descriere ?? null,
       domenii_altele: typeof body.domenii_altele === "string" && body.domenii_altele.trim() ? body.domenii_altele.trim().slice(0, 300) : null,
       numar_angajati: body.numar_angajati ?? null,
-      dimensiune_echipa: body.dimensiune_echipa ?? null,
+      dimensiune_echipa: body.dimensiune_echipa || null,
       cifra_afaceri_an: body.cifra_afaceri_an ?? null,
       cifra_afaceri_valoare: body.cifra_afaceri_valoare ?? null,
       cifra_afaceri_sursa: body.cifra_afaceri_sursa ?? null,
@@ -81,12 +81,19 @@ export async function POST(request: Request) {
     .single();
 
   if (insertError || !company) {
+    if (insertError) {
+      // Detalii tehnice doar in log-urile serverului (Railway) — niciodata in fata userului.
+      console.error("Eroare la salvarea firmei (companies insert):", insertError);
+    }
     const isDuplicate = insertError?.code === "23505";
+    const isCheckViolation = insertError?.code === "23514";
     return NextResponse.json(
       {
         error: isDuplicate
           ? "Această firmă (CUI) este deja înregistrată."
-          : "Nu am putut salva firma. " + (insertError?.message ?? ""),
+          : isCheckViolation
+            ? "Una dintre valorile completate nu este validă. Verifică formularul și încearcă din nou."
+            : "Nu am putut salva firma. Te rugăm încearcă din nou sau contactează-ne dacă problema persistă.",
       },
       { status: isDuplicate ? 409 : 500 }
     );

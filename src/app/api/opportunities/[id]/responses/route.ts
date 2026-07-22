@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { notificaFirma } from "@/lib/notifications";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 /** Raspunde la o oportunitate deschisa, in numele unei firme detinute de userul curent. */
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -61,7 +62,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (error) {
     const isDuplicate = error.code === "23505";
     return NextResponse.json(
-      { error: isDuplicate ? "Ai răspuns deja la această oportunitate." : error.message },
+      { error: mesajEroareSigur(error, "POST src/app/api/opportunities/[id]/responses/route.ts", { "23505": "Ai răspuns deja la această oportunitate." }) },
       { status: isDuplicate ? 409 : 500 }
     );
   }

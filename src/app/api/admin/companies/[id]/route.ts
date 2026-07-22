@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function PATCH(
   request: Request,
@@ -42,7 +43,10 @@ export async function PATCH(
     .eq("id", id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: mesajEroareSigur(error, "PATCH /api/admin/companies/[id]") },
+      { status: 500 }
+    );
   }
 
   await supabase.from("admin_audit_log").insert({

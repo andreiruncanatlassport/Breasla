@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
   if (error) {
     const isDuplicate = error.code === "23505";
     return NextResponse.json(
-      { error: isDuplicate ? "Ai trimis deja o cerere către această firmă." : error.message },
+      { error: mesajEroareSigur(error, "POST src/app/api/connections/route.ts", { "23505": "Ai trimis deja o cerere către această firmă." }) },
       { status: isDuplicate ? 409 : 500 }
     );
   }
