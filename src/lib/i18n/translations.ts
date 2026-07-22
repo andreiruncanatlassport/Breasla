@@ -61,6 +61,11 @@ interface Dictionary {
     companiesEyebrow: string;
     companiesTitle: string;
     companiesSeeAll: string;
+    companiesExploreButton: string;
+    opportunitiesEyebrow: string;
+    opportunitiesTitle: string;
+    opportunitiesSeeAll: string;
+    opportunitiesEmpty: string;
   };
   footer: {
     tagline: string;
@@ -300,6 +305,11 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       companiesEyebrow: "Din catalog",
       companiesTitle: "Firme din comunitate",
       companiesSeeAll: "Vezi toate firmele →",
+      companiesExploreButton: "Explorează lista firmelor înregistrate",
+      opportunitiesEyebrow: "Piața breslei",
+      opportunitiesTitle: "Oportunități",
+      opportunitiesSeeAll: "Toate oportunitățile →",
+      opportunitiesEmpty: "Nicio oportunitate deschisă momentan.",
     },
     footer: {
       tagline: "Registrul antreprenorilor din România — găsește colaboratori verificați, în orice domeniu.",
@@ -537,6 +547,11 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       companiesEyebrow: "From the catalog",
       companiesTitle: "Companies in the community",
       companiesSeeAll: "See all companies →",
+      companiesExploreButton: "Explore the list of registered companies",
+      opportunitiesEyebrow: "The guild's marketplace",
+      opportunitiesTitle: "Opportunities",
+      opportunitiesSeeAll: "All opportunities →",
+      opportunitiesEmpty: "No open opportunities right now.",
     },
     footer: {
       tagline: "Romania's entrepreneur registry — find verified collaborators, in any field.",

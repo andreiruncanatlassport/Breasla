@@ -9,9 +9,16 @@ import { HomeStats } from "@/components/HomeStats";
 import { NewsCard, type NewsCardData } from "@/components/NewsCard";
 import { EventCard, type EventCardData } from "@/components/EventCard";
 import { CompanyCard } from "@/components/CompanyCard";
+import { OpportunityCard, type OpportunityCardData } from "@/components/OpportunityCard";
 import { alegeFirmeRotativ } from "@/lib/rotate";
 
 const STEP_TINTS = ["bg-seal", "bg-teal", "bg-navy"];
+
+// Cate firme aratam in preview-ul de pe homepage — tinut mic intentionat
+// (2-3), ca homepage-ul sa ramana un ecran de intrare compact, nu un al
+// doilea catalog. Lista completa e la un click distanta (butonul de mai jos).
+const NR_FIRME_PREVIEW = 3;
+const NR_OPORTUNITATI_PREVIEW = 3;
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -27,6 +34,17 @@ export default async function HomePage() {
     seatsSuffix: t.events.seatsLeft,
     cancelled: t.events.cancelled,
   };
+  const opportunityLabels = {
+    proiect: t.opportunities.typeProject,
+    achizitie: t.opportunities.typePurchase,
+    colaborare: t.opportunities.typeCollaboration,
+    cerere_servicii: t.opportunities.typeServiceRequest,
+    closed: t.opportunities.closed,
+    responseSingular: t.opportunities.responseSingular,
+    responses: t.opportunities.responses,
+    companyFallback: t.opportunities.companyFallback,
+    until: t.opportunities.until,
+  };
 
   const [
     { count: firmeCount },
@@ -35,6 +53,7 @@ export default async function HomePage() {
     { data: stiriData },
     { data: evenimenteData },
     { data: firmeData },
+    { data: oportunitatiData },
   ] = await Promise.all([
     supabase.from("companies").select("id", { count: "exact", head: true }).eq("status", "approved"),
     supabase.from("categories").select("id", { count: "exact", head: true }),
@@ -53,20 +72,28 @@ export default async function HomePage() {
       .order("data_inceput", { ascending: true })
       .limit(3),
     // Pentru preview-ul rotativ de pe homepage: luam un lot recent de firme
-    // aprobate si alegem aleatoriu 6 dintre ele in cod (varietate la fiecare
-    // incarcare, fara sa scanam tot tabelul).
+    // aprobate si alegem aleatoriu cateva dintre ele in cod (varietate la
+    // fiecare incarcare, fara sa scanam tot tabelul).
     supabase
       .from("companies")
       .select("id, slug, denumire, logo_url, localitate, descriere, judet_cod, dimensiune_echipa, judete(nume)")
       .eq("status", "approved")
       .order("created_at", { ascending: false })
       .limit(40),
+    supabase
+      .from("opportunities")
+      .select(
+        "id, titlu, tip, imagine_url, buget_min, buget_max, termen_limita, status, created_at, judete(nume), companies(denumire, slug, logo_url)"
+      )
+      .eq("status", "deschisa")
+      .order("created_at", { ascending: false })
+      .limit(NR_OPORTUNITATI_PREVIEW),
   ]);
 
   const stiri = (stiriData as NewsCardData[]) ?? [];
   const evenimente = (evenimenteData as EventCardData[]) ?? [];
 
-  // amestecam si taiem la 6 — rotatie la fiecare randare
+  // amestecam si taiem la cateva — rotatie la fiecare randare
   type FirmaRand = {
     id: string;
     slug: string | null;
@@ -79,7 +106,7 @@ export default async function HomePage() {
     judete: { nume: string } | null;
   };
   const firmeToate = (firmeData as unknown as FirmaRand[]) ?? [];
-  const firmePreview = alegeFirmeRotativ(firmeToate, 6).map((c) => ({
+  const firmePreview = alegeFirmeRotativ(firmeToate, NR_FIRME_PREVIEW).map((c) => ({
     id: c.id,
     slug: c.slug,
     denumire: c.denumire,
@@ -89,6 +116,30 @@ export default async function HomePage() {
     dimensiune_echipa: c.dimensiune_echipa,
     judet_nume: c.judete?.nume ?? null,
     domeniu_principal: null,
+  }));
+
+  type OportunitateRand = Omit<
+    OpportunityCardData,
+    "company_denumire" | "company_slug" | "company_logo_url" | "judet_nume" | "raspunsuri"
+  > & {
+    judete: { nume: string } | null;
+    companies: { denumire: string; slug: string | null; logo_url: string | null } | null;
+  };
+  const oportunitatiToate = (oportunitatiData as unknown as OportunitateRand[]) ?? [];
+  const oportunitatiPreview: OpportunityCardData[] = oportunitatiToate.map((r) => ({
+    id: r.id,
+    titlu: r.titlu,
+    tip: r.tip,
+    imagine_url: r.imagine_url,
+    judet_nume: r.judete?.nume ?? null,
+    buget_min: r.buget_min,
+    buget_max: r.buget_max,
+    termen_limita: r.termen_limita,
+    status: r.status,
+    created_at: r.created_at,
+    company_denumire: r.companies?.denumire ?? null,
+    company_slug: r.companies?.slug ?? null,
+    company_logo_url: r.companies?.logo_url ?? null,
   }));
 
   const pasi = [
@@ -105,17 +156,17 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ================= HERO (trimis) ================= */}
+      {/* ================= HERO ================= */}
       <section className="hero-wash relative overflow-hidden border-b border-line">
         <div aria-hidden className="absolute inset-0 grid-registry opacity-60" />
         <div
           aria-hidden
-          className="absolute -right-16 -top-20 h-80 w-80 rounded-full bg-seal/10 blur-3xl"
+          className="absolute -right-16 -top-20 hidden h-80 w-80 rounded-full bg-seal/10 blur-3xl sm:block"
           style={{ animation: "float-a 10s ease-in-out infinite" }}
         />
         <div
           aria-hidden
-          className="absolute -left-10 bottom-0 h-56 w-56 rounded-full bg-teal/10 blur-3xl"
+          className="absolute -left-10 bottom-0 hidden h-56 w-56 rounded-full bg-teal/10 blur-3xl sm:block"
           style={{ animation: "float-b 12s ease-in-out infinite" }}
         />
         <style>{`
@@ -123,7 +174,7 @@ export default async function HomePage() {
           @keyframes float-b { 0%,100% { transform: translateY(0); } 50% { transform: translateY(14px); } }
         `}</style>
 
-        <div className="relative mx-auto grid max-w-6xl gap-14 px-5 py-16 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-20">
+        <div className="relative mx-auto grid max-w-6xl gap-8 px-5 py-8 md:grid-cols-[1.1fr_0.9fr] md:items-center md:gap-14 md:py-16">
           <div className="animate-fade-up">
             <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-seal to-ember px-3.5 py-1.5 text-white shadow-[var(--shadow-md)]">
               <span className="relative flex h-1.5 w-1.5">
@@ -133,17 +184,17 @@ export default async function HomePage() {
               <span className="stamp-label">{t.home.eyebrow}</span>
             </div>
 
-            <h1 className="mt-6 max-w-xl text-5xl font-bold leading-[1.02] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            <h1 className="mt-4 max-w-xl text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
               <span className="text-gradient-seal">{t.home.titleAccent}</span>
               <br />
               {t.home.titleRest}
             </h1>
 
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft sm:text-lg">
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-ink-soft sm:text-base">
               {t.home.subtitle}
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-2.5">
               <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
                 {t.home.ctaPrimary}
                 <ArrowRight className="h-4 w-4" />
@@ -157,7 +208,7 @@ export default async function HomePage() {
             <HomeStats firme={firmeCount ?? 0} domenii={domeniiCount ?? 0} judete={judeteCount ?? 0} />
           </div>
 
-          <div className="relative flex justify-center md:justify-end">
+          <div className="relative hidden justify-center md:flex md:justify-end">
             <div
               aria-hidden
               className="absolute h-72 w-72 rounded-full opacity-20 blur-3xl gradient-seal sm:h-96 sm:w-96"
@@ -178,93 +229,73 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
-
-        <RecentCompaniesTicker />
-      </section>
-
-      {/* ================= NAVIGARE RAPIDA ================= */}
-      <section className="border-b border-line bg-surface/40">
-        <div className="mx-auto max-w-6xl px-5 py-6">
-          <p className="stamp-label mb-3 text-ink-soft">{t.home.quickNavTitle}</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            {[
-              { href: "/catalog", label: t.home.quickNavFirme, icon: Building2 },
-              { href: "/membri", label: t.home.quickNavMembri, icon: Users },
-              { href: "/oportunitati", label: t.home.quickNavOportunitati, icon: Briefcase },
-              { href: "/evenimente", label: t.home.quickNavEvenimente, icon: CalendarDays },
-              { href: "/stiri", label: t.home.quickNavStiri, icon: Newspaper },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="lift-on-hover flex items-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-3.5 text-sm font-semibold text-ink transition hover:border-seal/40"
-              >
-                <item.icon className="h-4 w-4 shrink-0 text-seal" strokeWidth={1.8} />
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* ================= PREVIEW FIRME ================= */}
       {firmePreview.length > 0 && (
-        <section className="relative mx-auto max-w-6xl px-5 py-16">
-          <div className="flex items-end justify-between gap-4">
-            <div className="max-w-xl">
-              <p className="stamp-label text-seal">{t.home.companiesEyebrow}</p>
-              <h2 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                <Building2 className="h-6 w-6 text-seal" strokeWidth={1.8} />
-                {t.home.companiesTitle}
-              </h2>
-            </div>
-            <Link href="/catalog" className="shrink-0 text-sm font-semibold text-seal hover:underline">
-              {t.home.companiesSeeAll}
-            </Link>
+        <section className="relative mx-auto max-w-6xl px-5 py-8 md:py-12">
+          <div className="max-w-xl">
+            <p className="stamp-label text-seal">{t.home.companiesEyebrow}</p>
+            <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+              <Building2 className="h-5 w-5 text-seal" strokeWidth={1.8} />
+              {t.home.companiesTitle}
+            </h2>
           </div>
 
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
             {firmePreview.map((c) => (
               <CompanyCard key={c.id} company={c} />
             ))}
           </div>
+
+          <div className="mt-6 flex justify-center">
+            <LinkButton href="/catalog" variant="secondary" size="lg">
+              {t.home.companiesExploreButton}
+              <ArrowRight className="h-4 w-4" />
+            </LinkButton>
+          </div>
         </section>
       )}
 
-      {/* ================= EVENIMENTE ================= */}
-      <section className="relative mx-auto max-w-6xl px-5 py-16">
-        <div className="flex items-end justify-between gap-4">
-          <div className="max-w-xl">
-            <p className="stamp-label text-seal">{t.home.eventsEyebrow}</p>
-            <h2 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-              <CalendarDays className="h-6 w-6 text-seal" strokeWidth={1.8} />
-              {t.home.eventsTitle}
-            </h2>
-          </div>
-          <Link href="/evenimente" className="shrink-0 text-sm font-semibold text-seal hover:underline">
-            {t.home.eventsSeeAll}
-          </Link>
-        </div>
+      {/* ================= RECENT VERIFICATE ================= */}
+      <RecentCompaniesTicker />
 
-        {evenimente.length === 0 ? (
-          <p className="mt-6 text-sm text-ink-soft">{t.home.eventsEmpty}</p>
-        ) : (
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {evenimente.map((e) => (
-              <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
-            ))}
+      {/* ================= OPORTUNITATI ================= */}
+      <section className="relative border-t border-line bg-surface/40">
+        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
+          <div className="flex items-end justify-between gap-4">
+            <div className="max-w-xl">
+              <p className="stamp-label text-seal">{t.home.opportunitiesEyebrow}</p>
+              <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+                <Briefcase className="h-5 w-5 text-seal" strokeWidth={1.8} />
+                {t.home.opportunitiesTitle}
+              </h2>
+            </div>
+            <Link href="/oportunitati" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+              {t.home.opportunitiesSeeAll}
+            </Link>
           </div>
-        )}
+
+          {oportunitatiPreview.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-soft">{t.home.opportunitiesEmpty}</p>
+          ) : (
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {oportunitatiPreview.map((o) => (
+                <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ================= STIRI ================= */}
-      <section className="relative border-y border-line bg-surface/50">
-        <div className="mx-auto max-w-6xl px-5 py-16">
+      <section className="relative border-t border-line bg-surface/60">
+        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
           <div className="flex items-end justify-between gap-4">
             <div className="max-w-xl">
               <p className="stamp-label text-seal">{t.home.newsEyebrow}</p>
-              <h2 className="mt-2 flex items-center gap-2.5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-                <Newspaper className="h-6 w-6 text-seal" strokeWidth={1.8} />
+              <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+                <Newspaper className="h-5 w-5 text-seal" strokeWidth={1.8} />
                 {t.home.newsTitle}
               </h2>
             </div>
@@ -274,9 +305,9 @@ export default async function HomePage() {
           </div>
 
           {stiri.length === 0 ? (
-            <p className="mt-6 text-sm text-ink-soft">{t.home.newsEmpty}</p>
+            <p className="mt-5 text-sm text-ink-soft">{t.home.newsEmpty}</p>
           ) : (
-            <div className="mt-8 grid gap-5 md:grid-cols-3">
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {stiri.map((s) => (
                 <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
               ))}
@@ -285,20 +316,48 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ================= EVENIMENTE ================= */}
+      <section className="relative border-t border-line">
+        <div className="mx-auto max-w-6xl px-5 py-8 md:py-12">
+          <div className="flex items-end justify-between gap-4">
+            <div className="max-w-xl">
+              <p className="stamp-label text-seal">{t.home.eventsEyebrow}</p>
+              <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+                <CalendarDays className="h-5 w-5 text-seal" strokeWidth={1.8} />
+                {t.home.eventsTitle}
+              </h2>
+            </div>
+            <Link href="/evenimente" className="shrink-0 text-sm font-semibold text-seal hover:underline">
+              {t.home.eventsSeeAll}
+            </Link>
+          </div>
+
+          {evenimente.length === 0 ? (
+            <p className="mt-5 text-sm text-ink-soft">{t.home.eventsEmpty}</p>
+          ) : (
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {evenimente.map((e) => (
+                <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ================= CUM FUNCTIONEAZA ================= */}
-      <section id="cum-functioneaza" className="relative mx-auto max-w-6xl px-5 py-24">
+      <section id="cum-functioneaza" className="relative mx-auto max-w-6xl px-5 py-12 md:py-16">
         <div className="max-w-xl">
           <p className="stamp-label text-seal">{t.nav.howItWorks}</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
             {t.home.howTitle}
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {pasi.map((step, i) => (
             <div
               key={step.n}
-              className="lift-on-hover block-base relative overflow-hidden p-7"
+              className="lift-on-hover block-base relative overflow-hidden p-5 md:p-6"
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <div
@@ -307,16 +366,16 @@ export default async function HomePage() {
               />
               <div className="flex items-center justify-between">
                 <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-2xl shadow-[var(--shadow-md)] ${
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-[var(--shadow-md)] ${
                     i === 0 ? "gradient-seal" : i === 1 ? "bg-gradient-to-br from-teal to-teal-light" : "bg-gradient-to-br from-violet to-seal"
                   }`}
                 >
                   <step.icon className="h-5 w-5 text-white" strokeWidth={1.8} />
                 </div>
-                <span className="font-mono-num text-3xl font-bold text-ink/8">{step.n}</span>
+                <span className="font-mono-num text-2xl font-bold text-ink/8">{step.n}</span>
               </div>
-              <h3 className="relative mt-5 text-lg font-semibold text-ink">{step.title}</h3>
-              <p className="relative mt-2 text-sm leading-relaxed text-ink-soft">{step.body}</p>
+              <h3 className="relative mt-4 text-base font-semibold text-ink">{step.title}</h3>
+              <p className="relative mt-1.5 text-sm leading-relaxed text-ink-soft">{step.body}</p>
             </div>
           ))}
         </div>
@@ -334,24 +393,24 @@ export default async function HomePage() {
           className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-violet opacity-15 blur-3xl"
         />
 
-        <div className="relative mx-auto max-w-6xl px-5 py-24">
+        <div className="relative mx-auto max-w-6xl px-5 py-14 md:py-20">
           <div className="max-w-xl">
             <p className="stamp-label text-seal-light">{t.home.trustEyebrow}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {t.home.trustTitle}
             </h2>
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
             {increderi.map((item, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-white/10 bg-white/4 p-7 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-seal/40 hover:bg-white/6"
+                className="rounded-2xl border border-white/10 bg-white/4 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-seal/40 hover:bg-white/6"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl gradient-seal shadow-[var(--shadow-md)]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-seal shadow-[var(--shadow-md)]">
                   <item.icon className="h-5 w-5 text-white" strokeWidth={1.8} />
                 </div>
-                <p className="mt-5 text-sm leading-relaxed text-white/70">{item.text}</p>
+                <p className="mt-4 text-sm leading-relaxed text-white/70">{item.text}</p>
               </div>
             ))}
           </div>
@@ -360,15 +419,15 @@ export default async function HomePage() {
 
       {/* ================= CTA FINAL ================= */}
       <section className="hero-wash relative overflow-hidden">
-        <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
-          <BrandMark className="mx-auto h-14 w-14 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
-          <h2 className="mt-6 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+        <div className="relative mx-auto max-w-3xl px-5 py-14 text-center md:py-20">
+          <BrandMark className="mx-auto h-12 w-12 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
+          <h2 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
             {t.home.ctaFinalTitle}
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-base text-ink-soft">
+          <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft sm:text-base">
             {t.home.ctaFinalBody}
           </p>
-          <div className="mt-8 flex justify-center gap-3">
+          <div className="mt-6 flex justify-center gap-3">
             <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
               {t.home.ctaPrimary}
               <ArrowRight className="h-4 w-4" />
