@@ -386,7 +386,7 @@ export default function EditCompanyPage({
           <div className="rounded-2xl border border-seal/25 bg-seal/6 p-5">
             <div className="flex items-center gap-2">
               <Tag className="h-4 w-4 text-seal" />
-              <p className="font-semibold text-ink">Reducere pentru membrii Breslei</p>
+              <p className="font-semibold text-ink">Reducere pentru membrii ACDR</p>
             </div>
             <FieldHint>
               Oferă o reducere celorlalte firme verificate. Apare ca insignă pe cardul tău din

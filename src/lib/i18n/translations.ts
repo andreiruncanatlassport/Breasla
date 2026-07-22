@@ -62,6 +62,7 @@ interface Dictionary {
     companiesTitle: string;
     companiesSeeAll: string;
     companiesExploreButton: string;
+    companiesEmpty: string;
     opportunitiesEyebrow: string;
     opportunitiesTitle: string;
     opportunitiesSeeAll: string;
@@ -286,7 +287,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       step1Title: "Înregistrează-ți firma",
       step1Body: "Completezi CUI-ul, restul datelor se preiau automat de la ANAF.",
       step2Title: "Explorează comunitatea",
-      step2Body: "Catalog de firme, membri, oportunități deschise și știri din breaslă.",
+      step2Body: "Catalog de firme, membri, oportunități deschise și știri din comunitate.",
       step3Title: "Colaborează",
       step3Body: "Trimiți mesaje, răspunzi la oportunități și construiești parteneriate.",
       trustEyebrow: "Diferența",
@@ -306,7 +307,8 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       companiesTitle: "Firme din comunitate",
       companiesSeeAll: "Vezi toate firmele →",
       companiesExploreButton: "Explorează lista firmelor înregistrate",
-      opportunitiesEyebrow: "Piața breslei",
+      companiesEmpty: "Nicio firmă înregistrată momentan.",
+      opportunitiesEyebrow: "Piața",
       opportunitiesTitle: "Oportunități",
       opportunitiesSeeAll: "Toate oportunitățile →",
       opportunitiesEmpty: "Nicio oportunitate deschisă momentan.",
@@ -339,7 +341,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       conexiuneAcceptata: "Conectat",
     },
     catalog: {
-      eyebrow: "Registrul breslei",
+      eyebrow: "Registrul firmelor",
       title: "Catalog firme",
       countSuffix: "firme verificate prin ANAF",
       sortedByDistance: "sortate după distanță",
@@ -548,7 +550,8 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       companiesTitle: "Companies in the community",
       companiesSeeAll: "See all companies →",
       companiesExploreButton: "Explore the list of registered companies",
-      opportunitiesEyebrow: "The guild's marketplace",
+      companiesEmpty: "No companies registered yet.",
+      opportunitiesEyebrow: "Marketplace",
       opportunitiesTitle: "Opportunities",
       opportunitiesSeeAll: "All opportunities →",
       opportunitiesEmpty: "No open opportunities right now.",
@@ -581,7 +584,7 @@ export const translations: Record<"ro" | "en", Dictionary> = {
       conexiuneAcceptata: "Connected",
     },
     catalog: {
-      eyebrow: "The guild registry",
+      eyebrow: "Company registry",
       title: "Company catalog",
       countSuffix: "companies verified via ANAF",
       sortedByDistance: "sorted by distance",

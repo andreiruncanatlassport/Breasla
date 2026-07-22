@@ -232,30 +232,32 @@ export default async function HomePage() {
       </section>
 
       {/* ================= PREVIEW FIRME ================= */}
-      {firmePreview.length > 0 && (
-        <section className="relative mx-auto max-w-6xl px-5 py-8 md:py-12">
-          <div className="max-w-xl">
-            <p className="stamp-label text-seal">{t.home.companiesEyebrow}</p>
-            <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-              <Building2 className="h-5 w-5 text-seal" strokeWidth={1.8} />
-              {t.home.companiesTitle}
-            </h2>
-          </div>
+      <section className="relative mx-auto max-w-6xl px-5 py-8 md:py-12">
+        <div className="max-w-xl">
+          <p className="stamp-label text-seal">{t.home.companiesEyebrow}</p>
+          <h2 className="mt-1.5 flex items-center gap-2.5 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+            <Building2 className="h-5 w-5 text-seal" strokeWidth={1.8} />
+            {t.home.companiesTitle}
+          </h2>
+        </div>
 
+        {firmePreview.length === 0 ? (
+          <p className="mt-5 text-sm text-ink-soft">{t.home.companiesEmpty}</p>
+        ) : (
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             {firmePreview.map((c) => (
               <CompanyCard key={c.id} company={c} />
             ))}
           </div>
+        )}
 
-          <div className="mt-6 flex justify-center">
-            <LinkButton href="/catalog" variant="secondary" size="lg">
-              {t.home.companiesExploreButton}
-              <ArrowRight className="h-4 w-4" />
-            </LinkButton>
-          </div>
-        </section>
-      )}
+        <div className="mt-6 flex justify-center">
+          <LinkButton href="/catalog" variant="secondary" size="lg">
+            {t.home.companiesExploreButton}
+            <ArrowRight className="h-4 w-4" />
+          </LinkButton>
+        </div>
+      </section>
 
       {/* ================= RECENT VERIFICATE ================= */}
       <RecentCompaniesTicker />

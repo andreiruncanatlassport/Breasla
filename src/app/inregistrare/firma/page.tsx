@@ -23,7 +23,7 @@ const ETAPE = ["CUI", "Detalii firmă", "Domenii", "Nevoi & trimitere"];
 // gasita la ANAF etc.) se pierd — userul vede in continuare pasul 3-4, pare ca
 // a completat tot ce vede, dar trimiterea esueaza cu "date incomplete" pentru
 // campuri INVIZIBILE pe pasul curent. Persistand in sessionStorage evitam asta.
-const CHEIE_DRAFT = "breasla_inregistrare_firma_draft_v1";
+const CHEIE_DRAFT = "acdr_inregistrare_firma_draft_v1";
 
 function citesteDraft(): Partial<WizardFormState> | null {
   if (typeof window === "undefined") return null;

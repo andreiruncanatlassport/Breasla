@@ -250,7 +250,7 @@ export default async function CompanyPage({
                 <span className="font-mono-num text-lg font-bold">-{company.discount_procent}%</span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="stamp-label text-seal">Reducere pentru membrii Breslei</p>
+                <p className="stamp-label text-seal">Reducere pentru membrii ACDR</p>
                 <p className="mt-1.5 font-semibold text-ink">
                   {company.discount_descriere || `${company.discount_procent}% reducere pentru firmele din ACDR`}
                 </p>
