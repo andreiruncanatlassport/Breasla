@@ -10,6 +10,7 @@ import { NewsCard, type NewsCardData } from "@/components/NewsCard";
 import { EventCard, type EventCardData } from "@/components/EventCard";
 import { CompanyCard } from "@/components/CompanyCard";
 import { OpportunityCard, type OpportunityCardData } from "@/components/OpportunityCard";
+import { MobileCoverCarousel } from "@/components/MobileCoverCarousel";
 import { alegeFirmeRotativ } from "@/lib/rotate";
 
 const STEP_TINTS = ["bg-seal", "bg-teal", "bg-navy"];
@@ -259,11 +260,16 @@ export default async function HomePage() {
         {firmePreview.length === 0 ? (
           <p className="mt-5 text-sm text-ink-soft">{t.home.companiesEmpty}</p>
         ) : (
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
-            {firmePreview.map((c) => (
-              <CompanyCard key={c.id} company={c} />
-            ))}
-          </div>
+          <>
+            <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
+              {firmePreview.map((c) => (
+                <CompanyCard key={c.id} company={c} />
+              ))}
+            </div>
+            <div className="mt-5 sm:hidden">
+              <MobileCoverCarousel items={firmePreview.map((c) => <CompanyCard key={c.id} company={c} />)} />
+            </div>
+          </>
         )}
 
         <div className="mt-6 flex justify-center">
@@ -296,11 +302,20 @@ export default async function HomePage() {
           {oportunitatiPreview.length === 0 ? (
             <p className="mt-5 text-sm text-ink-soft">{t.home.opportunitiesEmpty}</p>
           ) : (
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {oportunitatiPreview.map((o) => (
-                <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
-              ))}
-            </div>
+            <>
+              <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
+                {oportunitatiPreview.map((o) => (
+                  <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
+                ))}
+              </div>
+              <div className="mt-5 sm:hidden">
+                <MobileCoverCarousel
+                  items={oportunitatiPreview.map((o) => (
+                    <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
+                  ))}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
@@ -324,11 +339,20 @@ export default async function HomePage() {
           {stiri.length === 0 ? (
             <p className="mt-5 text-sm text-ink-soft">{t.home.newsEmpty}</p>
           ) : (
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {stiri.map((s) => (
-                <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
-              ))}
-            </div>
+            <>
+              <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
+                {stiri.map((s) => (
+                  <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
+                ))}
+              </div>
+              <div className="mt-5 sm:hidden">
+                <MobileCoverCarousel
+                  items={stiri.map((s) => (
+                    <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
+                  ))}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
@@ -352,11 +376,20 @@ export default async function HomePage() {
           {evenimente.length === 0 ? (
             <p className="mt-5 text-sm text-ink-soft">{t.home.eventsEmpty}</p>
           ) : (
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {evenimente.map((e) => (
-                <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
-              ))}
-            </div>
+            <>
+              <div className="mt-5 hidden gap-4 sm:grid sm:grid-cols-3">
+                {evenimente.map((e) => (
+                  <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
+                ))}
+              </div>
+              <div className="mt-5 sm:hidden">
+                <MobileCoverCarousel
+                  items={evenimente.map((e) => (
+                    <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
+                  ))}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
