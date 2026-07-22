@@ -1,7 +1,8 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, PenLine } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { EventCard, type EventCardData } from "@/components/EventCard";
+import { LinkButton } from "@/components/ui/Button";
 
 export const metadata = { title: "Evenimente — ACDR" };
 
@@ -53,13 +54,19 @@ export default async function EvenimentePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12">
-      <div className="max-w-xl">
-        <p className="stamp-label text-seal">{t.events.eyebrow}</p>
-        <h1 className="mt-2 flex items-center gap-2.5 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          <CalendarDays className="h-7 w-7 text-seal" strokeWidth={1.8} />
-          {t.events.title}
-        </h1>
-        <p className="mt-3 text-base text-ink-soft">{t.events.subtitle}</p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="max-w-xl">
+          <p className="stamp-label text-seal">{t.events.eyebrow}</p>
+          <h1 className="mt-2 flex items-center gap-2.5 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <CalendarDays className="h-7 w-7 text-seal" strokeWidth={1.8} />
+            {t.events.title}
+          </h1>
+          <p className="mt-3 text-base text-ink-soft">{t.events.subtitle}</p>
+        </div>
+        <LinkButton href="/evenimente/propune" variant="secondary" size="sm" className="shrink-0">
+          <PenLine className="h-4 w-4" />
+          Propune un eveniment
+        </LinkButton>
       </div>
 
       <section className="mt-10">

@@ -18,7 +18,9 @@ export default async function AdminStiriPage() {
   if (rol !== "admin" && rol !== "moderator") redirect("/dashboard");
 
   const { data } = await supabase.from("news_articles").select("*").order("created_at", { ascending: false });
-  const stiri = (data as NewsArticle[]) ?? [];
+  const stiri = ((data as NewsArticle[]) ?? []).sort(
+    (a, b) => Number(b.status === "propunere") - Number(a.status === "propunere")
+  );
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">
@@ -45,8 +47,8 @@ export default async function AdminStiriPage() {
                   {new Date(s.created_at).toLocaleDateString("ro-RO", { day: "2-digit", month: "short", year: "numeric" })}
                 </p>
               </div>
-              <Badge tone={s.status === "publicat" ? "success" : "neutral"}>
-                {s.status === "publicat" ? "Publicat" : "Ciornă"}
+              <Badge tone={s.status === "publicat" ? "success" : s.status === "propunere" ? "warning" : "neutral"}>
+                {s.status === "publicat" ? "Publicat" : s.status === "propunere" ? "Propunere de membru" : "Ciornă"}
               </Badge>
             </Card>
           </Link>

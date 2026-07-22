@@ -1,7 +1,8 @@
-import { Newspaper } from "lucide-react";
+import { Newspaper, PenLine } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n/server";
 import { NewsCard, type NewsCardData } from "@/components/NewsCard";
+import { LinkButton } from "@/components/ui/Button";
 
 export const metadata = { title: "Știri — ACDR" };
 
@@ -19,13 +20,19 @@ export default async function StiriPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12">
-      <div className="max-w-xl">
-        <p className="stamp-label text-seal">{t.news.eyebrow}</p>
-        <h1 className="mt-2 flex items-center gap-2.5 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          <Newspaper className="h-7 w-7 text-seal" strokeWidth={1.8} />
-          {t.news.title}
-        </h1>
-        <p className="mt-3 text-base text-ink-soft">{t.news.subtitle}</p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="max-w-xl">
+          <p className="stamp-label text-seal">{t.news.eyebrow}</p>
+          <h1 className="mt-2 flex items-center gap-2.5 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            <Newspaper className="h-7 w-7 text-seal" strokeWidth={1.8} />
+            {t.news.title}
+          </h1>
+          <p className="mt-3 text-base text-ink-soft">{t.news.subtitle}</p>
+        </div>
+        <LinkButton href="/stiri/propune" variant="secondary" size="sm" className="shrink-0">
+          <PenLine className="h-4 w-4" />
+          Propune o știre
+        </LinkButton>
       </div>
 
       {stiri.length === 0 ? (

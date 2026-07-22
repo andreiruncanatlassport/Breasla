@@ -10,7 +10,7 @@ import { NewsCard, type NewsCardData } from "@/components/NewsCard";
 import { EventCard, type EventCardData } from "@/components/EventCard";
 import { CompanyCard } from "@/components/CompanyCard";
 import { OpportunityCard, type OpportunityCardData } from "@/components/OpportunityCard";
-import { MobileCoverCarousel } from "@/components/MobileCoverCarousel";
+import { MobileSlideCarousel } from "@/components/MobileSlideCarousel";
 import { alegeFirmeRotativ } from "@/lib/rotate";
 
 const STEP_TINTS = ["bg-seal", "bg-teal", "bg-navy"];
@@ -267,7 +267,7 @@ export default async function HomePage() {
               ))}
             </div>
             <div className="mt-5 sm:hidden">
-              <MobileCoverCarousel items={firmePreview.map((c) => <CompanyCard key={c.id} company={c} />)} />
+              <MobileSlideCarousel items={firmePreview.map((c) => <CompanyCard key={c.id} company={c} />)} />
             </div>
           </>
         )}
@@ -309,7 +309,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <div className="mt-5 sm:hidden">
-                <MobileCoverCarousel
+                <MobileSlideCarousel
                   items={oportunitatiPreview.map((o) => (
                     <OpportunityCard key={o.id} opportunity={o} labels={opportunityLabels} dateLocale={dateLocale} />
                   ))}
@@ -346,7 +346,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <div className="mt-5 sm:hidden">
-                <MobileCoverCarousel
+                <MobileSlideCarousel
                   items={stiri.map((s) => (
                     <NewsCard key={s.slug} article={s} readMoreLabel={t.news.readMore} />
                   ))}
@@ -383,7 +383,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <div className="mt-5 sm:hidden">
-                <MobileCoverCarousel
+                <MobileSlideCarousel
                   items={evenimente.map((e) => (
                     <EventCard key={e.slug} event={e} labels={eventLabels} dateLocale={dateLocale} />
                   ))}

@@ -6,12 +6,18 @@ import { Card, Badge } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
 import type { Profile, EventItem } from "@/types/database";
 
-const STATUS_TONE: Record<string, "success" | "neutral" | "danger"> = {
+const STATUS_TONE: Record<string, "success" | "neutral" | "danger" | "warning"> = {
   publicat: "success",
   draft: "neutral",
+  propunere: "warning",
   anulat: "danger",
 };
-const STATUS_LABEL: Record<string, string> = { publicat: "Publicat", draft: "Ciornă", anulat: "Anulat" };
+const STATUS_LABEL: Record<string, string> = {
+  publicat: "Publicat",
+  draft: "Ciornă",
+  propunere: "Propunere de membru",
+  anulat: "Anulat",
+};
 
 export default async function AdminEvenimentePage() {
   const supabase = await createClient();
@@ -25,7 +31,9 @@ export default async function AdminEvenimentePage() {
   if (rol !== "admin" && rol !== "moderator") redirect("/dashboard");
 
   const { data } = await supabase.from("events").select("*").order("data_inceput", { ascending: false });
-  const evenimente = (data as EventItem[]) ?? [];
+  const evenimente = ((data as EventItem[]) ?? []).sort(
+    (a, b) => Number(b.status === "propunere") - Number(a.status === "propunere")
+  );
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12">

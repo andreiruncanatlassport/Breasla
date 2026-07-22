@@ -385,7 +385,7 @@ export interface Notification {
 // ============================================================================
 // STIRI & EVENIMENTE
 // ============================================================================
-export type NewsStatus = "draft" | "publicat";
+export type NewsStatus = "draft" | "propunere" | "publicat";
 
 export interface NewsArticle {
   id: string;
@@ -402,7 +402,7 @@ export interface NewsArticle {
 }
 
 export type EventTip = "conferinta" | "workshop" | "networking" | "altul";
-export type EventStatus = "draft" | "publicat" | "anulat";
+export type EventStatus = "draft" | "propunere" | "publicat" | "anulat";
 
 export interface EventItem {
   id: string;

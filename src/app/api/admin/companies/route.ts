@@ -107,7 +107,11 @@ export async function DELETE(request: Request) {
   const { error } = await admin.from("companies").delete().eq("id", id);
   if (error) {
     return NextResponse.json(
-      { error: mesajEroareSigur(error, "DELETE /api/admin/companies") },
+      {
+        error: mesajEroareSigur(error, "DELETE /api/admin/companies", {
+          "23503": "Nu am putut șterge firma — încă mai există date asociate care fac referire la ea. Contactează suportul tehnic.",
+        }),
+      },
       { status: 500 }
     );
   }
