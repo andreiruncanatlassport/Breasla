@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Pencil, ExternalLink, Bookmark, Building2, ArrowRight } from "lucide-react";
+import { Pencil, ExternalLink, Bookmark, Building2, ArrowRight, Handshake } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
 import { EmailUnverifiedBanner } from "@/components/EmailUnverifiedBanner";
+import { CompanyCard } from "@/components/CompanyCard";
 import type { Company, CompanyStatus } from "@/types/database";
 
 const STATUS_LABEL: Record<CompanyStatus, string> = {
@@ -35,6 +36,45 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false });
 
   const companies = (companiesData as Company[]) ?? [];
+
+  // ---- Potriviri: firme care OFERA ceva ce eu (oricare din firmele mele
+  // aprobate) CAUT, in domeniile bifate la "Ce cauți?" ----------------------
+  const idFirmeAprobate = companies.filter((c) => c.status === "approved").map((c) => c.id);
+  const potriviri: {
+    id: string;
+    slug: string | null;
+    denumire: string;
+    logo_url: string | null;
+    localitate: string | null;
+    descriere: string | null;
+    dimensiune_echipa: string | null;
+  }[] = [];
+
+  if (idFirmeAprobate.length > 0) {
+    const { data: cautateData } = await supabase
+      .from("company_categorii_cautate")
+      .select("category_id")
+      .in("company_id", idFirmeAprobate);
+    const categoriiCautate = Array.from(
+      new Set(((cautateData as { category_id: string }[]) ?? []).map((c) => c.category_id))
+    );
+
+    if (categoriiCautate.length > 0) {
+      const { data: ofertantiData } = await supabase
+        .from("company_categories")
+        .select("companies(id, slug, denumire, logo_url, localitate, descriere, dimensiune_echipa, status)")
+        .in("category_id", categoriiCautate);
+
+      const vazute = new Set<string>();
+      for (const row of (ofertantiData as unknown as { companies: (typeof potriviri)[number] & { status: string } | null }[]) ?? []) {
+        const firma = row.companies;
+        if (!firma || firma.status !== "approved" || idFirmeAprobate.includes(firma.id) || vazute.has(firma.id)) continue;
+        vazute.add(firma.id);
+        potriviri.push(firma);
+        if (potriviri.length >= 6) break;
+      }
+    }
+  }
 
   const { data: favoriteData } = await supabase
     .from("company_favorites")
@@ -162,6 +202,21 @@ export default async function DashboardPage() {
           ))}
         </div>
       </section>
+
+      {/* Potriviri: firme care ofera ce caut */}
+      {potriviri.length > 0 && (
+        <section className="mt-8">
+          <SectionLabel icon={<Handshake className="h-3.5 w-3.5" />}>Potriviri pentru tine</SectionLabel>
+          <p className="mt-1 text-xs text-ink-soft/70">
+            Firme care oferă exact domeniile pe care le cauți — bazat pe „Ce cauți?” de la firma(ele) tale.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {potriviri.map((p) => (
+              <CompanyCard key={p.id} company={{ ...p, judet_nume: null, domeniu_principal: null }} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Firme salvate */}
       {favorite.length > 0 && (

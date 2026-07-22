@@ -47,7 +47,8 @@ function StatCard({
 
 const TOOLURI = [
   { href: "/admin/firme", icon: Building2, titlu: "Firme", desc: "Adaugă, editează, șterge, aprobă" },
-  { href: "/admin/membri", icon: Users, titlu: "Membri", desc: "Dezactivează, șterge, caută" },
+  { href: "/admin/membri", icon: Users, titlu: "Membri", desc: "Verifică, dezactivează, șterge, caută" },
+  { href: "/admin/oportunitati", icon: Briefcase, titlu: "Oportunități", desc: "Aprobă sau respinge oportunitățile noi" },
   { href: "/admin/recenzii", icon: Star, titlu: "Recenzii", desc: "Moderează recenziile firmelor" },
   { href: "/admin/stiri", icon: Newspaper, titlu: "Știri", desc: "Publică și editează articole" },
   { href: "/admin/evenimente", icon: CalendarDays, titlu: "Evenimente", desc: "Creează și gestionează evenimente" },

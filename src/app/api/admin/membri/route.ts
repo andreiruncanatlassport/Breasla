@@ -15,10 +15,9 @@ async function verificaAdmin() {
 }
 
 /**
- * PATCH /api/admin/membri — dezactiveaza sau reactiveaza un membru.
- * body: { id, activ: boolean }
- * Un membru dezactivat (activ=false) dispare din /membri si nu mai poate
- * fi contactat, dar contul si datele raman intacte (reactivabil oricand).
+ * PATCH /api/admin/membri — dezactiveaza/reactiveaza un membru si/sau ii
+ * schimba starea de verificare (nou/verificat/neverificat).
+ * body: { id, activ?: boolean, stare_verificare?: "nou" | "verificat" | "neverificat" }
  */
 export async function PATCH(request: Request) {
   const { user, rol } = await verificaAdmin();
@@ -30,19 +29,39 @@ export async function PATCH(request: Request) {
   const body = await request.json().catch(() => null);
   const id = body?.id as string | undefined;
   const activ = body?.activ;
-  if (!id || typeof activ !== "boolean") {
-    return NextResponse.json({ error: "Date invalide (id + activ necesare)." }, { status: 400 });
+  const stareVerificare = body?.stare_verificare as string | undefined;
+
+  if (!id || (typeof activ !== "boolean" && stareVerificare === undefined)) {
+    return NextResponse.json(
+      { error: "Date invalide (id + activ sau stare_verificare necesare)." },
+      { status: 400 }
+    );
+  }
+  if (stareVerificare !== undefined && !["nou", "verificat", "neverificat"].includes(stareVerificare)) {
+    return NextResponse.json({ error: "Stare de verificare invalidă." }, { status: 400 });
   }
 
   if (id === user.id) {
     return NextResponse.json({ error: "Nu te poți dezactiva pe tine însuți." }, { status: 400 });
   }
 
+  const patch: Record<string, unknown> = {};
+  if (typeof activ === "boolean") patch.activ = activ;
+  if (stareVerificare !== undefined) patch.stare_verificare = stareVerificare;
+
   const admin = createServiceRoleClient();
-  const { error } = await admin.from("profiles").update({ activ } as never).eq("id", id);
+  const { error } = await admin.from("profiles").update(patch as never).eq("id", id);
   if (error) return NextResponse.json({ error: mesajEroareSigur(error, "PATCH src/app/api/admin/membri/route.ts") }, { status: 500 });
 
-  return NextResponse.json({ data: { id, activ } });
+  if (stareVerificare !== undefined) {
+    await admin.from("admin_audit_log").insert({
+      admin_id: user.id,
+      actiune: `membru_${stareVerificare}`,
+      detalii: { profile_id: id },
+    } as never);
+  }
+
+  return NextResponse.json({ data: { id, activ, stare_verificare: stareVerificare } });
 }
 
 /**

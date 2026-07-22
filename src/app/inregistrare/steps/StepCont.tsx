@@ -17,6 +17,7 @@ export function StepCont({ onDone }: Props) {
   const [numeComplet, setNumeComplet] = useState("");
   const [telefonPersonal, setTelefonPersonal] = useState("");
   const [acceptaTermeni, setAcceptaTermeni] = useState(false);
+  const [declaraValori, setDeclaraValori] = useState(false);
   const [eroare, setEroare] = useState<string | null>(null);
   const [emailDejaFolosit, setEmailDejaFolosit] = useState(false);
   const [confirmareNecesara, setConfirmareNecesara] = useState(false);
@@ -28,6 +29,10 @@ export function StepCont({ onDone }: Props) {
 
     if (!acceptaTermeni) {
       setEroare("Trebuie să accepți Termenii, Regulamentul și Politica de confidențialitate.");
+      return;
+    }
+    if (!declaraValori) {
+      setEroare("Trebuie să confirmi declarația de mai jos pentru a continua.");
       return;
     }
 
@@ -79,6 +84,7 @@ export function StepCont({ onDone }: Props) {
         telefon_personal: telefonPersonal || null,
         termeni_acceptati_la: new Date().toISOString(),
         termeni_versiune: TERMENI_VERSIUNE,
+        declaratie_valori: true,
       } as never)
       .eq("id", data.user!.id);
 
@@ -137,6 +143,18 @@ export function StepCont({ onDone }: Props) {
         <FieldHint>Minim 8 caractere.</FieldHint>
       </div>
 
+      <label className="flex items-start gap-2.5 rounded-xl border border-seal/20 bg-seal/5 p-3.5 text-sm text-ink">
+        <input
+          type="checkbox"
+          checked={declaraValori}
+          onChange={(e) => setDeclaraValori(e.target.checked)}
+          className="mt-0.5 rounded border-line accent-seal"
+        />
+        <span>
+          Declar că sunt antreprenor/oare și că îmi desfășor activitatea potrivit valorilor creștine.
+        </span>
+      </label>
+
       <label className="flex items-start gap-2.5 text-sm text-ink-soft">
         <input
           type="checkbox"
@@ -160,6 +178,11 @@ export function StepCont({ onDone }: Props) {
           .
         </span>
       </label>
+
+      <p className="text-xs text-ink-soft/80">
+        Contul tău va fi vizibil ca &bdquo;nou&rdquo; până când un administrator îl verifică — de obicei
+        durează puțin, nu blochează navigarea pe platformă.
+      </p>
 
       {confirmareNecesara && (
         <div className="rounded-xl border border-teal/30 bg-teal/8 p-4 text-sm">

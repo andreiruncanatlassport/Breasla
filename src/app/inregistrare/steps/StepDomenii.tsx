@@ -66,6 +66,14 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
     });
   }
 
+  function toggleCautat(categoryId: string) {
+    update({
+      categorii_cautate: form.categorii_cautate.includes(categoryId)
+        ? form.categorii_cautate.filter((id) => id !== categoryId)
+        : [...form.categorii_cautate, categoryId],
+    });
+  }
+
   const areDomeniu = form.categorii.length > 0;
   const areDomeniuPrincipal = form.categorii.some((c) => c.is_primary);
 
@@ -181,6 +189,59 @@ export function StepDomenii({ form, update, onNext, onBack }: Props) {
             Apare pe profilul firmei lângă domeniile bifate. Tot trebuie să bifezi cel puțin un
             domeniu din listă (cel mai apropiat) ca domeniu principal.
           </FieldHint>
+        </div>
+      </div>
+
+      <div>
+        <Label>Ce cauți? (opțional)</Label>
+        <FieldHint>
+          Bifează domeniile în care cauți parteneri, servicii sau furnizori — te ajutăm să dai peste
+          firme din comunitate care oferă exact asta.
+        </FieldHint>
+
+        <div className="mt-3 max-h-72 space-y-4 overflow-y-auto rounded-lg border border-line bg-surface p-4">
+          {treeFiltrat.length === 0 && (
+            <p className="text-sm text-ink-soft">Niciun domeniu găsit pentru „{cautare}”.</p>
+          )}
+          {treeFiltrat.map((parent) => (
+            <div key={parent.id}>
+              <label className="flex items-center gap-2 text-sm font-semibold text-ink">
+                <input
+                  type="checkbox"
+                  checked={form.categorii_cautate.includes(parent.id)}
+                  onChange={() => toggleCautat(parent.id)}
+                  className="rounded border-line accent-teal"
+                />
+                {parent.name_ro}
+              </label>
+              {parent.children.length > 0 && (
+                <div className="ml-6 mt-1.5 grid grid-cols-1 gap-1 sm:grid-cols-2">
+                  {parent.children.map((child) => (
+                    <label key={child.id} className="flex items-center gap-2 text-sm text-ink-soft">
+                      <input
+                        type="checkbox"
+                        checked={form.categorii_cautate.includes(child.id)}
+                        onChange={() => toggleCautat(child.id)}
+                        className="rounded border-line accent-teal"
+                      />
+                      {child.name_ro}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="domenii-cautate-altele">Altceva ce cauți, în afara listei?</Label>
+          <Input
+            id="domenii-cautate-altele"
+            value={form.domenii_cautate_altele}
+            onChange={(e) => update({ domenii_cautate_altele: e.target.value })}
+            placeholder="Scrie cu cuvintele tale..."
+            maxLength={300}
+          />
         </div>
       </div>
 

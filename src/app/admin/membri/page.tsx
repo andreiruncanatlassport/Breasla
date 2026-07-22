@@ -17,6 +17,7 @@ interface MembruRand {
   oras: string | null;
   rol: string;
   activ: boolean;
+  stare_verificare: "nou" | "verificat" | "neverificat";
   created_at: string;
 }
 
@@ -27,6 +28,7 @@ export default async function AdminMembriPage({
 }) {
   const params = await searchParams;
   const q = params.q?.trim() ?? "";
+  const stareFiltru = params.stare?.trim() ?? "toate";
   const supabase = await createClient();
 
   const {
@@ -44,10 +46,11 @@ export default async function AdminMembriPage({
   const admin = createServiceRoleClient();
   let query = admin
     .from("profiles")
-    .select("id, nume_complet, email_personal, avatar_url, titlu, firma_declarata, oras, rol, activ, created_at")
+    .select("id, nume_complet, email_personal, avatar_url, titlu, firma_declarata, oras, rol, activ, stare_verificare, created_at")
     .order("created_at", { ascending: false })
     .limit(200);
   if (q) query = query.or(`nume_complet.ilike.%${q}%,email_personal.ilike.%${q}%,firma_declarata.ilike.%${q}%`);
+  if (stareFiltru !== "toate") query = query.eq("stare_verificare", stareFiltru);
 
   const { data } = await query;
   const membri = (data as MembruRand[]) ?? [];
@@ -77,6 +80,29 @@ export default async function AdminMembriPage({
 
       <section className="mt-8">
         <SectionLabel icon={<Users className="h-3.5 w-3.5" />}>Toți membrii ({membri.length})</SectionLabel>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {(
+            [
+              { id: "toate", label: "Toate" },
+              { id: "nou", label: "Noi" },
+              { id: "verificat", label: "Verificați" },
+              { id: "neverificat", label: "Neverificați" },
+            ] as const
+          ).map((f) => (
+            <Link
+              key={f.id}
+              href={`/admin/membri?stare=${f.id}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+              className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+                stareFiltru === f.id
+                  ? "gradient-seal text-white shadow-[var(--shadow-sm)]"
+                  : "bg-ink/5 text-ink-soft hover:bg-ink/10 hover:text-ink"
+              }`}
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
 
         <form className="mt-3 max-w-sm">
           <input
@@ -109,6 +135,21 @@ export default async function AdminMembriPage({
                         {m.nume_complet}
                       </Link>
                       {m.rol !== "user" && <Badge tone="seal">{m.rol}</Badge>}
+                      <Badge
+                        tone={
+                          m.stare_verificare === "verificat"
+                            ? "success"
+                            : m.stare_verificare === "neverificat"
+                              ? "danger"
+                              : "warning"
+                        }
+                      >
+                        {m.stare_verificare === "verificat"
+                          ? "Verificat"
+                          : m.stare_verificare === "neverificat"
+                            ? "Neverificat"
+                            : "Nou"}
+                      </Badge>
                       {!m.activ && <Badge tone="danger">Dezactivat</Badge>}
                     </div>
                     <p className="mt-0.5 truncate text-xs text-ink-soft">
@@ -116,7 +157,12 @@ export default async function AdminMembriPage({
                     </p>
                   </div>
                 </div>
-                <AdminMemberActions membruId={m.id} activ={m.activ} potSterge={potSterge && m.id !== user.id} />
+                <AdminMemberActions
+                  membruId={m.id}
+                  activ={m.activ}
+                  stareVerificare={m.stare_verificare}
+                  potSterge={potSterge && m.id !== user.id}
+                />
               </div>
             </Card>
           ))}

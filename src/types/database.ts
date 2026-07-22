@@ -19,6 +19,8 @@ export interface Profile {
   termeni_versiune: string | null;
   email_verificat: boolean;
   email_verificat_la: string | null;
+  stare_verificare: "nou" | "verificat" | "neverificat";
+  declaratie_valori: boolean;
   avatar_url: string | null;
   titlu: string | null;
   bio: string | null;
@@ -88,6 +90,7 @@ export interface Company {
   logo_url: string | null;
   descriere: string | null;
   domenii_altele: string | null;
+  domenii_cautate_altele: string | null;
   descriere_imagini: string[];
   numar_angajati: number | null;
   dimensiune_echipa: DimensiuneEchipa | null;
@@ -487,7 +490,7 @@ export interface MemberDirectoryEntry {
 // OPORTUNITATI (board public)
 // ============================================================================
 export type OpportunityTip = "proiect" | "achizitie" | "colaborare" | "cerere_servicii";
-export type OpportunityStatus = "deschisa" | "inchisa";
+export type OpportunityStatus = "in_asteptare" | "deschisa" | "respinsa" | "inchisa";
 
 export interface Opportunity {
   id: string;

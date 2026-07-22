@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart, Layers } from "lucide-react";
+import { Globe, Phone, Mail, MapPin, Users, TrendingUp, Building2, Star, Eye, Images, Zap, Navigation, UserRound, HelpCircle, HandHeart, Layers, Lock } from "lucide-react";
 import { FacebookIcon, InstagramIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
@@ -50,6 +50,7 @@ export default async function CompanyPage({
   const [
     { data: judetData },
     { data: categoriiData },
+    { data: categoriiCautateData },
     { data: nevoiData },
     { data: oferteData },
     { data: financiarData },
@@ -64,6 +65,10 @@ export default async function CompanyPage({
     supabase
       .from("company_categories")
       .select("is_primary, categories(id, name_ro, slug)")
+      .eq("company_id", id),
+    supabase
+      .from("company_categorii_cautate")
+      .select("categories(id, name_ro, slug)")
       .eq("company_id", id),
     supabase.from("company_support_needs").select("nota, categories(name_ro)").eq("company_id", id),
     supabase.from("company_support_offers").select("nota, categories(name_ro)").eq("company_id", id),
@@ -88,6 +93,8 @@ export default async function CompanyPage({
   const categorii =
     (categoriiData as unknown as { is_primary: boolean; categories: { id: string; name_ro: string; slug: string } | null }[]) ??
     [];
+  const categoriiCautate =
+    (categoriiCautateData as unknown as { categories: { id: string; name_ro: string; slug: string } | null }[]) ?? [];
   const nevoi = (nevoiData as unknown as { nota: string | null; categories: { name_ro: string } | null }[]) ?? [];
   const oferte = (oferteData as unknown as { nota: string | null; categories: { name_ro: string } | null }[]) ?? [];
   const financiar = (financiarData as { an: number; cifra_afaceri: number | null; numar_salariati: number | null }[] | null)?.[0];
@@ -117,8 +124,17 @@ export default async function CompanyPage({
   let stareConexiune: "none" | "pending_sent" | "pending_received" | "accepted" | "declined" = "none";
   let firmaVizitatorId: string | null = null;
   let motivRecenzie: MotivBlocare = "neautentificat";
+  let vizitatorulEVerificat = false;
 
   if (user) {
+    const { data: profilVizitator } = await supabase
+      .from("profiles")
+      .select("stare_verificare")
+      .eq("id", user.id)
+      .maybeSingle();
+    vizitatorulEVerificat =
+      (profilVizitator as { stare_verificare: string } | null)?.stare_verificare === "verificat";
+
     // Luam toate firmele userului, ca sa distingem intre "n-are firma" si
     // "are firma dar nu e verificata inca" — mesaje diferite pentru utilizator.
     const { data: firmeleMele } = await supabase
@@ -298,6 +314,24 @@ export default async function CompanyPage({
         )}
       </div>
 
+      {(categoriiCautate.length > 0 || company.domenii_cautate_altele) && (
+        <div className="mt-4">
+          <p className="stamp-label text-teal">Caută</p>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {categoriiCautate.map((c) => (
+              <Badge key={c.categories!.id} tone="neutral" className="border border-teal/30 text-teal">
+                {c.categories!.name_ro}
+              </Badge>
+            ))}
+            {company.domenii_cautate_altele && (
+              <Badge tone="neutral" className="border border-teal/30 text-teal">
+                {company.domenii_cautate_altele}
+              </Badge>
+            )}
+          </div>
+        </div>
+      )}
+
       {company.tags && company.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {company.tags.map((t) => (
@@ -332,11 +366,31 @@ export default async function CompanyPage({
         <Card>
           <SectionLabel icon={<Phone className="h-3.5 w-3.5" />}>Contact firmă</SectionLabel>
           <div className="mt-3 space-y-2 text-sm">
-            {company.telefon_firma && (
-              <p className="flex items-center gap-2 text-ink"><Phone className="h-4 w-4 text-ink-soft/70" /> {company.telefon_firma}</p>
-            )}
-            {company.email_firma && (
-              <p className="flex items-center gap-2 text-ink"><Mail className="h-4 w-4 text-ink-soft/70" /> {company.email_firma}</p>
+            {(company.telefon_firma || company.email_firma) && (
+              vizitatorulEVerificat ? (
+                <>
+                  {company.telefon_firma && (
+                    <p className="flex items-center gap-2 text-ink"><Phone className="h-4 w-4 text-ink-soft/70" /> {company.telefon_firma}</p>
+                  )}
+                  {company.email_firma && (
+                    <p className="flex items-center gap-2 text-ink"><Mail className="h-4 w-4 text-ink-soft/70" /> {company.email_firma}</p>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-start gap-2 rounded-xl bg-ink/4 p-3 text-xs text-ink-soft">
+                  <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    {user
+                      ? "Datele de contact devin vizibile după ce contul tău e verificat de un administrator."
+                      : (
+                        <>
+                          <Link href="/login" className="font-semibold text-seal hover:underline">Autentifică-te</Link>
+                          {" "}ca membru verificat pentru a vedea telefonul și emailul firmei.
+                        </>
+                      )}
+                  </span>
+                </div>
+              )
             )}
             {company.website && (
               <p className="flex items-center gap-2 text-ink">

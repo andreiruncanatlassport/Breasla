@@ -95,6 +95,7 @@ export async function POST(request: Request) {
       website: body.website ?? null,
       descriere: body.descriere ?? null,
       domenii_altele: typeof body.domenii_altele === "string" && body.domenii_altele.trim() ? body.domenii_altele.trim().slice(0, 300) : null,
+      domenii_cautate_altele: typeof body.domenii_cautate_altele === "string" && body.domenii_cautate_altele.trim() ? body.domenii_cautate_altele.trim().slice(0, 300) : null,
       numar_angajati: body.numar_angajati ?? null,
       dimensiune_echipa: body.dimensiune_echipa || null,
       cifra_afaceri_an: body.cifra_afaceri_an ?? null,
@@ -134,6 +135,13 @@ export async function POST(request: Request) {
         category_id: c.category_id,
         is_primary: Boolean(c.is_primary),
       })) as never
+    );
+  }
+
+  const categoriiCautate: string[] = Array.isArray(body.categorii_cautate) ? body.categorii_cautate : [];
+  if (categoriiCautate.length > 0) {
+    await supabase.from("company_categorii_cautate").insert(
+      categoriiCautate.map((categoryId) => ({ company_id: companyId, category_id: categoryId })) as never
     );
   }
 

@@ -52,6 +52,9 @@ export interface WizardFormState {
   // categorii + nevoi/oferte -----------------------------------------------
   categorii: WizardCategoriePick[];
   domenii_altele: string;
+  // ce cauta firma (simetric cu ce ofera, pentru matching) -----------------
+  categorii_cautate: string[];
+  domenii_cautate_altele: string;
   nevoi: WizardNevoieOferta[];
   oferte: WizardNevoieOferta[];
   cum_poate_ajuta_grupul: string;
@@ -94,6 +97,8 @@ export const initialWizardState: WizardFormState = {
 
   categorii: [],
   domenii_altele: "",
+  categorii_cautate: [],
+  domenii_cautate_altele: "",
   nevoi: [],
   oferte: [],
   cum_poate_ajuta_grupul: "",

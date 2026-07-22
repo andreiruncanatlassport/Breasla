@@ -49,8 +49,9 @@ export async function POST(request: Request) {
       buget_max: body?.buget_max ? Number(body.buget_max) : null,
       termen_limita: body?.termen_limita || null,
       imagine_url: body?.imagine_url || null,
+      status: "in_asteptare",
     } as never)
-    .select("id")
+    .select("id, status")
     .single();
 
   if (error) return NextResponse.json({ error: mesajEroareSigur(error, "POST src/app/api/opportunities/route.ts") }, { status: 500 });

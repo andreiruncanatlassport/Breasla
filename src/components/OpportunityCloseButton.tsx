@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Lock, Unlock } from "lucide-react";
+import { Loader2, Lock, Unlock, Clock, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import type { OpportunityStatus } from "@/types/database";
 
 export function OpportunityCloseButton({
   opportunityId,
@@ -11,11 +12,28 @@ export function OpportunityCloseButton({
   labels,
 }: {
   opportunityId: string;
-  status: "deschisa" | "inchisa";
+  status: OpportunityStatus;
   labels: { close: string; reopen: string };
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  // In asteptare / respinsa nu sunt stari intre care proprietarul poate comuta
+  // singur (le seteaza doar admin, la moderare) — aici doar informam.
+  if (status === "in_asteptare") {
+    return (
+      <p className="flex items-center gap-1.5 text-sm text-ink-soft">
+        <Clock className="h-3.5 w-3.5" /> În așteptare — un administrator o va analiza în curând.
+      </p>
+    );
+  }
+  if (status === "respinsa") {
+    return (
+      <p className="flex items-center gap-1.5 text-sm text-ink-soft">
+        <XCircle className="h-3.5 w-3.5" /> Respinsă de un administrator.
+      </p>
+    );
+  }
 
   async function toggle() {
     setLoading(true);
