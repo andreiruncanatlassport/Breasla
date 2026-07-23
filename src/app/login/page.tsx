@@ -9,6 +9,7 @@ import { Input, Label, FieldError } from "@/components/ui/Field";
 import { Card } from "@/components/ui/Card";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { useSettings } from "@/lib/settings/context";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 
 export default function LoginPage() {
   const { t } = useSettings();
@@ -17,19 +18,30 @@ export default function LoginPage() {
   const [parola, setParola] = useState("");
   const [eroare, setEroare] = useState<string | null>(null);
   const [seIncarca, setSeIncarca] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setEroare(null);
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setEroare("Completează verificarea anti-spam de mai jos.");
+      return;
+    }
+
     setSeIncarca(true);
 
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password: parola,
+      options: { captchaToken: captchaToken ?? undefined },
     });
 
     setSeIncarca(false);
+    setTurnstileKey((k) => k + 1);
+    setCaptchaToken(null);
 
     if (error) {
       setEroare(
@@ -75,6 +87,8 @@ export default function LoginPage() {
               autoComplete="current-password"
             />
           </div>
+
+          <TurnstileWidget key={turnstileKey} onToken={setCaptchaToken} onExpire={() => setCaptchaToken(null)} />
 
           <FieldError>{eroare}</FieldError>
 

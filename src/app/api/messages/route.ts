@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceRoleClient } from "@/lib/supabase/server";
 import { creeazaNotificare } from "@/lib/notifications";
+import { mesajEroareSigur } from "@/lib/api-errors";
 
 interface ParticipantRow {
   conversation_id: string;
@@ -169,7 +170,10 @@ export async function POST(request: Request) {
       .single();
 
     if (convErr || !convNoua) {
-      return NextResponse.json({ error: convErr?.message ?? "Nu am putut porni conversația." }, { status: 500 });
+      return NextResponse.json(
+        { error: convErr ? mesajEroareSigur(convErr, "POST /api/messages (conversatie)") : "Nu am putut porni conversația." },
+        { status: 500 }
+      );
     }
     conversationId = (convNoua as { id: string }).id;
 
@@ -179,7 +183,7 @@ export async function POST(request: Request) {
     ] as never);
 
     if (partErr) {
-      return NextResponse.json({ error: partErr.message }, { status: 500 });
+      return NextResponse.json({ error: mesajEroareSigur(partErr, "POST /api/messages (participanti)") }, { status: 500 });
     }
   }
 
@@ -190,7 +194,7 @@ export async function POST(request: Request) {
   } as never);
 
   if (msgErr) {
-    return NextResponse.json({ error: msgErr.message }, { status: 500 });
+    return NextResponse.json({ error: mesajEroareSigur(msgErr, "POST /api/messages (mesaj)") }, { status: 500 });
   }
 
   const { data: profilMeu } = await supabase.from("profiles").select("nume_complet").eq("id", user.id).maybeSingle();

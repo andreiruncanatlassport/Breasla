@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input, Label, FieldError, FieldHint } from "@/components/ui/Field";
 import { TERMENI_VERSIUNE } from "@/lib/terms";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 
 interface Props {
   onDone: () => void;
@@ -18,6 +19,8 @@ export function StepCont({ onDone }: Props) {
   const [telefonPersonal, setTelefonPersonal] = useState("");
   const [acceptaTermeni, setAcceptaTermeni] = useState(false);
   const [declaraValori, setDeclaraValori] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
   const [eroare, setEroare] = useState<string | null>(null);
   const [emailDejaFolosit, setEmailDejaFolosit] = useState(false);
   const [confirmareNecesara, setConfirmareNecesara] = useState(false);
@@ -35,6 +38,10 @@ export function StepCont({ onDone }: Props) {
       setEroare("Trebuie să confirmi declarația de mai jos pentru a continua.");
       return;
     }
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken) {
+      setEroare("Completează verificarea anti-spam de mai jos.");
+      return;
+    }
 
     setSeIncarca(true);
 
@@ -44,10 +51,13 @@ export function StepCont({ onDone }: Props) {
       password: parola,
       options: {
         data: { nume_complet: numeComplet },
+        captchaToken: captchaToken ?? undefined,
       },
     });
 
     setSeIncarca(false);
+    setTurnstileKey((k) => k + 1); // token-ul Turnstile e single-use — resetam widgetul dupa orice incercare
+    setCaptchaToken(null);
 
     // Cazul 1: adresa exista deja, iar "Confirm email" e DEZACTIVAT in Supabase
     // -> Supabase intoarce o eroare explicita.
@@ -183,6 +193,8 @@ export function StepCont({ onDone }: Props) {
         Contul tău va fi vizibil ca &bdquo;nou&rdquo; până când un administrator îl verifică — de obicei
         durează puțin, nu blochează navigarea pe platformă.
       </p>
+
+      <TurnstileWidget key={turnstileKey} onToken={setCaptchaToken} onExpire={() => setCaptchaToken(null)} />
 
       {confirmareNecesara && (
         <div className="rounded-xl border border-teal/30 bg-teal/8 p-4 text-sm">
