@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAdminStats } from "@/lib/admin-stats";
 import { Card, Badge, SectionLabel } from "@/components/ui/Card";
 import { AdminCompanyActions } from "@/components/AdminCompanyActions";
+import { MaintenanceToggle } from "@/components/MaintenanceToggle";
 import type { Company, Profile } from "@/types/database";
 
 function StatCard({
@@ -66,11 +67,13 @@ export default async function AdminPage() {
   const rol = (profile as Pick<Profile, "rol"> | null)?.rol;
   if (rol !== "admin" && rol !== "moderator") redirect("/dashboard");
 
-  const [stats, { data: pendingData }] = await Promise.all([
+  const [stats, { data: pendingData }, { data: setariData }] = await Promise.all([
     getAdminStats(),
     supabase.from("companies").select("*").eq("status", "pending").order("created_at", { ascending: true }).limit(10),
+    supabase.from("platform_settings").select("mentenanta_activa, mentenanta_mesaj").eq("id", true).maybeSingle(),
   ]);
   const pending = (pendingData as Company[]) ?? [];
+  const setari = setariData as { mentenanta_activa: boolean; mentenanta_mesaj: string | null } | null;
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-12">
@@ -79,6 +82,13 @@ export default async function AdminPage() {
           <p className="stamp-label text-seal">Panou de control</p>
           <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">Administrare</h1>
         </div>
+      </div>
+
+      <div className="mt-6">
+        <MaintenanceToggle
+          initialActiva={setari?.mentenanta_activa ?? false}
+          initialMesaj={setari?.mentenanta_mesaj ?? null}
+        />
       </div>
 
       {/* ============ STATISTICI ============ */}
