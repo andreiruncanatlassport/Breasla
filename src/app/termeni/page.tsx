@@ -70,9 +70,7 @@ export default function TermeniPage() {
       <p className="stamp-label text-seal">Document oficial</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Termeni și Condiții</h1>
       <p className="mt-2 text-sm text-ink-soft">
-        Versiune: {TERMENI_VERSIUNE}. Acesta e un draft de pornire, scris pentru claritate —
-        recomandăm o revizuire de către un jurist înainte de lansarea publică la scară largă. Nu
-        constituie consultanță juridică.
+        Versiune: {TERMENI_VERSIUNE}.
       </p>
 
       <div className="mt-8 space-y-5">

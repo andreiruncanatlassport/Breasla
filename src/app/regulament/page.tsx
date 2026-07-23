@@ -39,8 +39,7 @@ export default function RegulamentPage() {
       <p className="stamp-label text-seal">Document oficial</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Regulament</h1>
       <p className="mt-2 text-sm text-ink-soft">
-        Reguli simple, gândite să țină comunitatea de încredere. (Acesta e un draft de pornire — ajustează-l liber din cod, în{" "}
-        <code className="rounded bg-ink/8 px-1 py-0.5 text-xs">src/app/regulament/page.tsx</code>.)
+        Reguli simple, gândite să țină comunitatea de încredere.
       </p>
 
       <div className="mt-8 space-y-5">

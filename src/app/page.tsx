@@ -25,6 +25,9 @@ export default async function HomePage() {
   const supabase = await createClient();
   const { t, locale } = await getT();
   const dateLocale = locale === "en" ? "en-US" : "ro-RO";
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const eventLabels = {
     conferinta: t.events.typeConference,
     workshop: t.events.typeWorkshop,
@@ -211,10 +214,12 @@ export default async function HomePage() {
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2.5">
-              <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
-                {t.home.ctaPrimary}
-                <ArrowRight className="h-4 w-4" />
-              </LinkButton>
+              {!user && (
+                <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
+                  {t.home.ctaPrimary}
+                  <ArrowRight className="h-4 w-4" />
+                </LinkButton>
+              )}
               <LinkButton href="/catalog" variant="secondary" size="lg">
                 <Search className="h-4 w-4" />
                 {t.home.ctaSecondary}
@@ -468,23 +473,25 @@ export default async function HomePage() {
       </section>
 
       {/* ================= CTA FINAL ================= */}
-      <section className="hero-wash relative overflow-hidden">
-        <div className="relative mx-auto max-w-3xl px-5 py-14 text-center md:py-20">
-          <BrandMark className="mx-auto h-12 w-12 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
-          <h2 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
-            {t.home.ctaFinalTitle}
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft sm:text-base">
-            {t.home.ctaFinalBody}
-          </p>
-          <div className="mt-6 flex justify-center gap-3">
-            <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
-              {t.home.ctaPrimary}
-              <ArrowRight className="h-4 w-4" />
-            </LinkButton>
+      {!user && (
+        <section className="hero-wash relative overflow-hidden">
+          <div className="relative mx-auto max-w-3xl px-5 py-14 text-center md:py-20">
+            <BrandMark className="mx-auto h-12 w-12 drop-shadow-[0_10px_20px_rgba(10,37,64,0.15)]" />
+            <h2 className="mt-5 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
+              {t.home.ctaFinalTitle}
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-sm text-ink-soft sm:text-base">
+              {t.home.ctaFinalBody}
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <LinkButton href="/inregistrare" variant="seal" size="lg" className="shadow-lg shadow-seal/25 hover:shadow-xl hover:shadow-seal/30">
+                {t.home.ctaPrimary}
+                <ArrowRight className="h-4 w-4" />
+              </LinkButton>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

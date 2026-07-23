@@ -6,8 +6,7 @@ export default function ConfidentialitatePage() {
       <p className="stamp-label text-seal">Document oficial</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">Confidențialitate & date personale</h1>
       <p className="mt-2 text-sm text-ink-soft">
-        Rezumat pe scurt al modului în care tratăm datele. Acesta e un punct de plecare, nu o
-        consultanță juridică — recomandăm o revizuire cu un jurist înainte de lansarea publică.
+        Rezumat pe scurt al modului în care tratăm datele.
       </p>
 
       <div className="mt-8 space-y-5">
